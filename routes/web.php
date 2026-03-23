@@ -12,6 +12,12 @@ Route::get('/dashboard', function () {
     if (auth()->user()->hasRole('Admin')) {
         return redirect()->route('admin.users.index');
     }
+    if (auth()->user()->hasRole('Secretaria Sin Nota')) {
+        return redirect()->route('secretaria.sin-nota.index');
+    }
+    if (auth()->user()->hasRole('Secretaria Con Nota')) {
+        return redirect()->route('secretaria.con-nota.index');
+    }
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
