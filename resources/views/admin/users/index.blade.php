@@ -17,9 +17,9 @@
                     <div class="flex justify-between mb-4">
     <h2 class="text-xl font-semibold">Usuarios del Sistema</h2>
     <div class="flex gap-2">
-        <a href="{{ route('admin.asesores.index') }}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Gestión de Asesores</a>
-        <a href="{{ route('admin.users.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Nuevo Usuario</a>
-    </div>
+    <a href="{{ route('admin.asesores.index') }}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Gestión de Asesores</a>
+    <a href="{{ route('admin.users.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Nuevo Usuario</a>
+</div>
 </div>
                     <table class="w-full">
                         <thead>
