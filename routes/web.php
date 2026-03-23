@@ -33,6 +33,7 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
 });
 
 Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin'])->prefix('secretaria')->name('secretaria.')->group(function () {
+    Route::get('sin-nota/pdf', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'exportPdf'])->name('sin-nota.pdf');
     Route::resource('sin-nota', \App\Http\Controllers\Secretaria\EntradaSinNotaController::class)
          ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
     ->parameters(['sin-nota' => 'sinNota']);

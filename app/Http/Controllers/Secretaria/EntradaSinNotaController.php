@@ -8,11 +8,34 @@ use Illuminate\Http\Request;
 
 class EntradaSinNotaController extends Controller
 {
-    public function index()
-    {
-        $entradas = EntradaSinNota::latest()->paginate(10);
-        return view('secretaria.sin_nota.index', compact('entradas'));
+    public function index(Request $request)
+{
+    $query = EntradaSinNota::with('asesor');
+
+    if ($request->filled('nombre')) {
+        $query->where(function($q) use ($request) {
+            $q->where('nombre', 'like', '%' . $request->nombre . '%')
+              ->orWhere('apellido', 'like', '%' . $request->nombre . '%');
+        });
     }
+
+    if ($request->filled('asesor_id')) {
+        $query->where('asesor_id', $request->asesor_id);
+    }
+
+    if ($request->filled('fecha_desde')) {
+        $query->whereDate('created_at', '>=', $request->fecha_desde);
+    }
+
+    if ($request->filled('fecha_hasta')) {
+        $query->whereDate('created_at', '<=', $request->fecha_hasta);
+    }
+
+    $entradas = $query->latest()->paginate(10)->withQueryString();
+    $asesores = Asesor::where('activo', true)->get();
+
+    return view('secretaria.sin_nota.index', compact('entradas', 'asesores'));
+}
 
     public function create()
     {
@@ -83,4 +106,35 @@ class EntradaSinNotaController extends Controller
         return redirect()->route('secretaria.sin-nota.index')
             ->with('success', 'Entrada eliminada correctamente.');
     }
+    public function exportPdf(Request $request)
+{
+    $query = EntradaSinNota::with('asesor');
+
+    if ($request->filled('fecha_desde')) {
+        $query->whereDate('created_at', '>=', $request->fecha_desde);
+    }
+
+    if ($request->filled('fecha_hasta')) {
+        $query->whereDate('created_at', '<=', $request->fecha_hasta);
+    }
+
+    if ($request->filled('asesor_id')) {
+        $query->where('asesor_id', $request->asesor_id);
+    }
+
+    if ($request->filled('nombre')) {
+        $query->where(function($q) use ($request) {
+            $q->where('nombre', 'like', '%' . $request->nombre . '%')
+              ->orWhere('apellido', 'like', '%' . $request->nombre . '%');
+        });
+    }
+
+    $entradas = $query->latest()->get();
+    $fecha_desde = $request->fecha_desde ?? 'inicio';
+    $fecha_hasta = $request->fecha_hasta ?? now()->format('Y-m-d');
+
+    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('secretaria.sin_nota.pdf', compact('entradas', 'fecha_desde', 'fecha_hasta'));
+
+    return $pdf->stream('reporte-entradas-sin-nota.pdf');
+}
 }
