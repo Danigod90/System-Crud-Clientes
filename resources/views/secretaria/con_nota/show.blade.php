@@ -1,74 +1,95 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Detalle de Entrada Con Nota
+            {{ $conNota->codigo_org }} — {{ $conNota->nombre_organizacion }}
         </h2>
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white shadow-sm sm:rounded-lg p-6">
 
-                <div class="mb-6 border-b pb-4">
-                    <p class="text-gray-500 text-sm">N° de Entrada</p>
-                    <p class="text-2xl font-bold text-blue-600">{{ $conNota->numero_entrada }}</p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4 mb-6">
+                {{-- ENCABEZADO --}}
+                <div class="flex justify-between items-start mb-6">
                     <div>
-                        <p class="text-gray-500 text-sm">Organización</p>
-                        <p class="font-semibold">{{ $conNota->nombre_organizacion }}</p>
+                        <span class="font-mono text-blue-700 font-bold text-lg">{{ $conNota->codigo_org }}</span>
+                        <p class="text-xs text-gray-500 mt-1">Registrado por {{ $conNota->registrado_por }} el {{ $conNota->created_at?->format('d/m/Y H:i') ?? '-' }}</p>
                     </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Tipo de Organización</p>
-                        <p class="font-semibold">{{ $conNota->tipo_organizacion }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Representante</p>
-                        <p class="font-semibold">{{ $conNota->nombre_representante }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Asesor Asignado</p>
-                        <p class="font-semibold">{{ $conNota->asesor_asignado ?? 'No asignado' }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Vía de Ingreso</p>
-                        <p class="font-semibold capitalize">{{ $conNota->via_ingreso }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Fecha de Registro</p>
-                        <p class="font-semibold">{{ $conNota->created_at->format('d/m/Y H:i') }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Registrado por</p>
-                        <p class="font-semibold">{{ $conNota->user->name }}</p>
-                    </div>
-                </div>
-
-                <div class="mb-6">
-                    <p class="text-gray-700 font-semibold mb-2">Servicios Solicitados</p>
-                    @forelse($conNota->servicios as $servicio)
-                        <div class="border rounded px-4 py-3 mb-2 bg-gray-50">
-                            <p class="font-semibold capitalize">{{ str_replace('_', ' ', $servicio->tipo_servicio) }}</p>
-                            @if($servicio->lugar_charla)
-                                <p class="text-sm text-gray-600">Lugar: {{ $servicio->lugar_charla == 'fuera' ? 'Fuera de oficina' : 'En oficina' }}</p>
-                            @endif
-                            @if($servicio->direccion_charla)
-                                <p class="text-sm text-gray-600">Dirección: {{ $servicio->direccion_charla }}</p>
-                            @endif
-                            @if($servicio->fecha_hora_charla)
-                                <p class="text-sm text-gray-600">Fecha y hora: {{ $servicio->fecha_hora_charla->format('d/m/Y H:i') }}</p>
-                            @endif
-                        </div>
-                    @empty
-                        <p class="text-gray-500">No hay servicios registrados.</p>
-                    @endforelse
-                </div>
-
-                <a href="{{ route('secretaria.con-nota.index') }}"
-                   class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
-                    Volver al listado
+                    <div class="flex gap-2">
+                 <a href="{{ route('secretaria.con-nota.edit', ['conNota' => $conNota->id]) }}"
+                        style="background-color: #f59e0b; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">
+                     Editar
                 </a>
+                  </a>
+                  @if($conNota->via_ingreso == 'presencial' && ($conNota->asunto_char || $conNota->asunto_tec))
+<a href="{{ route('secretaria.con-nota.nota-pdf', $conNota->id) }}" target="_blank"
+       style="background-color: #1e3a5f; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">
+    Imprimir Nota
+</a>
+@endif
+
+@if($conNota->asunto_log && !$conNota->asunto_tec)
+<a href="#"
+       style="background-color: #065f46; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">
+    Imprimir Logistico
+</a>
+@endif
+                <a href="{{ route('secretaria.con-nota.index') }}"
+                     style="background-color: #e5e7eb; color: #374151; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">
+                  Volver
+                </a>
+                </div>
+                </div>
+
+                {{-- DATOS --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-medium mb-1">Organizacion</p>
+                        <p class="font-semibold text-gray-800">{{ $conNota->nombre_organizacion }}</p>
+                        <p class="text-sm text-gray-500">{{ $conNota->tipo_organizacion }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-medium mb-1">Representante</p>
+                        <p class="font-semibold text-gray-800">{{ $conNota->nombre_representante }}</p>
+                        @if($conNota->telefono_representante)
+                            <p class="text-sm text-gray-500">{{ $conNota->telefono_representante }}</p>
+                        @endif
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-medium mb-1">Asesor asignado</p>
+                        <p class="font-semibold text-gray-800">{{ $conNota->asesor_asignado ?? '-' }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-medium mb-1">Via de ingreso</p>
+                        <p class="font-semibold text-gray-800 capitalize">{{ $conNota->via_ingreso }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-medium mb-1">Fecha de eleccion</p>
+                        <p class="font-semibold text-gray-800">
+                            {{ $conNota->fecha_eleccion ? $conNota->fecha_eleccion->format('d/m/Y') : '-' }}
+                        </p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 uppercase font-medium mb-1">Asunto</p>
+                        <p class="font-mono font-bold text-gray-800">{{ $conNota->asunto_texto }}</p>
+                    </div>
+                </div>
+
+                {{-- ASUNTO DETALLE --}}
+                <div class="border-t pt-4">
+                    <p class="text-xs text-gray-500 uppercase font-medium mb-3">Servicios solicitados</p>
+                    <div class="flex gap-3">
+                        <span class="px-3 py-1 rounded-full text-sm font-medium {{ $conNota->asunto_char ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-400 line-through' }}">
+                            Char — Charla
+                        </span>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium {{ $conNota->asunto_log ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-400 line-through' }}">
+                            Log — Logistica
+                        </span>
+                        <span class="px-3 py-1 rounded-full text-sm font-medium {{ $conNota->asunto_tec ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-400 line-through' }}">
+                            Tec — Tecnica
+                        </span>
+                    </div>
+                </div>
 
             </div>
         </div>

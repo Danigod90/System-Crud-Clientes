@@ -39,7 +39,9 @@ Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin']
     ->parameters(['sin-nota' => 'sinNota']);
 
     Route::resource('con-nota', \App\Http\Controllers\Secretaria\EntradaConNotaController::class)
-        ->only(['index', 'create', 'store', 'show']);
+    ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
+    ->parameters(['con-nota' => 'conNota']);
+    Route::get('con-nota/{conNota}/nota-pdf', [\App\Http\Controllers\Secretaria\NotaPdfController::class, 'notaPresidente'])->name('con-nota.nota-pdf');
 });
 
 require __DIR__.'/auth.php';

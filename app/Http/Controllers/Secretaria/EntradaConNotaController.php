@@ -1,62 +1,128 @@
 <?php
+
 namespace App\Http\Controllers\Secretaria;
 
 use App\Http\Controllers\Controller;
 use App\Models\EntradaConNota;
-use App\Models\ServicioEntrada;
+use App\Models\Asesor;
 use Illuminate\Http\Request;
 
 class EntradaConNotaController extends Controller
 {
-    public function index()
-    {
-        $entradas = EntradaConNota::with('servicios')->latest()->paginate(10);
-        return view('secretaria.con_nota.index', compact('entradas'));
-    }
+    public function index(Request $request)
+{
+    $asesores = Asesor::orderBy('nombre')->get();
+
+    $entradas = EntradaConNota::with('user')
+        ->when($request->organizacion, fn($q) =>
+            $q->where('nombre_organizacion', 'like', '%' . $request->organizacion . '%')
+        )
+        ->when($request->asesor, fn($q) =>
+            $q->where('asesor_asignado', $request->asesor)
+        )
+        ->when($request->asunto, function($q) use ($request) {
+            match($request->asunto) {
+                'char' => $q->where('asunto_char', true),
+                'log'  => $q->where('asunto_log', true),
+                'tec'  => $q->where('asunto_tec', true),
+            };
+        })
+        ->when($request->mes_ingreso, fn($q) =>
+    $q->whereYear('created_at', substr($request->mes_ingreso, 0, 4))
+      ->whereMonth('created_at', substr($request->mes_ingreso, 5, 2))
+)
+        ->latest()
+        ->paginate(10);
+
+    return view('secretaria.con_nota.index', compact('entradas', 'asesores'));
+}
 
     public function create()
     {
-        return view('secretaria.con_nota.create');
+        $asesores = Asesor::orderBy('nombre')->get();
+        return view('secretaria.con_nota.create', compact('asesores'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'nombre_organizacion'  => 'required|string|max:255',
-            'tipo_organizacion'    => 'required|string|max:255',
-            'nombre_representante' => 'required|string|max:255',
-            'asesor_asignado'      => 'nullable|string|max:255',
-            'via_ingreso'          => 'required|in:correo,presencial',
-            'servicios'            => 'required|array|min:1',
-            'servicios.*'          => 'in:asesoramiento_electoral,parte_tecnica,logistica,charla_asesoramiento,charla_mesa_receptora',
+            'nombre_organizacion'   => 'required|string|max:255',
+            'tipo_organizacion'     => 'required|string|max:255',
+            'nombre_representante'  => 'required|string|max:255',
+            'telefono_representante'=> 'nullable|string|max:50',
+            'fecha_eleccion'        => 'required|date',
+            'asesor_asignado'       => 'required|string|max:255',
+            'via_ingreso'           => 'required|in:correo,presencial',
+            'asunto'                => 'required|array|min:1',
+            'asunto.*'              => 'in:char,log,tec',
         ]);
 
-        $entrada = EntradaConNota::create([
-            'nombre_organizacion'  => $request->nombre_organizacion,
-            'tipo_organizacion'    => $request->tipo_organizacion,
-            'nombre_representante' => $request->nombre_representante,
-            'asesor_asignado'      => $request->asesor_asignado,
-            'via_ingreso'          => $request->via_ingreso,
-            'user_id'              => auth()->id(),
+        EntradaConNota::create([
+            'nombre_organizacion'    => $request->nombre_organizacion,
+            'tipo_organizacion'      => $request->tipo_organizacion,
+            'nombre_representante'   => $request->nombre_representante,
+            'telefono_representante' => $request->telefono_representante,
+            'fecha_eleccion'         => $request->fecha_eleccion,
+            'asesor_asignado'        => $request->asesor_asignado,
+            'via_ingreso'            => $request->via_ingreso,
+            'asunto_char'            => in_array('char', $request->asunto),
+            'asunto_log'             => in_array('log', $request->asunto),
+            'asunto_tec'             => in_array('tec', $request->asunto),
+            'user_id'                => auth()->id(),
         ]);
-
-        foreach ($request->servicios as $servicio) {
-            ServicioEntrada::create([
-                'entrada_con_nota_id' => $entrada->id,
-                'tipo_servicio'       => $servicio,
-                'lugar_charla'        => $request->input("lugar_charla_$servicio"),
-                'direccion_charla'    => $request->input("direccion_charla_$servicio"),
-                'fecha_hora_charla'   => $request->input("fecha_hora_charla_$servicio"),
-            ]);
-        }
 
         return redirect()->route('secretaria.con-nota.index')
-            ->with('success', 'Entrada registrada correctamente.');
+            ->with('success', 'Mesa de entrada registrada correctamente.');
     }
 
     public function show(EntradaConNota $conNota)
     {
-        $conNota->load('servicios');
         return view('secretaria.con_nota.show', compact('conNota'));
     }
+
+    public function edit(EntradaConNota $conNota)
+    {
+        $asesores = Asesor::orderBy('nombre')->get();
+        return view('secretaria.con_nota.edit', compact('conNota', 'asesores'));
+    }
+
+    public function update(Request $request, EntradaConNota $conNota)
+    {
+        $request->validate([
+            'nombre_organizacion'    => 'required|string|max:255',
+            'tipo_organizacion'      => 'required|string|max:255',
+            'nombre_representante'   => 'required|string|max:255',
+            'telefono_representante' => 'nullable|string|max:50',
+            'fecha_eleccion'         => 'required|date',
+            'asesor_asignado'        => 'required|string|max:255',
+            'via_ingreso'            => 'required|in:correo,presencial',
+            'asunto'                 => 'required|array|min:1',
+            'asunto.*'               => 'in:char,log,tec',
+        ]);
+
+        $conNota->update([
+            'nombre_organizacion'    => $request->nombre_organizacion,
+            'tipo_organizacion'      => $request->tipo_organizacion,
+            'nombre_representante'   => $request->nombre_representante,
+            'telefono_representante' => $request->telefono_representante,
+            'fecha_eleccion'         => $request->fecha_eleccion,
+            'asesor_asignado'        => $request->asesor_asignado,
+            'via_ingreso'            => $request->via_ingreso,
+            'asunto_char'            => in_array('char', $request->asunto ?? []),
+            'asunto_log'             => in_array('log', $request->asunto ?? []),
+            'asunto_tec'             => in_array('tec', $request->asunto ?? []),
+        ]);
+
+        return redirect()->route('secretaria.con-nota.index')
+            ->with('success', 'Entrada actualizada correctamente.');
+    }
+
+    public function destroy(EntradaConNota $conNota)
+{
+    $nombre = $conNota->nombre_organizacion;
+    $codigo = $conNota->codigo_org;
+    $conNota->delete();
+    return redirect()->route('secretaria.con-nota.index')
+        ->with('error', 'Se elimino la entrada ' . $codigo . ' — ' . $nombre . '.');
+}
 }
