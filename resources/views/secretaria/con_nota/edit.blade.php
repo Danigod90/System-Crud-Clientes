@@ -29,15 +29,14 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de organizacion *</label>
                             <select name="tipo_organizacion"
-        class="w-full border rounded px-3 py-2 text-sm @error('tipo_organizacion') border-red-500 @enderror">
-    <option value="">Seleccionar tipo...</option>
-    <option value="Club" {{ old('tipo_organizacion', $conNota->tipo_organizacion) == 'Club' ? 'selected' : '' }}>Club</option>
-    <option value="Universidad" {{ old('tipo_organizacion', $conNota->tipo_organizacion) == 'Universidad' ? 'selected' : '' }}>Universidad</option>
-    <option value="Cooperativa" {{ old('tipo_organizacion', $conNota->tipo_organizacion) == 'Cooperativa' ? 'selected' : '' }}>Cooperativa</option>
-    <option value="Escuela y Colegio" {{ old('tipo_organizacion', $conNota->tipo_organizacion) == 'Escuela y Colegio' ? 'selected' : '' }}>Escuela y Colegio</option>
-    <option value="Asentamiento" {{ old('tipo_organizacion', $conNota->tipo_organizacion) == 'Asentamiento' ? 'selected' : '' }}>Asentamiento</option>
-    <option value="Comision Vecinal" {{ old('tipo_organizacion', $conNota->tipo_organizacion) == 'Comision Vecinal' ? 'selected' : '' }}>Comision Vecinal</option>
-</select>
+                                    class="w-full border rounded px-3 py-2 text-sm @error('tipo_organizacion') border-red-500 @enderror">
+                                <option value="">Seleccionar tipo...</option>
+                                @foreach(['Club','Universidad','Cooperativa','Escuela y Colegio','Asentamiento','Comision Vecinal'] as $tipo)
+                                    <option value="{{ $tipo }}" {{ old('tipo_organizacion', $conNota->tipo_organizacion) == $tipo ? 'selected' : '' }}>
+                                        {{ $tipo }}
+                                    </option>
+                                @endforeach
+                            </select>
                             @error('tipo_organizacion')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -113,7 +112,7 @@
                         <p class="text-red-500 text-xs mb-3">{{ $message }}</p>
                     @enderror
 
-                    <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="grid grid-cols-3 gap-4 mb-4">
                         <label class="flex items-center gap-3 border rounded-lg p-4 cursor-pointer hover:bg-blue-50 transition">
                             <input type="checkbox" name="asunto[]" value="char"
                                    {{ old('asunto') ? (in_array('char', old('asunto')) ? 'checked' : '') : ($conNota->asunto_char ? 'checked' : '') }}
@@ -124,7 +123,7 @@
                             </div>
                         </label>
                         <label class="flex items-center gap-3 border rounded-lg p-4 cursor-pointer hover:bg-blue-50 transition">
-                            <input type="checkbox" name="asunto[]" value="log"
+                            <input type="checkbox" name="asunto[]" value="log" id="check-log"
                                    {{ old('asunto') ? (in_array('log', old('asunto')) ? 'checked' : '') : ($conNota->asunto_log ? 'checked' : '') }}
                                    class="w-4 h-4 text-blue-600">
                             <div>
@@ -143,6 +142,32 @@
                         </label>
                     </div>
 
+                    {{-- SECCION LOGISTICA — se activa con checkbox Log --}}
+                    <div id="seccion-logistica" style="display: none;" class="mb-6">
+                        <h3 class="text-md font-semibold text-gray-700 mb-3 border-b pb-2">Detalle Logistico</h3>
+                        <p class="text-xs text-gray-500 mb-3">Carga las cantidades segun la nota. Deja en 0 si no aplica.</p>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Urnas</label>
+                                <input type="number" name="log_urnas" min="0"
+                                       value="{{ old('log_urnas', $conNota->log_urnas) }}"
+                                       class="w-full border rounded px-3 py-2 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Cuartos oscuros</label>
+                                <input type="number" name="log_cuartos" min="0"
+                                       value="{{ old('log_cuartos', $conNota->log_cuartos) }}"
+                                       class="w-full border rounded px-3 py-2 text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tintas</label>
+                                <input type="number" name="log_tintas" min="0"
+                                       value="{{ old('log_tintas', $conNota->log_tintas) }}"
+                                       class="w-full border rounded px-3 py-2 text-sm">
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- BOTONES --}}
                     <div class="flex justify-end gap-3">
                         <a href="{{ route('secretaria.con-nota.index') }}"
@@ -159,4 +184,18 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const checkLog = document.getElementById('check-log');
+        const seccionLog = document.getElementById('seccion-logistica');
+
+        function toggleLogistica() {
+            seccionLog.style.display = checkLog.checked ? 'block' : 'none';
+        }
+
+        checkLog.addEventListener('change', toggleLogistica);
+
+        // Precarga al abrir — si ya tiene Log marcado muestra la seccion
+        toggleLogistica();
+    </script>
 </x-app-layout>

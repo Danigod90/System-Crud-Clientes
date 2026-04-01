@@ -16,30 +16,43 @@
                         <p class="text-xs text-gray-500 mt-1">Registrado por {{ $conNota->registrado_por }} el {{ $conNota->created_at?->format('d/m/Y H:i') ?? '-' }}</p>
                     </div>
                     <div class="flex gap-2">
-                 <a href="{{ route('secretaria.con-nota.edit', ['conNota' => $conNota->id]) }}"
-                        style="background-color: #f59e0b; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">
-                     Editar
-                </a>
-                  </a>
-                  @if($conNota->via_ingreso == 'presencial' && ($conNota->asunto_char || $conNota->asunto_tec))
-<a href="{{ route('secretaria.con-nota.nota-pdf', $conNota->id) }}" target="_blank"
-       style="background-color: #1e3a5f; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">
-    Imprimir Nota
-</a>
-@endif
+                        <a href="{{ route('secretaria.con-nota.edit', ['conNota' => $conNota->id]) }}"
+                           style="background-color: #f59e0b; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">
+                            Editar
+                        </a>
 
-@if($conNota->asunto_log && !$conNota->asunto_tec)
-<a href="#"
-       style="background-color: #065f46; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">
-    Imprimir Logistico
+                        @if($conNota->via_ingreso == 'presencial')
+                        <a href="{{ route('secretaria.con-nota.nota-pdf', $conNota->id) }}" target="_blank"
+                           style="background-color: #1e3a5f; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">
+                            Imprimir Nota
+                        </a>
+                        @endif
+
+                        @if($conNota->asunto_log && !$conNota->asunto_tec)
+                        <a href="{{ route('secretaria.con-nota.recibo-logistica', $conNota->id) }}" target="_blank"
+                           style="background-color: #065f46; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">
+                            Imprimir Logistico
+                        </a>
+                        @endif
+
+                        @if($conNota->asunto_log && !$conNota->asunto_tec && $conNota->log_estado !== 'entregada')
+<form method="POST" action="{{ route('secretaria.con-nota.entregar-log', $conNota->id) }}" style="display:inline;">
+    @csrf
+    @method('PATCH')
+    <button type="submit"
+            onclick="return confirm('¿Confirmar entrega logística de {{ $conNota->nombre_organizacion }}?')"
+            style="background-color: #065f46; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; border: none;">
+        Volver y terminar
+    </button>
+</form>
+@else
+<a href="{{ route('secretaria.con-nota.index') }}"
+   style="background-color: #e5e7eb; color: #374151; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">
+    Volver
 </a>
 @endif
-                <a href="{{ route('secretaria.con-nota.index') }}"
-                     style="background-color: #e5e7eb; color: #374151; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">
-                  Volver
-                </a>
-                </div>
-                </div>
+                    </div>
+                </div>{{-- fin encabezado --}}
 
                 {{-- DATOS --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -73,25 +86,31 @@
                         <p class="text-xs text-gray-500 uppercase font-medium mb-1">Asunto</p>
                         <p class="font-mono font-bold text-gray-800">{{ $conNota->asunto_texto }}</p>
                     </div>
-                </div>
+                </div>{{-- fin datos --}}
 
-                {{-- ASUNTO DETALLE --}}
+                {{-- SERVICIOS SOLICITADOS --}}
                 <div class="border-t pt-4">
                     <p class="text-xs text-gray-500 uppercase font-medium mb-3">Servicios solicitados</p>
-                    <div class="flex gap-3">
+                    <div class="flex gap-3 flex-wrap">
                         <span class="px-3 py-1 rounded-full text-sm font-medium {{ $conNota->asunto_char ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-400 line-through' }}">
                             Char — Charla
                         </span>
                         <span class="px-3 py-1 rounded-full text-sm font-medium {{ $conNota->asunto_log ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-400 line-through' }}">
                             Log — Logistica
+                            @if($conNota->asunto_log && ($conNota->log_urnas || $conNota->log_cuartos || $conNota->log_tintas))
+                                &nbsp;
+                                @if($conNota->log_urnas) <span class="font-normal">({{ $conNota->log_urnas }}) urnas</span> @endif
+                                @if($conNota->log_cuartos) <span class="font-normal">&nbsp;({{ $conNota->log_cuartos }}) cuartos</span> @endif
+                                @if($conNota->log_tintas) <span class="font-normal">&nbsp;({{ $conNota->log_tintas }}) tintas</span> @endif
+                            @endif
                         </span>
                         <span class="px-3 py-1 rounded-full text-sm font-medium {{ $conNota->asunto_tec ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-400 line-through' }}">
                             Tec — Tecnica
                         </span>
                     </div>
-                </div>
+                </div>{{-- fin servicios --}}
 
-            </div>
+            </div>{{-- fin card --}}
         </div>
     </div>
 </x-app-layout>

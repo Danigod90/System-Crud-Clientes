@@ -1,3 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes humo {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+html {
+    background: linear-gradient(135deg, #e8eaf6 0%, #d4d8f0 25%, #e8d5f0 50%, #d4e8f0 75%, #e8eaf6 100%) !important;
+    background-size: 400% 400% !important;
+    animation: humo 6s ease infinite !important;
+    min-height: 100% !important;
+}
+
+body {
+    background: transparent !important;
+    min-height: 100vh !important;
+}

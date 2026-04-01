@@ -50,27 +50,30 @@ class EntradaConNotaController extends Controller
             'tipo_organizacion'     => 'required|string|max:255',
             'nombre_representante'  => 'required|string|max:255',
             'telefono_representante'=> 'nullable|string|max:50',
-            'fecha_eleccion'        => 'required|date',
+            'fecha_eleccion'        => 'nullable|date',
             'asesor_asignado'       => 'required|string|max:255',
             'via_ingreso'           => 'required|in:correo,presencial',
             'asunto'                => 'required|array|min:1',
             'asunto.*'              => 'in:char,log,tec',
         ]);
 
-        EntradaConNota::create([
-            'nombre_organizacion'    => $request->nombre_organizacion,
-            'tipo_organizacion'      => $request->tipo_organizacion,
-            'nombre_representante'   => $request->nombre_representante,
-            'telefono_representante' => $request->telefono_representante,
-            'fecha_eleccion'         => $request->fecha_eleccion,
-            'asesor_asignado'        => $request->asesor_asignado,
-            'via_ingreso'            => $request->via_ingreso,
-            'asunto_char'            => in_array('char', $request->asunto),
-            'asunto_log'             => in_array('log', $request->asunto),
-            'asunto_tec'             => in_array('tec', $request->asunto),
-            'user_id'                => auth()->id(),
-        ]);
 
+      EntradaConNota::create([
+    'nombre_organizacion'    => $request->nombre_organizacion,
+    'tipo_organizacion'      => $request->tipo_organizacion,
+    'nombre_representante'   => $request->nombre_representante,
+    'telefono_representante' => $request->telefono_representante,
+    'fecha_eleccion'         => $request->fecha_eleccion,
+    'asesor_asignado'        => $request->asesor_asignado,
+    'via_ingreso'            => $request->via_ingreso,
+    'asunto_char'            => in_array('char', $request->asunto),
+    'asunto_log'             => in_array('log', $request->asunto),
+    'asunto_tec'             => in_array('tec', $request->asunto),
+    'log_urnas'              => in_array('log', $request->asunto) ? (int)$request->log_urnas : 0,
+    'log_cuartos'            => in_array('log', $request->asunto) ? (int)$request->log_cuartos : 0,
+    'log_tintas'             => in_array('log', $request->asunto) ? (int)$request->log_tintas : 0,
+    'user_id'                => auth()->id(),
+]);
         return redirect()->route('secretaria.con-nota.index')
             ->with('success', 'Mesa de entrada registrada correctamente.');
     }
@@ -93,7 +96,7 @@ class EntradaConNotaController extends Controller
             'tipo_organizacion'      => 'required|string|max:255',
             'nombre_representante'   => 'required|string|max:255',
             'telefono_representante' => 'nullable|string|max:50',
-            'fecha_eleccion'         => 'required|date',
+            'fecha_eleccion'         => 'nullable|date',
             'asesor_asignado'        => 'required|string|max:255',
             'via_ingreso'            => 'required|in:correo,presencial',
             'asunto'                 => 'required|array|min:1',
@@ -111,6 +114,9 @@ class EntradaConNotaController extends Controller
             'asunto_char'            => in_array('char', $request->asunto ?? []),
             'asunto_log'             => in_array('log', $request->asunto ?? []),
             'asunto_tec'             => in_array('tec', $request->asunto ?? []),
+            'log_urnas'              => in_array('log', $request->asunto ?? []) ? (int)$request->log_urnas : 0,
+            'log_cuartos'            => in_array('log', $request->asunto ?? []) ? (int)$request->log_cuartos : 0,
+            'log_tintas'             => in_array('log', $request->asunto ?? []) ? (int)$request->log_tintas : 0,
         ]);
 
         return redirect()->route('secretaria.con-nota.index')
@@ -124,5 +130,12 @@ class EntradaConNotaController extends Controller
     $conNota->delete();
     return redirect()->route('secretaria.con-nota.index')
         ->with('error', 'Se elimino la entrada ' . $codigo . ' — ' . $nombre . '.');
+}
+public function entregarLog(EntradaConNota $conNota)
+{
+    $conNota->update(['log_estado' => 'entregada']);
+
+    return redirect()->route('secretaria.con-nota.index')
+        ->with('success', 'Logística entregada — ' . $conNota->codigo_org . ' — ' . $conNota->nombre_organizacion);
 }
 }

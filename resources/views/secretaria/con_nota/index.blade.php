@@ -17,12 +17,18 @@
     </div>
         @endif
             <div class="bg-white shadow-sm sm:rounded-lg p-6">
-             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
     <h3 style="font-size: 18px; font-weight: 600; color: #1f2937;">Listado de entradas</h3>
-    <a href="{{ route('secretaria.con-nota.create') }}"
-       style="background-color: #2563eb; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">
-        + Nueva mesa de entrada
-    </a>
+    <div style="display:flex; gap:8px;">
+        <a href="{{ route('panel.dashboard') }}"
+           style="background-color: #1e3a5f; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">
+            ← Panel general
+        </a>
+        <a href="{{ route('secretaria.con-nota.create') }}"
+           style="background-color: #2563eb; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px; text-decoration: none;">
+            + Nueva mesa de entrada
+        </a>
+    </div>
 </div>
 
 {{-- FILTROS --}}
@@ -79,13 +85,13 @@
                         <tr class="bg-gray-50 text-gray-600 uppercase text-xs">
                             <th class="border border-gray-200 px-4 py-3 text-left">Codigo ORG</th>
                             <th class="border border-gray-200 px-4 py-3 text-left">Organizacion</th>
-                            <th class="border border-gray-200 px-4 py-3 text-left">Representante</th>
                             <th class="border border-gray-200 px-4 py-3 text-left">Asesor</th>
                             <th class="border border-gray-200 px-4 py-3 text-left">Asunto</th>
                             <th class="border border-gray-200 px-4 py-3 text-left">Via</th>
                             <th class="border border-gray-200 px-4 py-3 text-left">Fecha eleccion</th>
                             <th class="border border-gray-200 px-4 py-3 text-left">Registrado por</th>
                             <th class="border border-gray-200 px-4 py-3 text-left">Fecha ingreso</th>
+                            <th class="border border-gray-200 px-4 py-3 text-left">Estado</th>
                             <th class="border border-gray-200 px-4 py-3 text-left">Acciones</th>
                         </tr>
                     </thead>
@@ -99,12 +105,6 @@
                                     {{ $entrada->nombre_organizacion }}
                                 </td>
                                 <td class="border border-gray-200 px-4 py-2">
-                                    {{ $entrada->nombre_representante }}
-                                    @if($entrada->telefono_representante)
-                                        <div class="text-xs text-gray-500">{{ $entrada->telefono_representante }}</div>
-                                    @endif
-                                </td>
-                                <td class="border border-gray-200 px-4 py-2">
                                     {{ $entrada->asesor_asignado ?? '-' }}
                                 </td>
                                 <td class="border border-gray-200 px-4 py-2">
@@ -116,7 +116,13 @@
                                     {{ $entrada->via_ingreso }}
                                 </td>
                                 <td class="border border-gray-200 px-4 py-2">
-                                    {{ $entrada->fecha_eleccion ? $entrada->fecha_eleccion->format('d/m/Y') : '-' }}
+                                  @if($entrada->fecha_eleccion)
+    {{ $entrada->fecha_eleccion->format('d/m/Y') }}
+@else
+    <span style="background:#fef9c3; color:#854d0e; font-size:11px; padding:2px 8px; border-radius:999px; font-weight:600;">
+        ⚠️ Sin fecha
+    </span>
+@endif
                                 </td>
                                 <td class="border border-gray-200 px-4 py-2 text-xs text-gray-600">
                                  {{ $entrada->registrado_por }}
@@ -124,6 +130,38 @@
                                     <td class="border border-gray-200 px-4 py-2 text-xs text-gray-600">
                                      {{ $entrada->created_at?->format('d/m/Y H:i') ?? '-' }}
                                 </td>
+       <td class="border border-gray-200 px-4 py-2" style="white-space:nowrap;">
+    @if($entrada->asunto_char)
+        @php
+            $charDot = match($entrada->char_estado ?? 'pendiente') {
+                'realizada' => '#16a34a',
+                'cancelada' => '#ea580c',
+                'vencida'   => '#dc2626',
+                default     => '#ca8a04',
+            };
+        @endphp
+        <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
+            <span style="font-size:11px; color:#6b7280;">Char</span>
+            <span style="width:9px; height:9px; border-radius:50%; background:{{ $charDot }}; display:inline-block;"></span>
+        </span>
+    @endif
+
+    @if($entrada->asunto_log)
+        @php $logDot = ($entrada->log_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#ca8a04'; @endphp
+        <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
+            <span style="font-size:11px; color:#6b7280;">Log</span>
+            <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>
+        </span>
+    @endif
+
+    @if($entrada->asunto_tec)
+        @php $tecDot = ($entrada->tec_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#ca8a04'; @endphp
+        <span style="display:inline-flex; align-items:center; gap:3px;">
+            <span style="font-size:11px; color:#6b7280;">Tec</span>
+            <span style="width:9px; height:9px; border-radius:50%; background:{{ $tecDot }}; display:inline-block;"></span>
+        </span>
+    @endif
+</td>
                                 <td class="border border-gray-200 px-4 py-2">
                                     <div class="flex gap-2">
                                         <a href="{{ route('secretaria.con-nota.show', $entrada) }}"

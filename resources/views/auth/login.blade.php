@@ -15,6 +15,10 @@
         <!-- Password -->
         <div class="mt-4">
             <x-input-label for="password" :value="__('Password')" />
+            {{-- Aviso Bloq Mayús --}}
+<div id="aviso-mayus" style="display:none; margin-top:6px; background:#fef9c3; color:#854d0e; font-size:12px; padding:4px 10px; border-radius:6px;">
+    ⚠️ Bloq Mayús activado
+</div>
 
             <x-text-input id="password" class="block mt-1 w-full"
                             type="password"
@@ -44,4 +48,16 @@
             </x-primary-button>
         </div>
     </form>
+    <script>
+    const passInput = document.getElementById('password');
+    const avisoMayus = document.getElementById('aviso-mayus');
+
+    passInput.addEventListener('keyup', function(e) {
+        avisoMayus.style.display = e.getModifierState('CapsLock') ? 'block' : 'none';
+    });
+
+    passInput.addEventListener('keydown', function(e) {
+        avisoMayus.style.display = e.getModifierState('CapsLock') ? 'block' : 'none';
+    });
+</script>
 </x-guest-layout>

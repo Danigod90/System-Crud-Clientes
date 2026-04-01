@@ -22,6 +22,10 @@ class EntradaConNota extends Model
         'asunto_tec',
         'user_id',
         'registrado_por',
+        'log_urnas',
+        'log_cuartos',
+        'log_tintas',
+        'log_estado',
     ];
 
     protected $casts = [
