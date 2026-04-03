@@ -1,96 +1,82 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Editar Mesa de Entrada — {{ $conNota->codigo_org }}
-        </h2>
-    </x-slot>
+<x-panel-layout title="Editar Mesa de Entrada — {{ $conNota->codigo_org }}">
 
-    <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
+<div class="px-2 py-2">
+    <div style="max-width:760px; margin:0 auto;">
 
-                <form method="POST" action="{{ route('secretaria.con-nota.update', $conNota) }}">
-                    @csrf
-                    @method('PUT')
+        @if(session('success'))
+        <div style="background:#d1fae5; color:#065f46; padding:10px 14px; border-radius:8px; margin-bottom:14px; font-size:13px;">
+            {{ session('success') }}
+        </div>
+        @endif
 
-                    {{-- DATOS DE LA ORGANIZACIÓN --}}
-                    <h3 class="text-md font-semibold text-gray-700 mb-4 border-b pb-2">Datos de la organizacion</h3>
+        <form method="POST" action="{{ route('secretaria.con-nota.update', $conNota) }}">
+            @csrf
+            @method('PUT')
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre de la organizacion *</label>
-                            <input type="text" name="nombre_organizacion"
-                                   value="{{ old('nombre_organizacion', $conNota->nombre_organizacion) }}"
-                                   class="w-full border rounded px-3 py-2 text-sm @error('nombre_organizacion') border-red-500 @enderror">
-                            @error('nombre_organizacion')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo de organizacion *</label>
-                            <select name="tipo_organizacion"
-                                    class="w-full border rounded px-3 py-2 text-sm @error('tipo_organizacion') border-red-500 @enderror">
-                                <option value="">Seleccionar tipo...</option>
-                                @foreach(['Club','Universidad','Cooperativa','Escuela y Colegio','Asentamiento','Comision Vecinal'] as $tipo)
-                                    <option value="{{ $tipo }}" {{ old('tipo_organizacion', $conNota->tipo_organizacion) == $tipo ? 'selected' : '' }}>
-                                        {{ $tipo }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('tipo_organizacion')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+            {{-- DATOS DE LA ORGANIZACIÓN --}}
+            <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+                <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px;">Datos de la organización</h3>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Nombre de la organización *</label>
+                        <input type="text" name="nombre_organizacion"
+                               value="{{ old('nombre_organizacion', $conNota->nombre_organizacion) }}"
+                               style="width:100%; border:1px solid {{ $errors->has('nombre_organizacion') ? '#f87171' : '#e5e7eb' }}; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                        @error('nombre_organizacion')<p style="color:#ef4444; font-size:11px; margin-top:3px;">{{ $message }}</p>@enderror
                     </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre del representante *</label>
-                            <input type="text" name="nombre_representante"
-                                   value="{{ old('nombre_representante', $conNota->nombre_representante) }}"
-                                   class="w-full border rounded px-3 py-2 text-sm @error('nombre_representante') border-red-500 @enderror">
-                            @error('nombre_representante')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Telefono del representante</label>
-                            <input type="text" name="telefono_representante"
-                                   value="{{ old('telefono_representante', $conNota->telefono_representante) }}"
-                                   placeholder="Opcional"
-                                   class="w-full border rounded px-3 py-2 text-sm">
-                        </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Tipo de organización *</label>
+                        <select name="tipo_organizacion"
+                                style="width:100%; border:1px solid {{ $errors->has('tipo_organizacion') ? '#f87171' : '#e5e7eb' }}; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
+                            <option value="">Seleccionar tipo...</option>
+                            @foreach(['Club','Universidad','Cooperativa','Escuela y Colegio','Asentamiento','Comision Vecinal'] as $tipo)
+                                <option value="{{ $tipo }}" {{ old('tipo_organizacion', $conNota->tipo_organizacion) == $tipo ? 'selected' : '' }}>{{ $tipo }}</option>
+                            @endforeach
+                        </select>
+                        @error('tipo_organizacion')<p style="color:#ef4444; font-size:11px; margin-top:3px;">{{ $message }}</p>@enderror
                     </div>
+                </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de eleccion *</label>
-                            <input type="date" name="fecha_eleccion"
-                                   value="{{ old('fecha_eleccion', $conNota->fecha_eleccion?->format('Y-m-d')) }}"
-                                   class="w-full border rounded px-3 py-2 text-sm @error('fecha_eleccion') border-red-500 @enderror">
-                            @error('fecha_eleccion')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Via de ingreso *</label>
-                            <select name="via_ingreso"
-                                    class="w-full border rounded px-3 py-2 text-sm @error('via_ingreso') border-red-500 @enderror">
-                                <option value="">Seleccionar...</option>
-                                <option value="presencial" {{ old('via_ingreso', $conNota->via_ingreso) == 'presencial' ? 'selected' : '' }}>Presencial</option>
-                                <option value="correo" {{ old('via_ingreso', $conNota->via_ingreso) == 'correo' ? 'selected' : '' }}>Correo</option>
-                            </select>
-                            @error('via_ingreso')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Nombre del representante *</label>
+                        <input type="text" name="nombre_representante"
+                               value="{{ old('nombre_representante', $conNota->nombre_representante) }}"
+                               style="width:100%; border:1px solid {{ $errors->has('nombre_representante') ? '#f87171' : '#e5e7eb' }}; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                        @error('nombre_representante')<p style="color:#ef4444; font-size:11px; margin-top:3px;">{{ $message }}</p>@enderror
                     </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Teléfono del representante</label>
+                        <input type="text" name="telefono_representante"
+                               value="{{ old('telefono_representante', $conNota->telefono_representante) }}"
+                               placeholder="Opcional"
+                               style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                    </div>
+                </div>
 
-                    {{-- ASESOR --}}
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Asesor asignado *</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha de elección</label>
+                        <input type="date" name="fecha_eleccion"
+                               value="{{ old('fecha_eleccion', $conNota->fecha_eleccion?->format('Y-m-d')) }}"
+                               style="width:100%; border:1px solid {{ $errors->has('fecha_eleccion') ? '#f87171' : '#e5e7eb' }}; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                        @error('fecha_eleccion')<p style="color:#ef4444; font-size:11px; margin-top:3px;">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Vía de ingreso *</label>
+                        <select name="via_ingreso"
+                                style="width:100%; border:1px solid {{ $errors->has('via_ingreso') ? '#f87171' : '#e5e7eb' }}; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
+                            <option value="">Seleccionar...</option>
+                            <option value="presencial" {{ old('via_ingreso', $conNota->via_ingreso) == 'presencial' ? 'selected' : '' }}>Presencial</option>
+                            <option value="correo" {{ old('via_ingreso', $conNota->via_ingreso) == 'correo' ? 'selected' : '' }}>Correo</option>
+                        </select>
+                        @error('via_ingreso')<p style="color:#ef4444; font-size:11px; margin-top:3px;">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Asesor asignado *</label>
                         <select name="asesor_asignado"
-                                class="w-full border rounded px-3 py-2 text-sm @error('asesor_asignado') border-red-500 @enderror">
+                                style="width:100%; border:1px solid {{ $errors->has('asesor_asignado') ? '#f87171' : '#e5e7eb' }}; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
                             <option value="">Seleccionar asesor...</option>
                             @foreach($asesores as $asesor)
                                 <option value="{{ $asesor->nombre }} {{ $asesor->apellido }}"
@@ -99,103 +85,103 @@
                                 </option>
                             @endforeach
                         </select>
-                        @error('asesor_asignado')
-                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                        @enderror
+                        @error('asesor_asignado')<p style="color:#ef4444; font-size:11px; margin-top:3px;">{{ $message }}</p>@enderror
                     </div>
-
-                    {{-- ASUNTO --}}
-                    <h3 class="text-md font-semibold text-gray-700 mb-3 border-b pb-2">Asunto solicitado *</h3>
-                    <p class="text-xs text-gray-500 mb-3">Podés agregar o quitar servicios en cualquier momento.</p>
-
-                    @error('asunto')
-                        <p class="text-red-500 text-xs mb-3">{{ $message }}</p>
-                    @enderror
-
-                    <div class="grid grid-cols-3 gap-4 mb-4">
-                        <label class="flex items-center gap-3 border rounded-lg p-4 cursor-pointer hover:bg-blue-50 transition">
-                            <input type="checkbox" name="asunto[]" value="char"
-                                   {{ old('asunto') ? (in_array('char', old('asunto')) ? 'checked' : '') : ($conNota->asunto_char ? 'checked' : '') }}
-                                   class="w-4 h-4 text-blue-600">
-                            <div>
-                                <span class="font-semibold text-gray-800">Char</span>
-                                <p class="text-xs text-gray-500">Charla</p>
-                            </div>
-                        </label>
-                        <label class="flex items-center gap-3 border rounded-lg p-4 cursor-pointer hover:bg-blue-50 transition">
-                            <input type="checkbox" name="asunto[]" value="log" id="check-log"
-                                   {{ old('asunto') ? (in_array('log', old('asunto')) ? 'checked' : '') : ($conNota->asunto_log ? 'checked' : '') }}
-                                   class="w-4 h-4 text-blue-600">
-                            <div>
-                                <span class="font-semibold text-gray-800">Log</span>
-                                <p class="text-xs text-gray-500">Logistica</p>
-                            </div>
-                        </label>
-                        <label class="flex items-center gap-3 border rounded-lg p-4 cursor-pointer hover:bg-blue-50 transition">
-                            <input type="checkbox" name="asunto[]" value="tec"
-                                   {{ old('asunto') ? (in_array('tec', old('asunto')) ? 'checked' : '') : ($conNota->asunto_tec ? 'checked' : '') }}
-                                   class="w-4 h-4 text-blue-600">
-                            <div>
-                                <span class="font-semibold text-gray-800">Tec</span>
-                                <p class="text-xs text-gray-500">Tecnica</p>
-                            </div>
-                        </label>
-                    </div>
-
-                    {{-- SECCION LOGISTICA — se activa con checkbox Log --}}
-                    <div id="seccion-logistica" style="display: none;" class="mb-6">
-                        <h3 class="text-md font-semibold text-gray-700 mb-3 border-b pb-2">Detalle Logistico</h3>
-                        <p class="text-xs text-gray-500 mb-3">Carga las cantidades segun la nota. Deja en 0 si no aplica.</p>
-                        <div class="grid grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Urnas</label>
-                                <input type="number" name="log_urnas" min="0"
-                                       value="{{ old('log_urnas', $conNota->log_urnas) }}"
-                                       class="w-full border rounded px-3 py-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Cuartos oscuros</label>
-                                <input type="number" name="log_cuartos" min="0"
-                                       value="{{ old('log_cuartos', $conNota->log_cuartos) }}"
-                                       class="w-full border rounded px-3 py-2 text-sm">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Tintas</label>
-                                <input type="number" name="log_tintas" min="0"
-                                       value="{{ old('log_tintas', $conNota->log_tintas) }}"
-                                       class="w-full border rounded px-3 py-2 text-sm">
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- BOTONES --}}
-                    <div class="flex justify-end gap-3">
-                        <a href="{{ route('secretaria.con-nota.index') }}"
-                           class="bg-gray-200 text-gray-700 px-5 py-2 rounded hover:bg-gray-300 text-sm">
-                            Cancelar
-                        </a>
-                        <button type="submit"
-                                style="background-color: #2563eb; color: white; padding: 8px 20px; border-radius: 6px; font-size: 14px; font-weight: 500; border: none; cursor: pointer;">
-                            Guardar cambios
-                        </button>
-                    </div>
-                </form>
-
+                </div>
             </div>
-        </div>
+
+            {{-- ASUNTO --}}
+            <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+                <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:6px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px;">Asunto solicitado *</h3>
+                <p style="font-size:11px; color:#9ca3af; margin-bottom:14px;">Podés agregar o quitar servicios en cualquier momento.</p>
+
+                @error('asunto')<p style="color:#ef4444; font-size:11px; margin-bottom:10px;">{{ $message }}</p>@enderror
+
+                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+                    <label style="display:flex; align-items:center; gap:10px; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; cursor:pointer;">
+                        <input type="checkbox" name="asunto[]" value="char"
+                               {{ old('asunto') ? (in_array('char', old('asunto')) ? 'checked' : '') : ($conNota->asunto_char ? 'checked' : '') }}
+                               style="width:15px; height:15px; accent-color:#2563eb;">
+                        <div>
+                            <span style="font-size:13px; font-weight:600; color:#1f2937;">Char</span>
+                            <p style="font-size:11px; color:#9ca3af; margin:0;">Charla</p>
+                        </div>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; cursor:pointer;">
+                        <input type="checkbox" name="asunto[]" value="log" id="check-log"
+                               {{ old('asunto') ? (in_array('log', old('asunto')) ? 'checked' : '') : ($conNota->asunto_log ? 'checked' : '') }}
+                               style="width:15px; height:15px; accent-color:#2563eb;">
+                        <div>
+                            <span style="font-size:13px; font-weight:600; color:#1f2937;">Log</span>
+                            <p style="font-size:11px; color:#9ca3af; margin:0;">Logística</p>
+                        </div>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; cursor:pointer;">
+                        <input type="checkbox" name="asunto[]" value="tec"
+                               {{ old('asunto') ? (in_array('tec', old('asunto')) ? 'checked' : '') : ($conNota->asunto_tec ? 'checked' : '') }}
+                               style="width:15px; height:15px; accent-color:#2563eb;">
+                        <div>
+                            <span style="font-size:13px; font-weight:600; color:#1f2937;">Tec</span>
+                            <p style="font-size:11px; color:#9ca3af; margin:0;">Técnica</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            {{-- SECCIÓN LOGÍSTICA --}}
+            <div id="seccion-logistica" style="display:none; background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+                <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:6px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px;">Detalle Logístico</h3>
+                <p style="font-size:11px; color:#9ca3af; margin-bottom:14px;">Cargá las cantidades según la nota. Dejá en 0 si no aplica.</p>
+                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Urnas</label>
+                        <input type="number" name="log_urnas" min="0"
+                               value="{{ old('log_urnas', $conNota->log_urnas) }}"
+                               style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cuartos oscuros</label>
+                        <input type="number" name="log_cuartos" min="0"
+                               value="{{ old('log_cuartos', $conNota->log_cuartos) }}"
+                               style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Tintas</label>
+                        <input type="number" name="log_tintas" min="0"
+                               value="{{ old('log_tintas', $conNota->log_tintas) }}"
+                               style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                    </div>
+                </div>
+            </div>
+
+            {{-- BOTONES --}}
+            <div style="display:flex; justify-content:flex-end; gap:10px;">
+                <a href="{{ route('secretaria.con-nota.index') }}"
+                   style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; text-decoration:none;">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                    Cancelar
+                </a>
+                <button type="submit"
+                        style="display:inline-flex; align-items:center; gap:6px; background:#2563eb; color:white; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Guardar cambios
+                </button>
+            </div>
+
+        </form>
     </div>
+</div>
 
-    <script>
-        const checkLog = document.getElementById('check-log');
-        const seccionLog = document.getElementById('seccion-logistica');
+<script>
+    const checkLog = document.getElementById('check-log');
+    const seccionLog = document.getElementById('seccion-logistica');
+    function toggleLogistica() { seccionLog.style.display = checkLog.checked ? 'block' : 'none'; }
+    checkLog.addEventListener('change', toggleLogistica);
+    toggleLogistica();
+</script>
 
-        function toggleLogistica() {
-            seccionLog.style.display = checkLog.checked ? 'block' : 'none';
-        }
-
-        checkLog.addEventListener('change', toggleLogistica);
-
-        // Precarga al abrir — si ya tiene Log marcado muestra la seccion
-        toggleLogistica();
-    </script>
-</x-app-layout>
+</x-panel-layout>
