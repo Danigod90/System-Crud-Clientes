@@ -47,11 +47,15 @@
                         <div>
                             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Asunto</label>
                             <select name="asunto" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff;">
-                                <option value="">Todos</option>
-                                <option value="char" {{ request('asunto') == 'char' ? 'selected' : '' }}>Char — Charla</option>
-                                <option value="log" {{ request('asunto') == 'log' ? 'selected' : '' }}>Log — Logística</option>
-                                <option value="tec" {{ request('asunto') == 'tec' ? 'selected' : '' }}>Tec — Técnica</option>
-                            </select>
+    <option value="">Todos</option>
+    <option value="char" {{ request('asunto') == 'char' ? 'selected' : '' }}>Char — Charla</option>
+    <option value="log" {{ request('asunto') == 'log' ? 'selected' : '' }}>Log — Logística</option>
+    <option value="tec" {{ request('asunto') == 'tec' ? 'selected' : '' }}>Tec — Técnica</option>
+    <option value="char_realizada" {{ request('asunto') == 'char_realizada' ? 'selected' : '' }}>Char — Realizada</option>
+    <option value="char_pendiente" {{ request('asunto') == 'char_pendiente' ? 'selected' : '' }}>Char — Pendiente</option>
+    <option value="char_suspendida" {{ request('asunto') == 'char_suspendida' ? 'selected' : '' }}>Char — Suspendida</option>
+    <option value="char_cancelada" {{ request('asunto') == 'char_cancelada' ? 'selected' : '' }}>Char — Cancelada</option>
+</select>
                         </div>
                         <div>
                             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha ingreso</label>
