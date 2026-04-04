@@ -17,13 +17,22 @@ class CharlaController extends Controller
             'direccion'  => 'nullable|string|max:255',
         ]);
 
+        $charlaExistente = $entrada->charla;
+        $nuevosDatos = [
+            'modalidad'  => $request->modalidad,
+            'fecha_hora' => $request->fecha_hora,
+            'direccion'  => $request->modalidad === 'presencial_externa' ? $request->direccion : null,
+        ];
+
+        // Si estaba suspendida y cambia la fecha, vuelve a pendiente
+        if ($charlaExistente && $charlaExistente->estado === 'suspendida' &&
+            $charlaExistente->fecha_hora?->format('Y-m-d H:i') !== date('Y-m-d H:i', strtotime($request->fecha_hora))) {
+            $nuevosDatos['estado'] = 'pendiente';
+        }
+
         Charla::updateOrCreate(
             ['entrada_con_nota_id' => $entrada->id],
-            [
-                'modalidad'  => $request->modalidad,
-                'fecha_hora' => $request->fecha_hora,
-                'direccion'  => $request->modalidad === 'presencial_externa' ? $request->direccion : null,
-            ]
+            $nuevosDatos
         );
 
         return redirect()->back()->with('success', 'Charla guardada correctamente.');
