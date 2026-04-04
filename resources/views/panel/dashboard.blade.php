@@ -127,7 +127,7 @@
                 <td style="padding:5px 1px; color:#111827; font-weight:600; width:100px;">{{ $entrada->asunto_texto }}</td>
                 <td style="padding:5px 2px; width:120px;">
                     @if($entrada->asunto_char)
-                        @php $charDot = match($entrada->charla?->estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
+                        @php $charDot = match($entrada->charla?->estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
                         <span style="display:inline-flex; align-items:center; gap:3px; margin-right:6px;">
                             <span style="font-size:11px; color:#6b7280;">Char</span>
                             <span style="width:9px; height:9px; border-radius:50%; background:{{ $charDot }}; display:inline-block;"></span>

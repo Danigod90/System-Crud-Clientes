@@ -45,7 +45,7 @@ class DashboardController extends Controller
         $stats = [
             'organizaciones'      => EntradaConNota::count(),
             'charlas_realizadas'  => Charla::where('estado', 'realizada')->count(),
-            'charlas_pendientes'  => EntradaConNota::where('asunto_char', true)->count(),
+            'charlas_pendientes'  => Charla::where('estado', 'pendiente')->count(),
             'elecciones_proximas' => $elecciones->count(),
             'sin_fecha'           => EntradaConNota::whereNull('fecha_eleccion')->count(),
             'tec_pendientes'      => EntradaConNota::where('asunto_tec', true)->count(),
