@@ -67,10 +67,10 @@
         </a>
         @if(auth()->user()->roles->first()?->name === 'Asesor')
 <a href="{{ route('asesor.mis-organizaciones') }}"
-    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:rgba(255,255,255,0.55); text-decoration:none; border:1px solid transparent; transition:all 0.2s;"
+    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('asesor.*') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('asesor.*') ? 'rgba(52,211,153,0.15)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('asesor.*') ? '1px solid rgba(52,211,153,0.25)' : '1px solid transparent' }}; transition:all 0.2s;"
     onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-    onmouseout="this.style.background='transparent'">
-    <span style="width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.28); flex-shrink:0;"></span>
+    onmouseout="this.style.background='{{ request()->routeIs('asesor.*') ? 'rgba(52,211,153,0.15)' : 'transparent' }}'">
+    <span style="width:7px; height:7px; border-radius:50%; background:{{ request()->routeIs('asesor.*') ? '#34d399' : 'rgba(255,255,255,0.28)' }}; flex-shrink:0;"></span>
     Mis organizaciones
 </a>
 @else
