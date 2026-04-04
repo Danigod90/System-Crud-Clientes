@@ -23,7 +23,6 @@ class CharlaController extends Controller
                 'modalidad'  => $request->modalidad,
                 'fecha_hora' => $request->fecha_hora,
                 'direccion'  => $request->modalidad === 'presencial_externa' ? $request->direccion : null,
-                'estado'     => 'pendiente',
             ]
         );
 
