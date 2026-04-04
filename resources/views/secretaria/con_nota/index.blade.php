@@ -161,21 +161,21 @@
                         </td>
                         <td class="border border-gray-200 px-4 py-2" style="white-space:nowrap;">
                             @if($entrada->asunto_char)
-                                @php $charDot = match($entrada->char_estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#ea580c', 'vencida' => '#dc2626', default => '#ca8a04' }; @endphp
+                                @php $charDot = match($entrada->charla?->estado ?? 'pendiente') { 'suspendida' => '#f97316', 'cancelada' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
                                 <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
                                     <span style="font-size:11px; color:#6b7280;">Char</span>
                                     <span style="width:9px; height:9px; border-radius:50%; background:{{ $charDot }}; display:inline-block;"></span>
                                 </span>
                             @endif
                             @if($entrada->asunto_log)
-                                @php $logDot = ($entrada->log_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#ca8a04'; @endphp
+                                @php $logDot = ($entrada->log_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; @endphp
                                 <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
                                     <span style="font-size:11px; color:#6b7280;">Log</span>
                                     <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>
                                 </span>
                             @endif
                             @if($entrada->asunto_tec)
-                                @php $tecDot = ($entrada->tec_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#ca8a04'; @endphp
+                                @php $tecDot = ($entrada->tec_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; @endphp
                                 <span style="display:inline-flex; align-items:center; gap:3px;">
                                     <span style="font-size:11px; color:#6b7280;">Tec</span>
                                     <span style="width:9px; height:9px; border-radius:50%; background:{{ $tecDot }}; display:inline-block;"></span>

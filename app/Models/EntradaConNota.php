@@ -44,7 +44,10 @@ class EntradaConNota extends Model
     {
         return $this->hasMany(ServicioEntrada::class, 'entrada_con_nota_id');
     }
-
+public function charla()
+{
+    return $this->hasOne(Charla::class, 'entrada_con_nota_id');
+}
     // Genera codigo ORG automaticamente al crear
     protected static function boot()
 {

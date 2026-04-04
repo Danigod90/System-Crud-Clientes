@@ -31,4 +31,10 @@ class MisOrganizacionesController extends Controller
 
         return view('asesor.mis-organizaciones', compact('entradas', 'asesores'));
     }
+
+    public function edit(EntradaConNota $entrada)
+    {
+        $entrada->load('charla');
+        return view('asesor.edit', compact('entrada'));
+    }
 }

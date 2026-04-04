@@ -13,7 +13,7 @@ class EntradaConNotaController extends Controller
 {
     $asesores = Asesor::orderBy('nombre')->get();
 
-    $entradas = EntradaConNota::with('user')
+    $entradas = EntradaConNota::with(['user', 'charla'])
         ->when($request->organizacion, fn($q) =>
             $q->where('nombre_organizacion', 'like', '%' . $request->organizacion . '%')
         )

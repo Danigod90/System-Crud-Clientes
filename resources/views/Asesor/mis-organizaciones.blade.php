@@ -121,21 +121,21 @@
                         </td>
                         <td class="border border-gray-200 px-2 py-2" style="white-space:nowrap;">
                             @if($entrada->asunto_char)
-                                @php $charDot = match($entrada->char_estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#ea580c', 'vencida' => '#dc2626', default => '#ca8a04' }; @endphp
+                                @php $charDot = match($entrada->charla?->estado ?? 'pendiente') { 'suspendida' => '#f97316', 'cancelada' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
                                 <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
                                     <span style="font-size:11px; color:#6b7280;">Char</span>
                                     <span style="width:9px; height:9px; border-radius:50%; background:{{ $charDot }}; display:inline-block;"></span>
                                 </span>
                             @endif
                             @if($entrada->asunto_log)
-                                @php $logDot = ($entrada->log_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#ca8a04'; @endphp
+                                @php $logDot = ($entrada->log_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; @endphp
                                 <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
                                     <span style="font-size:11px; color:#6b7280;">Log</span>
                                     <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>
                                 </span>
                             @endif
                             @if($entrada->asunto_tec)
-                                @php $tecDot = ($entrada->tec_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#ca8a04'; @endphp
+                                @php $tecDot = ($entrada->tec_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; @endphp
                                 <span style="display:inline-flex; align-items:center; gap:3px;">
                                     <span style="font-size:11px; color:#6b7280;">Tec</span>
                                     <span style="width:9px; height:9px; border-radius:50%; background:{{ $tecDot }}; display:inline-block;"></span>
@@ -152,13 +152,15 @@
                                         <circle cx="12" cy="12" r="3"/>
                                     </svg>
                                 </a>
-                                <a href="{{ route('secretaria.con-nota.edit', $entrada) }}"
-                                   style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; background:#fef9c3; border-radius:8px; color:#854d0e; text-decoration:none; flex-shrink:0;"
-                                   title="Editar">
-                                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                    </svg>
+                                <a href="{{ route('asesor.organizacion.edit', $entrada) }}"
+                                 style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; background:#fef9c3; border-radius:8px; color:#854d0e; text-decoration:none; flex-shrink:0;"
+                                    title="Editar">
+                                   <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+    <rect x="2" y="7" width="20" height="14" rx="2"/>
+    <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+    <line x1="2" y1="13" x2="22" y2="13"/>
+    <rect x="9" y="10" width="6" height="6" rx="1"/>
+</svg>
                                 </a>
                             </div>
                         </td>

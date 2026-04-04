@@ -15,8 +15,7 @@ class DashboardController extends Controller
         $esAsesor = $rol === 'Asesor';
 
         if ($esAsesor) {
-            $entradas = EntradaConNota::where('asesor_asignado', $user->name)->latest()->take(10)->get();
-            $elecciones = EntradaConNota::where('asesor_asignado', $user->name)
+$entradas = EntradaConNota::with('charla')->where('asesor_asignado', $user->name)->latest()->take(10)->get();            $elecciones = EntradaConNota::where('asesor_asignado', $user->name)
                 ->whereNotNull('fecha_eleccion')
                 ->where('fecha_eleccion', '>=', now())
                 ->where('fecha_eleccion', '<=', now()->addDays(30))
@@ -35,7 +34,7 @@ class DashboardController extends Controller
             return view('panel.dashboard-asesor', compact('entradas', 'elecciones', 'stats'));
         }
 
-        $entradas = EntradaConNota::latest()->take(10)->get();
+        $entradas = EntradaConNota::with('charla')->latest()->take(10)->get();
         $elecciones = EntradaConNota::whereNotNull('fecha_eleccion')
             ->where('fecha_eleccion', '>=', now())
             ->where('fecha_eleccion', '<=', now()->addDays(30))
