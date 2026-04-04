@@ -3,6 +3,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/es.min.js"></script>
+<style>
+.flatpickr-calendar { font-size: 12px !important; width: 240px !important; }
+.flatpickr-day { max-width: 30px !important; height: 30px !important; line-height: 30px !important; }
+.flatpickr-months .flatpickr-month { height: 34px !important; }
+</style>
 
 <div class="px-2 py-2">
     <div style="max-width:760px; margin:0 auto;">
@@ -58,14 +63,23 @@
                         </span>
                     @endif
                 </h3>
-                <button id="btn-editar-charla" onclick="activarEdicion()"
-                        style="display:{{ $entrada->charla ? 'inline-flex' : 'none' }}; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
-                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                    Editar
-                </button>
+                <div style="display:flex; gap:8px; align-items:center;">
+                    <a href="{{ route('asesor.mis-organizaciones') }}"
+                       style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <polyline points="15 18 9 12 15 6"/>
+                        </svg>
+                        Volver
+                    </a>
+                    <button id="btn-editar-charla" onclick="activarEdicion()"
+                            style="display:{{ $entrada->charla ? 'inline-flex' : 'none' }}; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        Editar
+                    </button>
+                </div>
             </div>
 
             {{-- VISTA SOLO LECTURA --}}
@@ -88,6 +102,12 @@
                     <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->charla->direccion }}</p>
                 </div>
                 @endif
+                @if($entrada->charla?->descripcion)
+                <div style="grid-column:span 2;">
+                    <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Descripción</label>
+                    <p style="font-size:14px; color:#111827; margin:0;">{{ $entrada->charla->descripcion }}</p>
+                </div>
+                @endif
             </div>
 
             {{-- FORMULARIO EDICIÓN --}}
@@ -106,12 +126,15 @@
                         </select>
                     </div>
                     <div>
-                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora *</label>
-                        {{-- Input visible para Flatpickr --}}
-<input type="text" id="fecha_hora_display"
-       placeholder="Seleccionar fecha y hora..."
-       value="{{ $entrada->charla?->fecha_hora?->format('d/m/Y H:i') }}"
-       style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; cursor:pointer;">                        {{-- Input oculto con formato para Laravel --}}
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora <span style="color:#9ca3af; font-weight:400;">(opcional)</span></label>
+                        <div style="position:relative;">
+                            <input type="text" id="fecha_hora_display"
+                                   placeholder="Seleccionar fecha y hora..."
+                                   value="{{ $entrada->charla?->fecha_hora?->format('d/m/Y H:i') }}"
+                                   style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 32px 7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; cursor:pointer;">
+                            <button type="button" onclick="limpiarFecha()"
+                                    style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#9ca3af; font-size:14px; padding:0; line-height:1;">✕</button>
+                        </div>
                         <input type="hidden" name="fecha_hora" id="fecha_hora_input"
                                value="{{ $entrada->charla?->fecha_hora?->format('Y-m-d H:i:s') }}">
                     </div>
@@ -123,6 +146,13 @@
                            value="{{ $entrada->charla?->direccion }}"
                            placeholder="Dirección del local donde se realizará la charla..."
                            style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                </div>
+
+                <div style="margin-bottom:12px;">
+                    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Descripción <span style="color:#9ca3af; font-weight:400;">(opcional)</span></label>
+                    <textarea name="descripcion" rows="3"
+                              placeholder="Ej: Charla a confirmar, pendiente de respuesta del representante..."
+                              style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; resize:vertical;">{{ $entrada->charla?->descripcion }}</textarea>
                 </div>
 
                 <div style="display:flex; justify-content:flex-end; gap:8px;">
@@ -215,15 +245,26 @@
 </div>
 
 <script>
+let botonListoAgregado = false;
+
 let fpInstance = flatpickr("#fecha_hora_display", {
     locale: "es",
     enableTime: true,
     time_24hr: true,
     dateFormat: "d/m/Y H:i",
-    defaultDate: document.getElementById('fecha_hora_display').value || "{{ now()->format('d/m/Y H:i') }}",
+    defaultDate: document.getElementById('fecha_hora_display').value || null,
     closeOnSelect: false,
     onOpen: function(selectedDates, dateStr, instance) {
         instance.jumpToDate(instance.selectedDates[0] || new Date());
+        if (!botonListoAgregado) {
+            const btn = document.createElement('button');
+            btn.textContent = '✓ Listo';
+            btn.type = 'button';
+            btn.style.cssText = 'width:100%; margin-top:8px; padding:7px; background:#2563eb; color:white; border:none; border-radius:6px; font-size:13px; font-weight:500; cursor:pointer;';
+            btn.addEventListener('click', function() { instance.close(); });
+            instance.calendarContainer.appendChild(btn);
+            botonListoAgregado = true;
+        }
     },
     onChange: function(selectedDates, dateStr) {
         if (selectedDates.length > 0) {
@@ -236,16 +277,13 @@ let fpInstance = flatpickr("#fecha_hora_display", {
                 String(d.getMinutes()).padStart(2,'0') + ':00';
             document.getElementById('fecha_hora_input').value = formatted;
         }
-    },
-    onReady: function(selectedDates, dateStr, instance) {
-        const btn = document.createElement('button');
-        btn.textContent = '✓ Listo';
-        btn.type = 'button';
-        btn.style.cssText = 'width:100%; margin-top:8px; padding:7px; background:#2563eb; color:white; border:none; border-radius:6px; font-size:13px; font-weight:500; cursor:pointer;';
-        btn.addEventListener('click', function() { instance.close(); });
-        instance.calendarContainer.appendChild(btn);
     }
 });
+
+function limpiarFecha() {
+    fpInstance.clear();
+    document.getElementById('fecha_hora_input').value = '';
+}
 
 const modalidadSelect = document.getElementById('modalidad-select');
 const seccionDireccion = document.getElementById('seccion-direccion');

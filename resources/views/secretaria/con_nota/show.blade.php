@@ -137,6 +137,53 @@
                     Tec — Técnica
                 </span>
             </div>
+            {{-- DETALLE DE CHARLA (solo lectura) --}}
+        @if($conNota->asunto_char && $conNota->charla)
+        @php
+            $dotColor = match($conNota->charla->estado) {
+                'realizada'  => '#16a34a',
+                'cancelada'  => '#dc2626',
+                'suspendida' => '#f97316',
+                'vencida'    => '#dc2626',
+                default      => '#eab308',
+            };
+        @endphp
+        <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-top:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+            <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:8px;">
+                Detalle de Charla
+                <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
+                    <span style="width:9px; height:9px; border-radius:50%; background:{{ $dotColor }}; display:inline-block;"></span>
+                    {{ ucfirst($conNota->charla->estado) }}
+                </span>
+            </h3>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div>
+                    <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Modalidad</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">
+                        {{ $conNota->charla->modalidad == 'virtual' ? 'Virtual' : ($conNota->charla->modalidad == 'presencial_oficina' ? 'Presencial — Oficina' : 'Presencial — Externa') }}
+                    </p>
+                </div>
+                <div>
+                    <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Fecha y hora</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">
+                        {{ $conNota->charla->fecha_hora?->format('d/m/Y H:i') ?? '—' }}
+                    </p>
+                </div>
+                @if($conNota->charla->direccion)
+                <div style="grid-column:span 2;">
+                    <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Dirección</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $conNota->charla->direccion }}</p>
+                </div>
+                @endif
+                @if($conNota->charla->descripcion)
+                <div style="grid-column:span 2;">
+                    <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Descripción</p>
+                    <p style="font-size:14px; color:#111827; margin:0;">{{ $conNota->charla->descripcion }}</p>
+                </div>
+                @endif
+            </div>
+        </div>
+        @endif
         </div>
 
     </div>

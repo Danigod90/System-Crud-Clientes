@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Charla extends Model
 {
     protected $fillable = [
-        'entrada_con_nota_id',
-        'modalidad',
-        'fecha_hora',
-        'direccion',
-        'estado',
-    ];
+    'entrada_con_nota_id',
+    'modalidad',
+    'fecha_hora',
+    'direccion',
+    'estado',
+    'descripcion',
+];
 
     protected $casts = [
         'fecha_hora' => 'datetime',

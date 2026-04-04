@@ -12,20 +12,21 @@ class CharlaController extends Controller
     public function store(Request $request, EntradaConNota $entrada)
     {
         $request->validate([
-            'modalidad'  => 'required|in:virtual,presencial_oficina,presencial_externa',
-            'fecha_hora' => 'required|date',
-            'direccion'  => 'nullable|string|max:255',
-        ]);
+    'modalidad'   => 'required|in:virtual,presencial_oficina,presencial_externa',
+    'fecha_hora'  => 'nullable|date',
+    'direccion'   => 'nullable|string|max:255',
+    'descripcion' => 'nullable|string|max:1000',
+]);
 
         $charlaExistente = $entrada->charla;
         $nuevosDatos = [
             'modalidad'  => $request->modalidad,
             'fecha_hora' => $request->fecha_hora,
             'direccion'  => $request->modalidad === 'presencial_externa' ? $request->direccion : null,
+            'descripcion' => $request->descripcion,
         ];
 
-        // Si estaba suspendida, cancelada o realizada y cambia la fecha, vuelve a pendiente
-$estadosQueResetean = ['suspendida', 'cancelada', 'realizada'];
+ $estadosQueResetean = ['suspendida', 'cancelada'];
 if ($charlaExistente && in_array($charlaExistente->estado, $estadosQueResetean) &&
     $charlaExistente->fecha_hora?->format('Y-m-d H:i') !== date('Y-m-d H:i', strtotime($request->fecha_hora))) {
     $nuevosDatos['estado'] = 'pendiente';
