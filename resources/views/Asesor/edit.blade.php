@@ -15,17 +15,16 @@
         {{-- DATOS DE LA ORGANIZACIÓN (solo lectura) --}}
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
-    <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0;">Datos de la organización</h3>
-    <a href="{{ route('secretaria.con-nota.edit', ['conNota' => $entrada->id]) }}?from=asesor&entrada_id={{ $entrada->id }}"
-   style="display:inline-flex; align-items:center; gap:6px; background:#f59e0b; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
-    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-    </svg>
-    Editar entrada
-</a>
-    </a>
-</div>
+                <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0;">Datos de la organización</h3>
+                <a href="{{ route('secretaria.con-nota.edit', ['conNota' => $entrada->id]) }}?from=asesor&entrada_id={{ $entrada->id }}"
+                   style="display:inline-flex; align-items:center; gap:6px; background:#f59e0b; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Editar entrada
+                </a>
+            </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                 <div>
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Organización</label>
@@ -49,6 +48,27 @@
                 </div>
             </div>
         </div>
+
+        {{-- SECCIÓN LOGÍSTICA (solo lectura) --}}
+        @if($entrada->asunto_log)
+        <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+            <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px;">Detalle Logístico</h3>
+            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
+                <div style="text-align:center;">
+                    <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Urnas</label>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->log_urnas ?? 0 }}</p>
+                </div>
+                <div style="text-align:center;">
+                    <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Cuartos oscuros</label>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->log_cuartos ?? 0 }}</p>
+                </div>
+                <div style="text-align:center;">
+                    <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Tintas</label>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->log_tintas ?? 0 }}</p>
+                </div>
+            </div>
+        </div>
+        @endif
 
         {{-- SECCIÓN CHARLA --}}
         @if($entrada->asunto_char)
