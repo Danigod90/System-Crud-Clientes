@@ -30,9 +30,14 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'destroy']);
     Route::resource('asesores', \App\Http\Controllers\Admin\AsesorController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::get('configuracion', [\App\Http\Controllers\Admin\ConfiguracionController::class, 'index'])->name('configuracion.index');
+    Route::patch('configuracion', [\App\Http\Controllers\Admin\ConfiguracionController::class, 'update'])->name('configuracion.update');
+    Route::get('tipo-organizaciones', [\App\Http\Controllers\Admin\TipoOrganizacionController::class, 'index'])->name('tipo-organizaciones.index');
+    Route::post('tipo-organizaciones', [\App\Http\Controllers\Admin\TipoOrganizacionController::class, 'store'])->name('tipo-organizaciones.store');
+    Route::delete('tipo-organizaciones/{tipoOrganizacion}', [\App\Http\Controllers\Admin\TipoOrganizacionController::class, 'destroy'])->name('tipo-organizaciones.destroy');
 });
 
-Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin'])->prefix('secretaria')->name('secretaria.')->group(function () {
+Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin|Asesor'])->prefix('secretaria')->name('secretaria.')->group(function () {
     Route::get('sin-nota/pdf', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'exportPdf'])->name('sin-nota.pdf');
     Route::resource('sin-nota', \App\Http\Controllers\Secretaria\EntradaSinNotaController::class)
          ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
@@ -48,5 +53,7 @@ Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin']
 });
 
 Route::middleware(['auth'])->get('/panel/dashboard', [\App\Http\Controllers\Panel\DashboardController::class, 'index'])->name('panel.dashboard');
-
+Route::middleware(['auth', 'role:Asesor'])->prefix('asesor')->name('asesor.')->group(function () {
+    Route::get('mis-organizaciones', [\App\Http\Controllers\Asesor\MisOrganizacionesController::class, 'index'])->name('mis-organizaciones');
+});
 require __DIR__.'/auth.php';

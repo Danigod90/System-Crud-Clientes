@@ -11,7 +11,7 @@ class NotaPdfController extends Controller
 {
     public function notaPresidente(EntradaConNota $conNota)
     {
-        $presidente = Configuracion::get('presidente_tsje', 'Presidente del TSJE');
+        $presidente = Configuracion::where('clave', 'presidente_actual')->value('valor') ?? 'Presidente del TSJE';
 
         $servicios = [];
         if ($conNota->asunto_char) $servicios[] = '"Char" Charla Electoral';

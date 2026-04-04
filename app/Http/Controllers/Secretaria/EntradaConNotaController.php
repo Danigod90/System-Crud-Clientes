@@ -31,19 +31,24 @@ class EntradaConNotaController extends Controller
     $q->whereYear('created_at', substr($request->mes_ingreso, 0, 4))
       ->whereMonth('created_at', substr($request->mes_ingreso, 5, 2))
 )
+->when($request->mes_eleccion, fn($q) =>
+    $q->whereYear('fecha_eleccion', substr($request->mes_eleccion, 0, 4))
+      ->whereMonth('fecha_eleccion', substr($request->mes_eleccion, 5, 2))
+)
         ->latest()
         ->paginate(10);
 
     return view('secretaria.con_nota.index', compact('entradas', 'asesores'));
 }
 
-    public function create()
-    {
-        $asesores = Asesor::orderBy('nombre')->get();
-        return view('secretaria.con_nota.create', compact('asesores'));
-    }
+ public function create()
+{
+    $asesores = Asesor::orderBy('nombre')->get();
+    $tipos = \App\Models\TipoOrganizacion::orderBy('nombre')->get();
+    return view('secretaria.con_nota.create', compact('asesores', 'tipos'));
+}
 
-    public function store(Request $request)
+public function store(Request $request)
     {
         $request->validate([
             'nombre_organizacion'   => 'required|string|max:255',
@@ -84,10 +89,11 @@ class EntradaConNotaController extends Controller
     }
 
     public function edit(EntradaConNota $conNota)
-    {
-        $asesores = Asesor::orderBy('nombre')->get();
-        return view('secretaria.con_nota.edit', compact('conNota', 'asesores'));
-    }
+{
+    $asesores = Asesor::orderBy('nombre')->get();
+    $tipos = \App\Models\TipoOrganizacion::orderBy('nombre')->get();
+    return view('secretaria.con_nota.edit', compact('conNota', 'asesores', 'tipos'));
+}
 
     public function update(Request $request, EntradaConNota $conNota)
     {

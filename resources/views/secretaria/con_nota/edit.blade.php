@@ -30,9 +30,9 @@
                         <select name="tipo_organizacion"
                                 style="width:100%; border:1px solid {{ $errors->has('tipo_organizacion') ? '#f87171' : '#e5e7eb' }}; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
                             <option value="">Seleccionar tipo...</option>
-                            @foreach(['Club','Universidad','Cooperativa','Escuela y Colegio','Asentamiento','Comision Vecinal'] as $tipo)
-                                <option value="{{ $tipo }}" {{ old('tipo_organizacion', $conNota->tipo_organizacion) == $tipo ? 'selected' : '' }}>{{ $tipo }}</option>
-                            @endforeach
+                            @foreach($tipos as $tipo)
+                            <option value="{{ $tipo->nombre }}" {{ old('tipo_organizacion', $conNota->tipo_organizacion) == $tipo->nombre ? 'selected' : '' }}>{{ $tipo->nombre }}</option>
+                        @endforeach
                         </select>
                         @error('tipo_organizacion')<p style="color:#ef4444; font-size:11px; margin-top:3px;">{{ $message }}</p>@enderror
                     </div>

@@ -16,9 +16,15 @@
                 <div class="p-6">
                     <div class="flex justify-between mb-4">
     <h2 class="text-xl font-semibold">Usuarios del Sistema</h2>
-    <div class="flex gap-2">
+  <div class="flex gap-2">
     <a href="{{ route('admin.asesores.index') }}" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Gestión de Asesores</a>
+    <a href="{{ route('admin.configuracion.index') }}" style="background-color:#7c3aed; color:white; padding:8px 16px; border-radius:6px; text-decoration:none; font-size:14px;">Configuración</a>
+    <a href="/admin/tipo-organizaciones" style="background-color:#0891b2; color:white; padding:8px 16px; border-radius:6px; text-decoration:none; font-size:14px;">Tipos de Org.</a>
     <a href="{{ route('admin.users.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Nuevo Usuario</a>
+    <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+        @csrf
+        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Cerrar sesión</button>
+    </form>
 </div>
 </div>
                     <table class="w-full">

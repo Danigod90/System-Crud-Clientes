@@ -16,12 +16,18 @@
                 @endif
 
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-semibold">Listado de Asesores</h3>
-                    <a href="{{ route('admin.asesores.create') }}"
-                       class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                        + Nuevo Asesor
-                    </a>
-                </div>
+    <h3 class="text-lg font-semibold">Listado de Asesores</h3>
+    <div class="flex gap-2">
+        <a href="{{ route('admin.users.index') }}"
+           class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+            ← Volver
+        </a>
+        <a href="{{ route('admin.asesores.create') }}"
+           class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            + Nuevo Asesor
+        </a>
+    </div>
+</div>
 
                 <table class="w-full table-auto border-collapse">
                     <thead>
