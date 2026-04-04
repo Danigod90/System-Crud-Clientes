@@ -24,11 +24,12 @@ class CharlaController extends Controller
             'direccion'  => $request->modalidad === 'presencial_externa' ? $request->direccion : null,
         ];
 
-        // Si estaba suspendida y cambia la fecha, vuelve a pendiente
-        if ($charlaExistente && $charlaExistente->estado === 'suspendida' &&
-            $charlaExistente->fecha_hora?->format('Y-m-d H:i') !== date('Y-m-d H:i', strtotime($request->fecha_hora))) {
-            $nuevosDatos['estado'] = 'pendiente';
-        }
+        // Si estaba suspendida, cancelada o realizada y cambia la fecha, vuelve a pendiente
+$estadosQueResetean = ['suspendida', 'cancelada', 'realizada'];
+if ($charlaExistente && in_array($charlaExistente->estado, $estadosQueResetean) &&
+    $charlaExistente->fecha_hora?->format('Y-m-d H:i') !== date('Y-m-d H:i', strtotime($request->fecha_hora))) {
+    $nuevosDatos['estado'] = 'pendiente';
+}
 
         Charla::updateOrCreate(
             ['entrada_con_nota_id' => $entrada->id],
