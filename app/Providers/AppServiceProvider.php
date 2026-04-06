@@ -17,24 +17,25 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('layouts.panel', function ($view) {
-            if (!Auth::check()) return;
+    if (!Auth::check()) return;
 
-            $user = Auth::user();
-            $rol = $user->roles->first()?->name;
+    $user = Auth::user();
+    $rol = $user->roles->first()?->name;
 
-            $query = EntradaConNota::whereNotNull('fecha_eleccion')
-                ->where('fecha_eleccion', '>=', now()->startOfDay())
-                ->where('fecha_eleccion', '<=', now()->addDays(30))
-                ->orderBy('fecha_eleccion')
-                ->take(10);
+    $query = EntradaConNota::whereNotNull('fecha_eleccion')
+        ->where('fecha_eleccion', '>=', now()->startOfDay())
+        ->where('fecha_eleccion', '<=', now()->addDays(30))
+        ->where('mostrar_en_ticker', true)
+        ->orderBy('fecha_eleccion')
+        ->take(10);
 
-            if ($rol === 'Asesor') {
-                $query->where('asesor_asignado', $user->name);
-            }
+    if ($rol === 'Asesor') {
+        $query->where('asesor_asignado', $user->name);
+    }
 
-            $elecciones = $query->get();
+    $elecciones = $query->get();
 
-            $view->with('elecciones', $elecciones);
-        });
+    $view->with('elecciones', $elecciones);
+});
     }
 }

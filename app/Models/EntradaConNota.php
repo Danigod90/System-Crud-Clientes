@@ -26,6 +26,7 @@ class EntradaConNota extends Model
         'log_cuartos',
         'log_tintas',
         'log_estado',
+        'mostrar_en_ticker',
     ];
 
     protected $casts = [
@@ -33,6 +34,7 @@ class EntradaConNota extends Model
         'asunto_char'    => 'boolean',
         'asunto_log'     => 'boolean',
         'asunto_tec'     => 'boolean',
+        'mostrar_en_ticker'  => 'boolean',
     ];
 
     public function user()

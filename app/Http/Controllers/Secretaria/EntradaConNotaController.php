@@ -62,25 +62,25 @@ class EntradaConNotaController extends Controller
             'asunto.*'               => 'in:char,log,tec',
         ]);
 
-        EntradaConNota::create([
-            'nombre_organizacion'    => $request->nombre_organizacion,
-            'tipo_organizacion'      => $request->tipo_organizacion,
-            'nombre_representante'   => $request->nombre_representante,
-            'telefono_representante' => $request->telefono_representante,
-            'fecha_eleccion'         => $request->fecha_eleccion,
-            'asesor_asignado'        => $request->asesor_asignado,
-            'via_ingreso'            => $request->via_ingreso,
-            'asunto_char'            => in_array('char', $request->asunto),
-            'asunto_log'             => in_array('log', $request->asunto),
-            'asunto_tec'             => in_array('tec', $request->asunto),
-            'log_urnas'              => in_array('log', $request->asunto) ? (int)$request->log_urnas : 0,
-            'log_cuartos'            => in_array('log', $request->asunto) ? (int)$request->log_cuartos : 0,
-            'log_tintas'             => in_array('log', $request->asunto) ? (int)$request->log_tintas : 0,
-            'user_id'                => auth()->id(),
-        ]);
+        $entrada = EntradaConNota::create([
+    'nombre_organizacion'    => $request->nombre_organizacion,
+    'tipo_organizacion'      => $request->tipo_organizacion,
+    'nombre_representante'   => $request->nombre_representante,
+    'telefono_representante' => $request->telefono_representante,
+    'fecha_eleccion'         => $request->fecha_eleccion,
+    'asesor_asignado'        => $request->asesor_asignado,
+    'via_ingreso'            => $request->via_ingreso,
+    'asunto_char'            => in_array('char', $request->asunto),
+    'asunto_log'             => in_array('log', $request->asunto),
+    'asunto_tec'             => in_array('tec', $request->asunto),
+    'log_urnas'              => in_array('log', $request->asunto) ? (int)$request->log_urnas : 0,
+    'log_cuartos'            => in_array('log', $request->asunto) ? (int)$request->log_cuartos : 0,
+    'log_tintas'             => in_array('log', $request->asunto) ? (int)$request->log_tintas : 0,
+    'user_id'                => auth()->id(),
+]);
 
-        return redirect()->route('secretaria.con-nota.index')
-            ->with('success', 'Mesa de entrada registrada correctamente.');
+return redirect()->route('secretaria.con-nota.show', $entrada)
+    ->with('success', 'Mesa de entrada registrada correctamente.');
     }
 
     public function show(EntradaConNota $conNota)
@@ -125,13 +125,12 @@ class EntradaConNotaController extends Controller
             'log_tintas'             => in_array('log', $request->asunto ?? []) ? (int)$request->log_tintas : 0,
         ]);
 
-        // Si viene desde el panel asesor, redirigir de vuelta
-        if ($request->from === 'asesor' && $request->entrada_id) {
-            return redirect()->route('asesor.organizacion.edit', $request->entrada_id)
-                ->with('success', 'Entrada actualizada correctamente.');
-        }
+       if ($request->from === 'asesor') {
+    return redirect()->route('asesor.organizacion.edit', $conNota->id)
+        ->with('success', 'Entrada actualizada correctamente.');
+}
 
-        return redirect()->route('secretaria.con-nota.index')
+        return redirect()->route('secretaria.con-nota.show', $conNota)
             ->with('success', 'Entrada actualizada correctamente.');
     }
 
@@ -150,4 +149,10 @@ class EntradaConNotaController extends Controller
         return redirect()->route('secretaria.con-nota.index')
             ->with('success', 'Logística entregada — ' . $conNota->codigo_org . ' — ' . $conNota->nombre_organizacion);
     }
+    public function toggleTicker(EntradaConNota $conNota)
+{
+    $conNota->update(['mostrar_en_ticker' => !$conNota->mostrar_en_ticker]);
+    $conNota->refresh();
+    return response()->json(['mostrar_en_ticker' => $conNota->mostrar_en_ticker]);
+}
 }

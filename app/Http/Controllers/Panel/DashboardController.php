@@ -21,13 +21,15 @@ class DashboardController extends Controller
                 ->whereNotNull('fecha_eleccion')
                 ->where('fecha_eleccion', '>=', now())
                 ->where('fecha_eleccion', '<=', now()->addDays(30))
+                ->where('mostrar_en_ticker', true)
                 ->orderBy('fecha_eleccion')
                 ->take(5)
                 ->get();
             $stats = [
                 'organizaciones'      => EntradaConNota::where('asesor_asignado', $user->name)->count(),
                 'charlas_realizadas'  => Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', $user->name))->where('estado', 'realizada')->count(),
-'charlas_pendientes'  => Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', $user->name))->where('estado', 'pendiente')->count(),                'elecciones_proximas' => $elecciones->count(),
+                'charlas_pendientes'  => Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', $user->name))->where('estado', 'pendiente')->count(),
+                'elecciones_proximas' => $elecciones->count(),
                 'sin_fecha'           => EntradaConNota::where('asesor_asignado', $user->name)->whereNull('fecha_eleccion')->count(),
                 'tec_pendientes'      => EntradaConNota::where('asesor_asignado', $user->name)->where('asunto_tec', true)->count(),
                 'borradores'          => 0,
@@ -39,6 +41,7 @@ class DashboardController extends Controller
         $elecciones = EntradaConNota::whereNotNull('fecha_eleccion')
             ->where('fecha_eleccion', '>=', now())
             ->where('fecha_eleccion', '<=', now()->addDays(30))
+            ->where('mostrar_en_ticker', true)
             ->orderBy('fecha_eleccion')
             ->take(5)
             ->get();
