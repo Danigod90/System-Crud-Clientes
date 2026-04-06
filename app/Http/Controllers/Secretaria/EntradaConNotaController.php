@@ -21,12 +21,20 @@ class EntradaConNotaController extends Controller
                 $q->where('asesor_asignado', $request->asesor)
             )
             ->when($request->asunto, function($q) use ($request) {
-                match($request->asunto) {
-                    'char' => $q->where('asunto_char', true),
-                    'log'  => $q->where('asunto_log', true),
-                    'tec'  => $q->where('asunto_tec', true),
-                };
-            })
+    $asunto = $request->asunto;
+    if (in_array($asunto, ['char_realizada', 'char_pendiente', 'char_suspendida', 'char_cancelada'])) {
+        $estado = str_replace('char_', '', $asunto);
+        $q->where('asunto_char', true)
+          ->whereHas('charla', fn($q) => $q->where('estado', $estado));
+    } else {
+        match($asunto) {
+            'char' => $q->where('asunto_char', true),
+            'log'  => $q->where('asunto_log', true),
+            'tec'  => $q->where('asunto_tec', true),
+            default => null,
+        };
+    }
+})
             ->when($request->mes_ingreso, fn($q) =>
                 $q->whereYear('created_at', substr($request->mes_ingreso, 0, 4))
                   ->whereMonth('created_at', substr($request->mes_ingreso, 5, 2))
