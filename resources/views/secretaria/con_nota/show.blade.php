@@ -64,19 +64,26 @@
                     @endif
 
                     @if($conNota->asunto_log && !$conNota->asunto_tec && $conNota->log_estado !== 'entregada')
-                    <form method="POST" action="{{ route('secretaria.con-nota.entregar-log', $conNota->id) }}" style="display:inline;">
-                        @csrf
-                        @method('PATCH')
-                        <button type="submit"
-                                onclick="return confirm('¿Confirmar entrega logística de {{ $conNota->nombre_organizacion }}?')"
-                                style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:8px 14px; border-radius:8px; font-size:13px; border:none; cursor:pointer;">
-                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <polyline points="20 6 9 17 4 12"/>
-                            </svg>
-                            Marcar entregado
-                        </button>
-                    </form>
-                    @endif
+<form method="POST" action="{{ route('secretaria.con-nota.entregar-log', $conNota->id) }}" style="display:inline;">
+    @csrf
+    @method('PATCH')
+    <button type="submit"
+            onclick="return confirm('¿Confirmar entrega logística de {{ $conNota->nombre_organizacion }}?')"
+            style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:8px 14px; border-radius:8px; font-size:13px; border:none; cursor:pointer;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        Marcar entregado
+    </button>
+</form>
+@elseif($conNota->asunto_log && !$conNota->asunto_tec && $conNota->log_estado === 'entregada')
+<span style="display:inline-flex; align-items:center; gap:6px; background:#d1fae5; color:#065f46; padding:8px 14px; border-radius:8px; font-size:13px; font-weight:500;">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <polyline points="20 6 9 17 4 12"/>
+    </svg>
+    Entregado
+</span>
+@endif
                     <a href="{{ request('from') == 'asesor' ? route('asesor.mis-organizaciones') : route('secretaria.con-nota.index') }}"
                        style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 14px; border-radius:8px; font-size:13px; text-decoration:none;">
                         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

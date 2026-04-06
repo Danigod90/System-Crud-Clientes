@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name', 'Sistema de Gestion') }}</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
+    <link rel="icon" type="image/x-icon" href="/favicon-tsje.ico">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -152,8 +153,7 @@
                         <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
                     <span style="font-size:11px; color:#0369a1; font-weight:600; white-space:nowrap; flex-shrink:0;">Próxima:</span>
-                    <span id="ticker-nombre" style="font-size:12px; color:#0c4a6e; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">{{ $primera->nombre_organizacion }}</span>
-                    <span id="ticker-dias" style="font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px; flex-shrink:0;
+<span id="ticker-nombre" style="font-size:12px; color:#0c4a6e; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">{{ $primera->nombre_organizacion }}</span>                    <span id="ticker-dias" style="font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px; flex-shrink:0;
                         background:{{ $diasPrimera <= 7 ? '#fee2e2' : ($diasPrimera <= 15 ? '#fef3c7' : '#d1fae5') }};
                         color:{{ $diasPrimera <= 7 ? '#991b1b' : ($diasPrimera <= 15 ? '#92400e' : '#065f46') }};">
                         {{ $diasPrimera }} días
@@ -198,22 +198,22 @@
 {{-- DROPDOWN ELECCIONES --}}
 <div id="eleccionesMenu" style="display:none; position:fixed; top:52px; right:80px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.12); width:290px; z-index:99999; overflow:hidden;">
     <div style="padding:10px 14px; border-bottom:1px solid #f3f4f6;">
-        <span style="font-size:11px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px;">Elecciones próximas</span>
+    <span style="font-size:11px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px;">Elecciones próximas</span>
+</div>
+@isset($elecciones)
+@forelse($elecciones as $e)
+@php $dias = (int) now()->startOfDay()->diffInDays($e->fecha_eleccion->startOfDay(), false); @endphp
+<div style="display:flex; justify-content:space-between; align-items:center; padding:9px 14px; border-bottom:1px solid #f9fafb;">
+    <div>
+        <div style="font-size:12px; font-weight:500; color:#111827;">{{ $e->nombre_organizacion }}</div>
+        <div style="font-size:10.5px; color:#6b7280;">{{ $e->fecha_eleccion->format('d M Y') }} — {{ $e->asesor_asignado }}</div>
     </div>
-    @isset($elecciones)
-    @forelse($elecciones as $e)
-    @php $dias = (int) now()->startOfDay()->diffInDays($e->fecha_eleccion->startOfDay(), false); @endphp
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 14px; border-bottom:1px solid #f9fafb;">
-        <div>
-            <div style="font-size:12px; font-weight:500; color:#111827;">{{ $e->nombre_organizacion }}</div>
-            <div style="font-size:10.5px; color:#6b7280;">{{ $e->fecha_eleccion->format('d M Y') }}</div>
-        </div>
-        <span style="font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:20px; flex-shrink:0;
-            background:{{ $dias <= 7 ? '#fee2e2' : ($dias <= 15 ? '#fef3c7' : '#d1fae5') }};
-            color:{{ $dias <= 7 ? '#991b1b' : ($dias <= 15 ? '#92400e' : '#065f46') }};">
-            {{ $dias }} días
-        </span>
-    </div>
+    <span style="font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:20px; flex-shrink:0;
+        background:{{ $dias <= 7 ? '#fee2e2' : ($dias <= 15 ? '#fef3c7' : '#d1fae5') }};
+        color:{{ $dias <= 7 ? '#991b1b' : ($dias <= 15 ? '#92400e' : '#065f46') }};">
+        {{ $dias }} días
+    </span>
+</div>
     @empty
     <div style="padding:16px; text-align:center; font-size:12px; color:#9ca3af;">Sin elecciones próximas.</div>
     @endforelse
@@ -284,8 +284,7 @@
         $dias = (int) now()->startOfDay()->diffInDays($e->fecha_eleccion->startOfDay(), false);
         $bg = $dias <= 7 ? '#fee2e2' : ($dias <= 15 ? '#fef3c7' : '#d1fae5');
         $color = $dias <= 7 ? '#991b1b' : ($dias <= 15 ? '#92400e' : '#065f46');
-        return ['nombre' => $e->nombre_organizacion, 'dias' => $dias, 'bg' => $bg, 'color' => $color];
-    });
+return ['nombre' => $e->nombre_organizacion, 'dias' => $dias, 'bg' => $bg, 'color' => $color];    });
 @endphp
 const tickerItems = @json($tickerData);
 

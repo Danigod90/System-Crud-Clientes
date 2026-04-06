@@ -152,11 +152,11 @@ return redirect()->route('secretaria.con-nota.show', $entrada)
     }
 
     public function entregarLog(EntradaConNota $conNota)
-    {
-        $conNota->update(['log_estado' => 'entregada']);
-        return redirect()->route('secretaria.con-nota.index')
-            ->with('success', 'Logística entregada — ' . $conNota->codigo_org . ' — ' . $conNota->nombre_organizacion);
-    }
+{
+    $conNota->update(['log_estado' => 'entregada']);
+    return redirect()->route('secretaria.con-nota.show', $conNota)
+        ->with('success', 'Logística entregada — ' . $conNota->codigo_org);
+}
     public function toggleTicker(EntradaConNota $conNota)
 {
     $conNota->update(['mostrar_en_ticker' => !$conNota->mostrar_en_ticker]);
