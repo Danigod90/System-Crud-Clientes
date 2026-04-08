@@ -119,51 +119,52 @@
             <div style="overflow-x:auto;">
 <table class="w-full table-fixed border-collapse text-sm" style="min-width:900px;">
     <thead>
-        <tr class="bg-gray-50 text-gray-600 uppercase text-xs">
-            <th class="border border-gray-200 px-2 py-3 text-left" style="width:100px;">Codigo ORG</th>
-            <th class="border border-gray-200 px-2 py-3 text-left" style="width:180px;">Organizacion</th>
-            <th class="border border-gray-200 px-2 py-3 text-left" style="width:90px;">Asesor</th>
-            <th class="border border-gray-200 px-2 py-3 text-left" style="width:80px;">Asunto</th>
-            <th class="border border-gray-200 px-2 py-3 text-left" style="width:75px;">Via</th>
-            <th class="border border-gray-200 px-2 py-3 text-left" style="width:90px;">Fecha eleccion</th>
-            <th class="border border-gray-200 px-2 py-3 text-left" style="width:100px;">Registrado por</th>
-            <th class="border border-gray-200 px-2 py-3 text-left" style="width:90px;">Fecha ingreso</th>
-            <th class="border border-gray-200 px-2 py-3 text-left" style="width:80px;">Estado</th>
-            <th class="border border-gray-200 px-2 py-3 text-center" style="width:110px;">Acciones</th>
-        </tr>
-    </thead>
+    <tr class="bg-gray-50 text-gray-600 uppercase text-xs">
+        <th class="border border-gray-200 px-2 py-3 text-center" style="width:100px;">Codigo ORG</th>
+        <th class="border border-gray-200 px-2 py-3 text-center" style="width:180px;">Organizacion</th>
+        <th class="border border-gray-200 px-2 py-3 text-center" style="width:90px;">Asesor</th>
+        <th class="border border-gray-200 px-2 py-3 text-center" style="width:80px;">Asunto</th>
+        <th class="border border-gray-200 px-2 py-3 text-center" style="width:75px;">Via</th>
+        <th class="border border-gray-200 px-2 py-3 text-center" style="width:90px;">Fecha eleccion</th>
+        <th class="border border-gray-200 px-2 py-3 text-center" style="width:100px;">Registrado por</th>
+        <th class="border border-gray-200 px-2 py-3 text-center" style="width:90px;">Fecha ingreso</th>
+        <th class="border border-gray-200 px-2 py-3 text-center" style="width:120px;">Estado</th>
+        <th class="border border-gray-200 px-2 py-3 text-center" style="width:110px;">Acciones</th>
+    </tr>
+</thead>
                 <tbody>
                     @forelse($entradas as $entrada)
                     <tr class="hover:bg-gray-50">
-                        <td class="border border-gray-200 px-4 py-2 font-mono font-semibold text-blue-700">
+                        <td class="border border-gray-200 px-2 py-2 font-mono font-semibold text-blue-700" style="text-align:center;">
                             {{ $entrada->codigo_org }}
                         </td>
-                        <td class="border border-gray-200 px-4 py-2" style="font-size:11px; font-weight:500;">
-    {{ $entrada->nombre_organizacion }}
-</td>
-                        <td class="border border-gray-200 px-4 py-2">
+                        <td class="border border-gray-200 px-2 py-2" style="font-size:11px; font-weight:500; text-align:center;">
+                            {{ $entrada->nombre_organizacion }}
+                        </td>
+                        <td class="border border-gray-200 px-2 py-2" style="text-align:center;">
                             {{ $entrada->asesor_asignado ?? '-' }}
                         </td>
-                        <td class="border border-gray-200 px-4 py-2">
-                            <span class="font-mono font-semibold text-gray-800">{{ $entrada->asunto_texto }}</span>
+                        <td class="border border-gray-200 px-2 py-2" style="text-align:center;">
+                            <span class="font-mono font-semibold text-gray-800" style="font-size:12px;">{{ $entrada->asunto_texto }}</span>
                         </td>
-                        <td class="border border-gray-200 px-4 py-2 capitalize">
+                        <td class="border border-gray-200 px-2 py-2 capitalize" style="text-align:center;">
                             {{ $entrada->via_ingreso }}
                         </td>
-                        <td class="border border-gray-200 px-4 py-2" style="width:80px; font-size:11px;">
-    @if($entrada->fecha_eleccion)
+                        <td class="border border-gray-200 px-2 py-2" style="font-size:11px; text-align:center;">
+                            @if($entrada->fecha_eleccion)
                                 {{ $entrada->fecha_eleccion->format('d/m/Y') }}
                             @else
                                 <span style="background:#fef9c3; color:#854d0e; font-size:11px; padding:2px 8px; border-radius:999px; font-weight:600;">⚠️ Sin fecha</span>
                             @endif
                         </td>
-                        <td class="border border-gray-200 px-4 py-2 text-xs text-gray-600">
+                        <td class="border border-gray-200 px-2 py-2 text-xs text-gray-600" style="text-align:center;">
                             {{ $entrada->registrado_por }}
                         </td>
-                        <td class="border border-gray-200 px-4 py-2 text-xs text-gray-600">
+                        <td class="border border-gray-200 px-2 py-2 text-xs text-gray-600" style="text-align:center;">
                             {{ $entrada->created_at?->format('d/m/Y H:i') ?? '-' }}
                         </td>
-<td class="border border-gray-200 px-2 py-2" style="width:120px; white-space:nowrap;">                            @if($entrada->asunto_char)
+                        <td class="border border-gray-200 px-2 py-2" style="width:120px; white-space:nowrap;">
+                            @if($entrada->asunto_char)
                                 @php $charDot = match($entrada->charla?->estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
                                 <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
                                     <span style="font-size:11px; color:#6b7280;">Char</span>
@@ -193,7 +194,7 @@
                             @endif
                         </td>
                         <td class="border border-gray-200 px-2 py-2" style="width:110px;">
-                            <div style="display:flex; gap:6px; align-items:center;">
+                            <div style="display:flex; gap:6px; align-items:center; justify-content:center;">
                                 <a href="{{ route('secretaria.con-nota.show', $entrada) }}"
                                    style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; background:#e0f2fe; border-radius:8px; color:#0369a1; text-decoration:none; flex-shrink:0;"
                                    title="Ver">
