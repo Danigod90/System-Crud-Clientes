@@ -74,7 +74,37 @@
         {{-- SECCIÓN LOGÍSTICA (solo lectura) --}}
         @if($entrada->asunto_log)
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
-            <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px;">Detalle Logístico</h3>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
+                <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0; display:flex; align-items:center; gap:8px;">
+                    Detalle Logístico
+                    @php $logDot = ($entrada->log_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; @endphp
+                    <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
+                        <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>
+                        {{ ($entrada->log_estado ?? 'pendiente') === 'entregada' ? 'Entregada' : 'Pendiente' }}
+                    </span>
+                </h3>
+                @if($entrada->asunto_log && !$entrada->asunto_tec && $entrada->log_estado !== 'entregada')
+                <form method="POST" action="{{ route('secretaria.con-nota.entregar-log', $entrada->id) }}" style="display:inline;">
+                    @csrf
+                    @method('PATCH')
+                    <button type="submit"
+                            onclick="return confirm('¿Confirmar entrega logística de {{ $entrada->nombre_organizacion }}?')"
+                            style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Marcar entregado
+                    </button>
+                </form>
+                @elseif($entrada->log_estado === 'entregada')
+                <span style="display:inline-flex; align-items:center; gap:6px; background:#d1fae5; color:#065f46; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:500;">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Entregado
+                </span>
+                @endif
+            </div>
             <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
                 <div style="text-align:center;">
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Urnas</label>

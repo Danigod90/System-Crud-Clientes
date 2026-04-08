@@ -13,33 +13,32 @@
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                 <div>
-    <span style="font-family:monospace; color:#185FA5; font-weight:700; font-size:18px;">{{ $conNota->codigo_org }}</span>
-    <p style="font-size:11px; color:#9ca3af; margin-top:4px;">Registrado por {{ $conNota->registrado_por }} el {{ $conNota->created_at?->format('d/m/Y H:i') ?? '-' }}</p>
-    {{-- TOGGLE TICKER --}}
-    <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
-        <div id="ticker-box"
-             onclick="toggleTicker()"
-             style="width:18px; height:18px; border-radius:4px; border:1.5px solid {{ $conNota->mostrar_en_ticker ? '#16a34a' : '#d1d5db' }}; background:transparent; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;">
-            <svg id="ticker-check" width="12" height="12" fill="none" stroke="#16a34a" stroke-width="2.5" viewBox="0 0 24 24"
-                 style="display:{{ $conNota->mostrar_en_ticker ? 'block' : 'none' }};">
-                <polyline points="20 6 9 17 4 12"/>
-            </svg>
-        </div>
-        <span id="ticker-label" style="font-size:12px; color:#6b7280; cursor:pointer;" onclick="toggleTicker()">
-            {{ $conNota->mostrar_en_ticker ? 'Mostrar en ticker' : 'Oculto del ticker' }}
-        </span>
-    </div>
+                    <span style="font-family:monospace; color:#185FA5; font-weight:700; font-size:18px;">{{ $conNota->codigo_org }}</span>
+                    <p style="font-size:11px; color:#9ca3af; margin-top:4px;">Registrado por {{ $conNota->registrado_por }} el {{ $conNota->created_at?->format('d/m/Y H:i') ?? '-' }}</p>
+                    <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+                        <div id="ticker-box"
+                             onclick="toggleTicker()"
+                             style="width:18px; height:18px; border-radius:4px; border:1.5px solid {{ $conNota->mostrar_en_ticker ? '#16a34a' : '#d1d5db' }}; background:transparent; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0;">
+                            <svg id="ticker-check" width="12" height="12" fill="none" stroke="#16a34a" stroke-width="2.5" viewBox="0 0 24 24"
+                                 style="display:{{ $conNota->mostrar_en_ticker ? 'block' : 'none' }};">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                        </div>
+                        <span id="ticker-label" style="font-size:12px; color:#6b7280; cursor:pointer;" onclick="toggleTicker()">
+                            {{ $conNota->mostrar_en_ticker ? 'Mostrar en ticker' : 'Oculto del ticker' }}
+                        </span>
+                    </div>
                 </div>
 
                 <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
                     <a href="{{ route('secretaria.con-nota.edit', ['conNota' => $conNota->id]) }}{{ request('from') == 'asesor' ? '?from=asesor' : '' }}"
-   style="display:inline-flex; align-items:center; gap:6px; background:#f59e0b; color:white; padding:8px 14px; border-radius:8px; font-size:13px; text-decoration:none;">
-    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-    </svg>
-    Editar
-</a>
+                       style="display:inline-flex; align-items:center; gap:6px; background:#f59e0b; color:white; padding:8px 14px; border-radius:8px; font-size:13px; text-decoration:none;">
+                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        Editar
+                    </a>
 
                     @if($conNota->via_ingreso == 'presencial')
                     <a href="{{ route('secretaria.con-nota.nota-pdf', $conNota->id) }}" target="_blank"
@@ -64,26 +63,27 @@
                     @endif
 
                     @if($conNota->asunto_log && !$conNota->asunto_tec && $conNota->log_estado !== 'entregada')
-<form method="POST" action="{{ route('secretaria.con-nota.entregar-log', $conNota->id) }}" style="display:inline;">
-    @csrf
-    @method('PATCH')
-    <button type="submit"
-            onclick="return confirm('¿Confirmar entrega logística de {{ $conNota->nombre_organizacion }}?')"
-            style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:8px 14px; border-radius:8px; font-size:13px; border:none; cursor:pointer;">
-        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <polyline points="20 6 9 17 4 12"/>
-        </svg>
-        Marcar entregado
-    </button>
-</form>
-@elseif($conNota->asunto_log && !$conNota->asunto_tec && $conNota->log_estado === 'entregada')
-<span style="display:inline-flex; align-items:center; gap:6px; background:#d1fae5; color:#065f46; padding:8px 14px; border-radius:8px; font-size:13px; font-weight:500;">
-    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-        <polyline points="20 6 9 17 4 12"/>
-    </svg>
-    Entregado
-</span>
-@endif
+                    <form method="POST" action="{{ route('secretaria.con-nota.entregar-log', $conNota->id) }}" style="display:inline;">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit"
+                                onclick="return confirm('¿Confirmar entrega logística de {{ $conNota->nombre_organizacion }}?')"
+                                style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:8px 14px; border-radius:8px; font-size:13px; border:none; cursor:pointer;">
+                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Marcar entregado
+                        </button>
+                    </form>
+                    @elseif($conNota->asunto_log && !$conNota->asunto_tec && $conNota->log_estado === 'entregada')
+                    <span style="display:inline-flex; align-items:center; gap:6px; background:#d1fae5; color:#065f46; padding:8px 14px; border-radius:8px; font-size:13px; font-weight:500;">
+                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Entregado
+                    </span>
+                    @endif
+
                     <a href="{{ request('from') == 'asesor' ? route('asesor.mis-organizaciones') : route('secretaria.con-nota.index') }}"
                        style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 14px; border-radius:8px; font-size:13px; text-decoration:none;">
                         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -98,7 +98,6 @@
         {{-- DATOS --}}
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px;">Datos de la organización</h3>
-
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
                 <div>
                     <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Organización</p>
@@ -137,35 +136,60 @@
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px;">Servicios solicitados</h3>
 
-            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <div style="display:flex; gap:10px; flex-wrap:nowrap;">
                 <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:500;
                     background:{{ $conNota->asunto_char ? '#dbeafe' : '#f3f4f6' }};
                     color:{{ $conNota->asunto_char ? '#1d4ed8' : '#9ca3af' }};
                     text-decoration:{{ $conNota->asunto_char ? 'none' : 'line-through' }};">
-                    Char — Charla
+                    CHARLA
                 </span>
-
                 <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:500;
-                    background:{{ $conNota->asunto_log ? '#d1fae5' : '#f3f4f6' }};
-                    color:{{ $conNota->asunto_log ? '#065f46' : '#9ca3af' }};
-                    text-decoration:{{ $conNota->asunto_log ? 'none' : 'line-through' }};">
-                    Log — Logística
-                    @if($conNota->asunto_log && ($conNota->log_urnas || $conNota->log_cuartos || $conNota->log_tintas))
-                        @if($conNota->log_urnas) &nbsp;({{ $conNota->log_urnas }}) urnas @endif
-                        @if($conNota->log_cuartos) &nbsp;({{ $conNota->log_cuartos }}) cuartos @endif
-                        @if($conNota->log_tintas) &nbsp;({{ $conNota->log_tintas }}) tintas @endif
-                    @endif
-                </span>
-
+    background:{{ $conNota->asunto_log ? '#d1fae5' : '#f3f4f6' }};
+    color:{{ $conNota->asunto_log ? '#065f46' : '#9ca3af' }};
+    text-decoration:{{ $conNota->asunto_log ? 'none' : 'line-through' }};">
+    LOGÍSTICA
+</span>
                 <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:500;
                     background:{{ $conNota->asunto_tec ? '#ede9fe' : '#f3f4f6' }};
                     color:{{ $conNota->asunto_tec ? '#6d28d9' : '#9ca3af' }};
                     text-decoration:{{ $conNota->asunto_tec ? 'none' : 'line-through' }};">
-                    Tec — Técnica
+                    TECNICA
+                </span>
+                <span style="display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:500;
+                    background:{{ $conNota->asunto_obs ? '#fef3c7' : '#f3f4f6' }};
+                    color:{{ $conNota->asunto_obs ? '#92400e' : '#9ca3af' }};
+                    text-decoration:{{ $conNota->asunto_obs ? 'none' : 'line-through' }};">
+                    OBSERVADORES
                 </span>
             </div>
-
-            {{-- DETALLE DE CHARLA (solo lectura) --}}
+{{-- DETALLE DE LOGÍSTICA --}}
+            @if($conNota->asunto_log)
+            <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-top:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+                <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:8px;">
+                    Detalle Logístico
+                    @php $logDot = ($conNota->log_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; @endphp
+                    <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
+                        <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>
+                        {{ ($conNota->log_estado ?? 'pendiente') === 'entregada' ? 'Entregada' : 'Pendiente' }}
+                    </span>
+                </h3>
+                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
+                    <div style="text-align:center;">
+                        <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Urnas</p>
+                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $conNota->log_urnas ?? 0 }}</p>
+                    </div>
+                    <div style="text-align:center;">
+                        <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Cuartos oscuros</p>
+                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $conNota->log_cuartos ?? 0 }}</p>
+                    </div>
+                    <div style="text-align:center;">
+                        <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Tintas</p>
+                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $conNota->log_tintas ?? 0 }}</p>
+                    </div>
+                </div>
+            </div>
+            @endif
+            {{-- DETALLE DE CHARLA --}}
             @if($conNota->asunto_char && $conNota->charla)
             @php
                 $dotColor = match($conNota->charla->estado) {
@@ -212,10 +236,53 @@
                 </div>
             </div>
             @endif
+
+            {{-- DETALLE DE OBSERVADORES --}}
+            @if($conNota->asunto_obs && $conNota->observador)
+            @php
+                $obsDot = match($conNota->observador->estado) {
+                    'realizada'  => '#16a34a',
+                    'cancelada'  => '#dc2626',
+                    'suspendida' => '#f97316',
+                    default      => '#eab308',
+                };
+            @endphp
+            <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-top:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+                <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:8px;">
+                    Observadores
+                    <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
+                        <span style="width:9px; height:9px; border-radius:50%; background:{{ $obsDot }}; display:inline-block;"></span>
+                        {{ ucfirst($conNota->observador->estado) }}
+                    </span>
+                </h3>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                    <div>
+                        <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Fecha y hora</p>
+                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">
+                            {{ $conNota->observador->fecha_hora?->format('d/m/Y H:i') ?? '—' }}
+                        </p>
+                    </div>
+                    @if($conNota->observador->observadores)
+                    <div>
+                        <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Observadores asistentes</p>
+                        <p style="font-size:14px; color:#111827; margin:0;">{{ $conNota->observador->observadores }}</p>
+                    </div>
+                    @endif
+                    @if($conNota->observador->descripcion)
+                    <div style="grid-column:span 2;">
+                        <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Descripción</p>
+                        <p style="font-size:14px; color:#111827; margin:0;">{{ $conNota->observador->descripcion }}</p>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
+
         </div>
 
     </div>
 </div>
+
 <script>
 async function toggleTicker() {
     try {
@@ -244,7 +311,6 @@ async function toggleTicker() {
             label.textContent = 'Oculto del ticker';
         }
 
-        // Recargar solo el topbar sin recargar la página
         window.location.reload();
 
     } catch (err) {
@@ -252,4 +318,5 @@ async function toggleTicker() {
     }
 }
 </script>
+
 </x-panel-layout>
