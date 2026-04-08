@@ -129,7 +129,7 @@
             <th class="border border-gray-200 px-2 py-3 text-left" style="width:100px;">Registrado por</th>
             <th class="border border-gray-200 px-2 py-3 text-left" style="width:90px;">Fecha ingreso</th>
             <th class="border border-gray-200 px-2 py-3 text-left" style="width:80px;">Estado</th>
-            <th class="border border-gray-200 px-2 py-3 text-center" style="width:90px;">Acciones</th>
+            <th class="border border-gray-200 px-2 py-3 text-center" style="width:110px;">Acciones</th>
         </tr>
     </thead>
                 <tbody>
@@ -150,7 +150,7 @@
                         <td class="border border-gray-200 px-4 py-2 capitalize">
                             {{ $entrada->via_ingreso }}
                         </td>
-                        <td class="border border-gray-200 px-4 py-2" style="white-space:nowrap;">
+                        <td class="border border-gray-200 px-4 py-2" style="width:80px; font-size:11px;">
     @if($entrada->fecha_eleccion)
                                 {{ $entrada->fecha_eleccion->format('d/m/Y') }}
                             @else
@@ -163,8 +163,7 @@
                         <td class="border border-gray-200 px-4 py-2 text-xs text-gray-600">
                             {{ $entrada->created_at?->format('d/m/Y H:i') ?? '-' }}
                         </td>
-                        <td class="border border-gray-200 px-4 py-2" style="white-space:nowrap;">
-                            @if($entrada->asunto_char)
+<td class="border border-gray-200 px-2 py-2" style="width:120px; white-space:nowrap;">                            @if($entrada->asunto_char)
                                 @php $charDot = match($entrada->charla?->estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
                                 <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
                                     <span style="font-size:11px; color:#6b7280;">Char</span>
@@ -180,13 +179,20 @@
                             @endif
                             @if($entrada->asunto_tec)
                                 @php $tecDot = ($entrada->tec_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; @endphp
-                                <span style="display:inline-flex; align-items:center; gap:3px;">
+                                <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
                                     <span style="font-size:11px; color:#6b7280;">Tec</span>
                                     <span style="width:9px; height:9px; border-radius:50%; background:{{ $tecDot }}; display:inline-block;"></span>
                                 </span>
                             @endif
+                            @if($entrada->asunto_obs)
+                                @php $obsDot = match($entrada->observador?->estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', default => '#eab308' }; @endphp
+                                <span style="display:inline-flex; align-items:center; gap:3px;">
+                                    <span style="font-size:11px; color:#6b7280;">Obs</span>
+                                    <span style="width:9px; height:9px; border-radius:50%; background:{{ $obsDot }}; display:inline-block;"></span>
+                                </span>
+                            @endif
                         </td>
-                        <td class="border border-gray-200 px-4 py-2" style="min-width:110px;">
+                        <td class="border border-gray-200 px-2 py-2" style="width:110px;">
                             <div style="display:flex; gap:6px; align-items:center;">
                                 <a href="{{ route('secretaria.con-nota.show', $entrada) }}"
                                    style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; background:#e0f2fe; border-radius:8px; color:#0369a1; text-decoration:none; flex-shrink:0;"

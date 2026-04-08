@@ -92,42 +92,51 @@
             </div>
 
             {{-- ASUNTO --}}
-            <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
-                <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:6px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px;">Asunto solicitado *</h3>
-                <p style="font-size:11px; color:#9ca3af; margin-bottom:14px;">Podés agregar o quitar servicios en cualquier momento.</p>
+<div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+    <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:6px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px;">Asunto solicitado *</h3>
+    <p style="font-size:11px; color:#9ca3af; margin-bottom:14px;">Podés agregar o quitar servicios en cualquier momento.</p>
 
-                @error('asunto')<p style="color:#ef4444; font-size:11px; margin-bottom:10px;">{{ $message }}</p>@enderror
+    @error('asunto')<p style="color:#ef4444; font-size:11px; margin-bottom:10px;">{{ $message }}</p>@enderror
 
-                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
-                    <label style="display:flex; align-items:center; gap:10px; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; cursor:pointer;">
-                        <input type="checkbox" name="asunto[]" value="char"
-                               {{ old('asunto') ? (in_array('char', old('asunto')) ? 'checked' : '') : ($conNota->asunto_char ? 'checked' : '') }}
-                               style="width:15px; height:15px; accent-color:#2563eb;">
-                        <div>
-                            <span style="font-size:13px; font-weight:600; color:#1f2937;">Char</span>
-                            <p style="font-size:11px; color:#9ca3af; margin:0;">Charla</p>
-                        </div>
-                    </label>
-                    <label style="display:flex; align-items:center; gap:10px; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; cursor:pointer;">
-                        <input type="checkbox" name="asunto[]" value="log" id="check-log"
-                               {{ old('asunto') ? (in_array('log', old('asunto')) ? 'checked' : '') : ($conNota->asunto_log ? 'checked' : '') }}
-                               style="width:15px; height:15px; accent-color:#2563eb;">
-                        <div>
-                            <span style="font-size:13px; font-weight:600; color:#1f2937;">Log</span>
-                            <p style="font-size:11px; color:#9ca3af; margin:0;">Logística</p>
-                        </div>
-                    </label>
-                    <label style="display:flex; align-items:center; gap:10px; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; cursor:pointer;">
-                        <input type="checkbox" name="asunto[]" value="tec"
-                               {{ old('asunto') ? (in_array('tec', old('asunto')) ? 'checked' : '') : ($conNota->asunto_tec ? 'checked' : '') }}
-                               style="width:15px; height:15px; accent-color:#2563eb;">
-                        <div>
-                            <span style="font-size:13px; font-weight:600; color:#1f2937;">Tec</span>
-                            <p style="font-size:11px; color:#9ca3af; margin:0;">Técnica</p>
-                        </div>
-                    </label>
-                </div>
+    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;">
+        <label style="display:flex; align-items:center; gap:10px; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; cursor:pointer;">
+            <input type="checkbox" name="asunto[]" value="char"
+                   {{ old('asunto') ? (in_array('char', old('asunto')) ? 'checked' : '') : ($conNota->asunto_char ? 'checked' : '') }}
+                   style="width:15px; height:15px; accent-color:#2563eb;">
+            <div>
+                <span style="font-size:13px; font-weight:600; color:#1f2937;">Char</span>
+                <p style="font-size:11px; color:#9ca3af; margin:0;">Charla</p>
             </div>
+        </label>
+        <label style="display:flex; align-items:center; gap:10px; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; cursor:pointer;">
+            <input type="checkbox" name="asunto[]" value="log" id="check-log"
+                   {{ old('asunto') ? (in_array('log', old('asunto')) ? 'checked' : '') : ($conNota->asunto_log ? 'checked' : '') }}
+                   style="width:15px; height:15px; accent-color:#2563eb;">
+            <div>
+                <span style="font-size:13px; font-weight:600; color:#1f2937;">Log</span>
+                <p style="font-size:11px; color:#9ca3af; margin:0;">Logística</p>
+            </div>
+        </label>
+        <label style="display:flex; align-items:center; gap:10px; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; cursor:pointer;">
+            <input type="checkbox" name="asunto[]" value="tec"
+                   {{ old('asunto') ? (in_array('tec', old('asunto')) ? 'checked' : '') : ($conNota->asunto_tec ? 'checked' : '') }}
+                   style="width:15px; height:15px; accent-color:#2563eb;">
+            <div>
+                <span style="font-size:13px; font-weight:600; color:#1f2937;">Tec</span>
+                <p style="font-size:11px; color:#9ca3af; margin:0;">Técnica</p>
+            </div>
+        </label>
+        <label style="display:flex; align-items:center; gap:10px; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; cursor:pointer;">
+            <input type="checkbox" name="asunto[]" value="obs"
+                   {{ old('asunto') ? (in_array('obs', old('asunto')) ? 'checked' : '') : ($conNota->asunto_obs ? 'checked' : '') }}
+                   style="width:15px; height:15px; accent-color:#2563eb;">
+            <div>
+                <span style="font-size:13px; font-weight:600; color:#1f2937;">Obs</span>
+                <p style="font-size:11px; color:#9ca3af; margin:0;">Observadores</p>
+            </div>
+        </label>
+    </div>
+</div>
 
             {{-- SECCIÓN LOGÍSTICA --}}
             <div id="seccion-logistica" style="display:none; background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">

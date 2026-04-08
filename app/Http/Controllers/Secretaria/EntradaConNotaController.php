@@ -67,7 +67,7 @@ class EntradaConNotaController extends Controller
             'asesor_asignado'        => 'required|string|max:255',
             'via_ingreso'            => 'required|in:correo,presencial',
             'asunto'                 => 'required|array|min:1',
-            'asunto.*'               => 'in:char,log,tec',
+            'asunto.*'               => 'in:char,log,tec,obs',
         ]);
 
         $entrada = EntradaConNota::create([
@@ -85,6 +85,7 @@ class EntradaConNotaController extends Controller
     'log_cuartos'            => in_array('log', $request->asunto) ? (int)$request->log_cuartos : 0,
     'log_tintas'             => in_array('log', $request->asunto) ? (int)$request->log_tintas : 0,
     'user_id'                => auth()->id(),
+    'asunto_obs'  => in_array('obs', $request->asunto),
 ]);
 
 return redirect()->route('secretaria.con-nota.show', $entrada)
@@ -114,7 +115,7 @@ return redirect()->route('secretaria.con-nota.show', $entrada)
             'asesor_asignado'        => 'required|string|max:255',
             'via_ingreso'            => 'required|in:correo,presencial',
             'asunto'                 => 'required|array|min:1',
-            'asunto.*'               => 'in:char,log,tec',
+            'asunto.*'               => 'in:char,log,tec,obs',
         ]);
 
         $conNota->update([
@@ -131,6 +132,7 @@ return redirect()->route('secretaria.con-nota.show', $entrada)
             'log_urnas'              => in_array('log', $request->asunto ?? []) ? (int)$request->log_urnas : 0,
             'log_cuartos'            => in_array('log', $request->asunto ?? []) ? (int)$request->log_cuartos : 0,
             'log_tintas'             => in_array('log', $request->asunto ?? []) ? (int)$request->log_tintas : 0,
+            'asunto_obs'  => in_array('obs', $request->asunto ?? []),
         ]);
 
        if ($request->from === 'asesor') {

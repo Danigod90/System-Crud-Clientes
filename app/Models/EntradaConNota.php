@@ -27,6 +27,7 @@ class EntradaConNota extends Model
         'log_tintas',
         'log_estado',
         'mostrar_en_ticker',
+        'asunto_obs',
     ];
 
     protected $casts = [
@@ -35,6 +36,7 @@ class EntradaConNota extends Model
         'asunto_log'     => 'boolean',
         'asunto_tec'     => 'boolean',
         'mostrar_en_ticker'  => 'boolean',
+        'asunto_obs' => 'boolean',
     ];
 
     public function user()
@@ -50,7 +52,11 @@ public function charla()
 {
     return $this->hasOne(Charla::class, 'entrada_con_nota_id');
 }
-    // Genera codigo ORG automaticamente al crear
+  public function observador()
+{
+    return $this->hasOne(Observador::class, 'entrada_con_nota_id');
+}
+// Genera codigo ORG automaticamente al crear
     protected static function boot()
 {
     parent::boot();
@@ -74,6 +80,7 @@ public function charla()
         if ($this->asunto_char) $partes[] = 'Char';
         if ($this->asunto_log)  $partes[] = 'Log';
         if ($this->asunto_tec)  $partes[] = 'Tec';
+        if ($this->asunto_obs) $partes[] = 'Obs';
         return implode(' · ', $partes) ?: '—';
     }
 }

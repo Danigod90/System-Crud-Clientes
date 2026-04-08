@@ -17,37 +17,35 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
                 <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0;">Datos de la organización</h3>
                 <div style="display:flex; gap:8px; align-items:center;">
-    <a href="{{ route('secretaria.con-nota.edit', ['conNota' => $entrada->id]) }}?from=asesor&entrada_id={{ $entrada->id }}"
-       style="display:inline-flex; align-items:center; gap:6px; background:#f59e0b; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-        </svg>
-        Editar entrada
-    </a>
-
-    @if($entrada->via_ingreso == 'presencial')
-    <a href="{{ route('secretaria.con-nota.nota-pdf', $entrada->id) }}" target="_blank"
-       style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-        </svg>
-        Imprimir Nota
-    </a>
-    @endif
-
-    @if($entrada->asunto_log && !$entrada->asunto_tec)
-    <a href="{{ route('secretaria.con-nota.recibo-logistica', $entrada->id) }}" target="_blank"
-       style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
-        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-            <polyline points="14 2 14 8 20 8"/>
-        </svg>
-        Imprimir Logístico
-    </a>
-    @endif
-</div>
+                    <a href="{{ route('secretaria.con-nota.edit', ['conNota' => $entrada->id]) }}?from=asesor&entrada_id={{ $entrada->id }}"
+                       style="display:inline-flex; align-items:center; gap:6px; background:#f59e0b; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        Editar entrada
+                    </a>
+                    @if($entrada->via_ingreso == 'presencial')
+                    <a href="{{ route('secretaria.con-nota.nota-pdf', $entrada->id) }}" target="_blank"
+                       style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        Imprimir Nota
+                    </a>
+                    @endif
+                    @if($entrada->asunto_log && !$entrada->asunto_tec)
+                    <a href="{{ route('secretaria.con-nota.recibo-logistica', $entrada->id) }}" target="_blank"
+                       style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        Imprimir Logístico
+                    </a>
+                    @endif
+                </div>
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                 <div>
@@ -97,8 +95,6 @@
         {{-- SECCIÓN CHARLA --}}
         @if($entrada->asunto_char)
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
-
-            {{-- HEADER --}}
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
                 <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0; display:flex; align-items:center; gap:8px;">
                     Detalle de Charla
@@ -137,7 +133,6 @@
                 </div>
             </div>
 
-            {{-- VISTA SOLO LECTURA --}}
             <div id="charla-readonly" style="display:{{ $entrada->charla ? 'grid' : 'none' }}; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                 <div>
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Modalidad</label>
@@ -165,7 +160,6 @@
                 @endif
             </div>
 
-            {{-- FORMULARIO EDICIÓN --}}
             <form id="charla-form" method="POST" action="{{ route('asesor.charla.store', $entrada) }}"
                   style="display:{{ $entrada->charla ? 'none' : 'block' }};">
                 @csrf
@@ -194,7 +188,6 @@
                                value="{{ $entrada->charla?->fecha_hora?->format('Y-m-d H:i:s') }}">
                     </div>
                 </div>
-
                 <div id="seccion-direccion" style="display:{{ $entrada->charla?->modalidad == 'presencial_externa' ? 'block' : 'none' }}; margin-bottom:12px;">
                     <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Dirección *</label>
                     <input type="text" name="direccion"
@@ -202,14 +195,12 @@
                            placeholder="Dirección del local donde se realizará la charla..."
                            style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
                 </div>
-
                 <div style="margin-bottom:12px;">
                     <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Descripción <span style="color:#9ca3af; font-weight:400;">(opcional)</span></label>
                     <textarea name="descripcion" rows="3"
                               placeholder="Ej: Charla a confirmar, pendiente de respuesta del representante..."
                               style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; resize:vertical;">{{ $entrada->charla?->descripcion }}</textarea>
                 </div>
-
                 <div style="display:flex; justify-content:flex-end; gap:8px;">
                     @if($entrada->charla)
                     <button type="button" onclick="cancelarEdicion()"
@@ -227,61 +218,176 @@
                 </div>
             </form>
 
-            {{-- CAMBIAR ESTADO --}}
             @if($entrada->charla)
             <div style="border-top:1px solid #f3f4f6; margin-top:16px; padding-top:16px;">
                 <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;">Cambiar estado</p>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
-
                     <form method="POST" action="{{ route('asesor.charla.estado', $entrada->charla) }}">
-                        @csrf
-                        @method('PATCH')
+                        @csrf @method('PATCH')
                         <input type="hidden" name="estado" value="realizada">
-                        <button type="submit"
-                                onclick="return confirm('¿Marcar la charla como realizada?')"
+                        <button type="submit" onclick="return confirm('¿Marcar la charla como realizada?')"
                                 style="display:inline-flex; align-items:center; gap:6px; background:#16a34a; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
-                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <polyline points="20 6 9 17 4 12"/>
-                            </svg>
+                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                             Realizada
                         </button>
                     </form>
-
                     <form method="POST" action="{{ route('asesor.charla.estado', $entrada->charla) }}">
-                        @csrf
-                        @method('PATCH')
+                        @csrf @method('PATCH')
                         <input type="hidden" name="estado" value="suspendida">
-                        <button type="submit"
-                                onclick="return confirm('¿Marcar la charla como suspendida?')"
+                        <button type="submit" onclick="return confirm('¿Marcar la charla como suspendida?')"
                                 style="display:inline-flex; align-items:center; gap:6px; background:#f97316; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
-                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="10"/>
-                                <line x1="10" y1="15" x2="10" y2="9"/>
-                                <line x1="14" y1="15" x2="14" y2="9"/>
-                            </svg>
+                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/></svg>
                             Suspendida
                         </button>
                     </form>
-
                     <form method="POST" action="{{ route('asesor.charla.estado', $entrada->charla) }}">
-                        @csrf
-                        @method('PATCH')
+                        @csrf @method('PATCH')
                         <input type="hidden" name="estado" value="cancelada">
-                        <button type="submit"
-                                onclick="return confirm('¿Confirmar cancelación de la charla?')"
+                        <button type="submit" onclick="return confirm('¿Confirmar cancelación de la charla?')"
                                 style="display:inline-flex; align-items:center; gap:6px; background:#dc2626; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
-                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <line x1="18" y1="6" x2="6" y2="18"/>
-                                <line x1="6" y1="6" x2="18" y2="18"/>
-                            </svg>
+                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                             Cancelada
                         </button>
                     </form>
-
                 </div>
             </div>
             @endif
+        </div>
+        @endif
 
+        {{-- SECCIÓN OBSERVADORES --}}
+        @if($entrada->asunto_obs)
+        <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
+                <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0; display:flex; align-items:center; gap:8px;">
+                    Observadores
+                    @if($entrada->observador)
+                        @php
+                            $obsDot = match($entrada->observador->estado) {
+                                'realizada'  => '#16a34a',
+                                'cancelada'  => '#dc2626',
+                                'suspendida' => '#f97316',
+                                default      => '#eab308',
+                            };
+                        @endphp
+                        <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
+                            <span style="width:9px; height:9px; border-radius:50%; background:{{ $obsDot }}; display:inline-block;"></span>
+                            {{ ucfirst($entrada->observador->estado) }}
+                        </span>
+                    @endif
+                </h3>
+                <button id="btn-editar-obs" onclick="activarEdicionObs()"
+                        style="display:{{ $entrada->observador ? 'inline-flex' : 'none' }}; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                    Editar
+                </button>
+            </div>
+
+            <div id="obs-readonly" style="display:{{ $entrada->observador ? 'grid' : 'none' }}; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                <div>
+                    <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora</label>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">
+                        {{ $entrada->observador?->fecha_hora?->format('d/m/Y H:i') ?? '—' }}
+                    </p>
+                </div>
+                @if($entrada->observador?->observadores)
+                <div>
+                    <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Observadores asistentes</label>
+                    <p style="font-size:14px; color:#111827; margin:0;">{{ $entrada->observador->observadores }}</p>
+                </div>
+                @endif
+                @if($entrada->observador?->descripcion)
+                <div style="grid-column:span 2;">
+                    <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Descripción</label>
+                    <p style="font-size:14px; color:#111827; margin:0;">{{ $entrada->observador->descripcion }}</p>
+                </div>
+                @endif
+            </div>
+
+            <form id="obs-form" method="POST" action="{{ route('asesor.observador.store', $entrada) }}"
+                  style="display:{{ $entrada->observador ? 'none' : 'block' }};">
+                @csrf
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora <span style="color:#9ca3af; font-weight:400;">(opcional)</span></label>
+                        <div style="position:relative;">
+                            <input type="text" id="obs_fecha_hora_display"
+                                   placeholder="Seleccionar fecha y hora..."
+                                   value="{{ $entrada->observador?->fecha_hora?->format('d/m/Y H:i') }}"
+                                   style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 32px 7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; cursor:pointer;">
+                            <button type="button" onclick="limpiarFechaObs()"
+                                    style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#9ca3af; font-size:14px; padding:0; line-height:1;">✕</button>
+                        </div>
+                        <input type="hidden" name="fecha_hora" id="obs_fecha_hora_input"
+                               value="{{ $entrada->observador?->fecha_hora?->format('Y-m-d H:i:s') }}">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Descripción <span style="color:#9ca3af; font-weight:400;">(opcional)</span></label>
+                        <textarea name="descripcion" rows="2"
+                                  placeholder="Observaciones adicionales..."
+                                  style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; resize:vertical;">{{ $entrada->observador?->descripcion }}</textarea>
+                    </div>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Observadores asistentes <span style="color:#9ca3af; font-weight:400;">(opcional)</span></label>
+                    <textarea name="observadores" rows="3"
+                              placeholder="Ej: Juan Pérez, María García, Carlos López..."
+                              style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; resize:vertical;">{{ $entrada->observador?->observadores }}</textarea>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:8px;">
+                    @if($entrada->observador)
+                    <button type="button" onclick="cancelarEdicionObs()"
+                            style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                        Cancelar
+                    </button>
+                    @endif
+                    <button type="submit"
+                            style="display:inline-flex; align-items:center; gap:6px; background:#2563eb; color:white; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Guardar observadores
+                    </button>
+                </div>
+            </form>
+
+            @if($entrada->observador)
+            <div style="border-top:1px solid #f3f4f6; margin-top:16px; padding-top:16px;">
+                <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;">Cambiar estado</p>
+                <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    <form method="POST" action="{{ route('asesor.observador.estado', $entrada->observador) }}">
+                        @csrf @method('PATCH')
+                        <input type="hidden" name="estado" value="realizada">
+                        <button type="submit" onclick="return confirm('¿Marcar como realizada?')"
+                                style="display:inline-flex; align-items:center; gap:6px; background:#16a34a; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            Realizada
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ route('asesor.observador.estado', $entrada->observador) }}">
+                        @csrf @method('PATCH')
+                        <input type="hidden" name="estado" value="suspendida">
+                        <button type="submit" onclick="return confirm('¿Marcar como suspendida?')"
+                                style="display:inline-flex; align-items:center; gap:6px; background:#f97316; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/></svg>
+                            Suspendida
+                        </button>
+                    </form>
+                    <form method="POST" action="{{ route('asesor.observador.estado', $entrada->observador) }}">
+                        @csrf @method('PATCH')
+                        <input type="hidden" name="estado" value="cancelada">
+                        <button type="submit" onclick="return confirm('¿Confirmar cancelación?')"
+                                style="display:inline-flex; align-items:center; gap:6px; background:#dc2626; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            Cancelada
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @endif
         </div>
         @endif
 
@@ -359,6 +465,57 @@ function cancelarEdicion() {
     document.getElementById('charla-readonly').style.display = 'grid';
     document.getElementById('charla-form').style.display = 'none';
     document.getElementById('btn-editar-charla').style.display = 'inline-flex';
+}
+
+let botonListoObsAgregado = false;
+
+let fpObsInstance = flatpickr("#obs_fecha_hora_display", {
+    locale: "es",
+    enableTime: true,
+    time_24hr: true,
+    dateFormat: "d/m/Y H:i",
+    defaultDate: document.getElementById('obs_fecha_hora_display').value || null,
+    closeOnSelect: false,
+    onOpen: function(selectedDates, dateStr, instance) {
+        instance.jumpToDate(instance.selectedDates[0] || new Date());
+        if (!botonListoObsAgregado) {
+            const btn = document.createElement('button');
+            btn.textContent = '✓ Listo';
+            btn.type = 'button';
+            btn.style.cssText = 'width:100%; margin-top:8px; padding:7px; background:#2563eb; color:white; border:none; border-radius:6px; font-size:13px; font-weight:500; cursor:pointer;';
+            btn.addEventListener('click', function() { instance.close(); });
+            instance.calendarContainer.appendChild(btn);
+            botonListoObsAgregado = true;
+        }
+    },
+    onChange: function(selectedDates) {
+        if (selectedDates.length > 0) {
+            const d = selectedDates[0];
+            document.getElementById('obs_fecha_hora_input').value =
+                d.getFullYear() + '-' +
+                String(d.getMonth()+1).padStart(2,'0') + '-' +
+                String(d.getDate()).padStart(2,'0') + ' ' +
+                String(d.getHours()).padStart(2,'0') + ':' +
+                String(d.getMinutes()).padStart(2,'0') + ':00';
+        }
+    }
+});
+
+function limpiarFechaObs() {
+    fpObsInstance.clear();
+    document.getElementById('obs_fecha_hora_input').value = '';
+}
+
+function activarEdicionObs() {
+    document.getElementById('obs-readonly').style.display = 'none';
+    document.getElementById('obs-form').style.display = 'block';
+    document.getElementById('btn-editar-obs').style.display = 'none';
+}
+
+function cancelarEdicionObs() {
+    document.getElementById('obs-readonly').style.display = 'grid';
+    document.getElementById('obs-form').style.display = 'none';
+    document.getElementById('btn-editar-obs').style.display = 'inline-flex';
 }
 </script>
 
