@@ -33,9 +33,9 @@
                         <select name="tipo_organizacion"
                                 style="width:100%; border:1px solid {{ $errors->has('tipo_organizacion') ? '#f87171' : '#e5e7eb' }}; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
                             <option value="">Seleccionar tipo...</option>
-                            @foreach(['Club','Universidad','Cooperativa','Escuela y Colegio','Asentamiento','Comision Vecinal','Juntas'] as $tipo)
-                                <option value="{{ $tipo }}" {{ old('tipo_organizacion') == $tipo ? 'selected' : '' }}>{{ $tipo }}</option>
-                            @endforeach
+                            @foreach($tipos as $tipo)
+    <option value="{{ $tipo->nombre }}" {{ old('tipo_organizacion') == $tipo->nombre ? 'selected' : '' }}>{{ $tipo->nombre }}</option>
+                        @endforeach
                         </select>
                         @error('tipo_organizacion')<p style="color:#ef4444; font-size:11px; margin-top:3px;">{{ $message }}</p>@enderror
                     </div>
@@ -97,7 +97,7 @@
 
                 @error('asunto')<p style="color:#ef4444; font-size:11px; margin-bottom:10px;">{{ $message }}</p>@enderror
 
-                <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px;">
+                <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;">
                     <label style="display:flex; align-items:center; gap:10px; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; cursor:pointer;">
                         <input type="checkbox" name="asunto[]" value="char"
                                {{ is_array(old('asunto')) && in_array('char', old('asunto')) ? 'checked' : '' }}
@@ -123,6 +123,15 @@
                         <div>
                             <span style="font-size:13px; font-weight:600; color:#1f2937;">Tec</span>
                             <p style="font-size:11px; color:#9ca3af; margin:0;">Técnica</p>
+                        </div>
+                    </label>
+                    <label style="display:flex; align-items:center; gap:10px; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; cursor:pointer;">
+                        <input type="checkbox" name="asunto[]" value="obs"
+                               {{ is_array(old('asunto')) && in_array('obs', old('asunto')) ? 'checked' : '' }}
+                               style="width:15px; height:15px; accent-color:#2563eb;">
+                        <div>
+                            <span style="font-size:13px; font-weight:600; color:#1f2937;">Obs</span>
+                            <p style="font-size:11px; color:#9ca3af; margin:0;">Observadores</p>
                         </div>
                     </label>
                 </div>
@@ -195,9 +204,13 @@
 <script>
     const checkLog = document.getElementById('check-log');
     const seccionLog = document.getElementById('seccion-logistica');
-    function toggleLogistica() { seccionLog.style.display = checkLog.checked ? 'block' : 'none'; }
-    checkLog.addEventListener('change', toggleLogistica);
-    toggleLogistica();
+   function toggleLogistica() {
+    const tieneTec = document.querySelector('input[name="asunto[]"][value="tec"]')?.checked ?? false;
+    seccionLog.style.display = (checkLog.checked && !tieneTec) ? 'block' : 'none';
+}
+checkLog.addEventListener('change', toggleLogistica);
+document.querySelector('input[name="asunto[]"][value="tec"]')?.addEventListener('change', toggleLogistica);
+toggleLogistica();
 
     const form = document.getElementById('form-entrada');
     const btnGuardar = document.getElementById('btn-guardar');

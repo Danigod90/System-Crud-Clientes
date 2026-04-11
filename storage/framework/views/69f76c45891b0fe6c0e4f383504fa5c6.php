@@ -1,4 +1,13 @@
-<x-panel-layout title="Editar Organización — {{ $entrada->codigo_org }}">
+<?php if (isset($component)) { $__componentOriginald3474b09374f7a1c6aabd4f89d6847dc = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald3474b09374f7a1c6aabd4f89d6847dc = $attributes; } ?>
+<?php $component = App\View\Components\PanelLayout::resolve(['title' => 'Editar Organización — '.e($entrada->codigo_org).''] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('panel-layout'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\PanelLayout::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
@@ -12,12 +21,12 @@
 <div class="px-2 py-2">
     <div style="max-width:760px; margin:0 auto;">
 
-        {{-- DATOS DE LA ORGANIZACIÓN (solo lectura) --}}
+        
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
                 <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0;">Datos de la organización</h3>
                 <div style="display:flex; gap:8px; align-items:center;">
-                    <a href="{{ route('secretaria.con-nota.edit', ['conNota' => $entrada->id]) }}?from=asesor&entrada_id={{ $entrada->id }}"
+                    <a href="<?php echo e(route('secretaria.con-nota.edit', ['conNota' => $entrada->id])); ?>?from=asesor&entrada_id=<?php echo e($entrada->id); ?>"
                        style="display:inline-flex; align-items:center; gap:6px; background:#f59e0b; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
@@ -25,8 +34,8 @@
                         </svg>
                         Editar entrada
                     </a>
-                    @if($entrada->via_ingreso == 'presencial')
-                    <a href="{{ route('secretaria.con-nota.nota-pdf', $entrada->id) }}" target="_blank"
+                    <?php if($entrada->via_ingreso == 'presencial'): ?>
+                    <a href="<?php echo e(route('secretaria.con-nota.nota-pdf', $entrada->id)); ?>" target="_blank"
                        style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -34,9 +43,9 @@
                         </svg>
                         Imprimir Nota
                     </a>
-                    @endif
-                    @if($entrada->asunto_log && !$entrada->asunto_tec)
-                    <a href="{{ route('secretaria.con-nota.recibo-logistica', $entrada->id) }}" target="_blank"
+                    <?php endif; ?>
+                    <?php if($entrada->asunto_log && !$entrada->asunto_tec): ?>
+                    <a href="<?php echo e(route('secretaria.con-nota.recibo-logistica', $entrada->id)); ?>" target="_blank"
                        style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -44,51 +53,52 @@
                         </svg>
                         Imprimir Logístico
                     </a>
-                    @endif
+                    <?php endif; ?>
                 </div>
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                 <div>
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Organización</label>
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->nombre_organizacion }}</p>
-                    <p style="font-size:12px; color:#6b7280; margin:2px 0 0;">{{ $entrada->tipo_organizacion }}</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;"><?php echo e($entrada->nombre_organizacion); ?></p>
+                    <p style="font-size:12px; color:#6b7280; margin:2px 0 0;"><?php echo e($entrada->tipo_organizacion); ?></p>
                 </div>
                 <div>
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Representante</label>
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->nombre_representante }}</p>
-                    @if($entrada->telefono_representante)
-                    <p style="font-size:12px; color:#6b7280; margin:2px 0 0;">{{ $entrada->telefono_representante }}</p>
-                    @endif
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;"><?php echo e($entrada->nombre_representante); ?></p>
+                    <?php if($entrada->telefono_representante): ?>
+                    <p style="font-size:12px; color:#6b7280; margin:2px 0 0;"><?php echo e($entrada->telefono_representante); ?></p>
+                    <?php endif; ?>
                 </div>
                 <div>
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Fecha de elección</label>
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->fecha_eleccion?->format('d/m/Y') ?? '—' }}</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;"><?php echo e($entrada->fecha_eleccion?->format('d/m/Y') ?? '—'); ?></p>
                 </div>
                 <div>
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Asunto</label>
-                    <p style="font-size:14px; font-weight:700; color:#111827; font-family:monospace; margin:0;">{{ $entrada->asunto_texto }}</p>
+                    <p style="font-size:14px; font-weight:700; color:#111827; font-family:monospace; margin:0;"><?php echo e($entrada->asunto_texto); ?></p>
                 </div>
             </div>
         </div>
 
-        {{-- SECCIÓN LOGÍSTICA (solo lectura) --}}
-        @if($entrada->asunto_log && !$entrada->asunto_tec)
+        
+        <?php if($entrada->asunto_log && !$entrada->asunto_tec): ?>
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
                 <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0; display:flex; align-items:center; gap:8px;">
                     Detalle Logístico
-                    @php $logDot = ($entrada->log_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; @endphp
+                    <?php $logDot = ($entrada->log_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; ?>
                     <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
-                        <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>
-                        {{ ($entrada->log_estado ?? 'pendiente') === 'entregada' ? 'Entregada' : 'Pendiente' }}
+                        <span style="width:9px; height:9px; border-radius:50%; background:<?php echo e($logDot); ?>; display:inline-block;"></span>
+                        <?php echo e(($entrada->log_estado ?? 'pendiente') === 'entregada' ? 'Entregada' : 'Pendiente'); ?>
+
                     </span>
                 </h3>
-                @if($entrada->asunto_log && !$entrada->asunto_tec && $entrada->log_estado !== 'entregada')
-                <form method="POST" action="{{ route('secretaria.con-nota.entregar-log', $entrada->id) }}" style="display:inline;">
-                    @csrf
-                    @method('PATCH')
+                <?php if($entrada->asunto_log && !$entrada->asunto_tec && $entrada->log_estado !== 'entregada'): ?>
+                <form method="POST" action="<?php echo e(route('secretaria.con-nota.entregar-log', $entrada->id)); ?>" style="display:inline;">
+                    <?php echo csrf_field(); ?>
+                    <?php echo method_field('PATCH'); ?>
                     <button type="submit"
-                            onclick="return confirm('¿Confirmar entrega logística de {{ $entrada->nombre_organizacion }}?')"
+                            onclick="return confirm('¿Confirmar entrega logística de <?php echo e($entrada->nombre_organizacion); ?>?')"
                             style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <polyline points="20 6 9 17 4 12"/>
@@ -96,40 +106,40 @@
                         Marcar entregado
                     </button>
                 </form>
-                @elseif($entrada->log_estado === 'entregada')
+                <?php elseif($entrada->log_estado === 'entregada'): ?>
                 <span style="display:inline-flex; align-items:center; gap:6px; background:#d1fae5; color:#065f46; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:500;">
                     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <polyline points="20 6 9 17 4 12"/>
                     </svg>
                     Entregado
                 </span>
-                @endif
+                <?php endif; ?>
             </div>
             <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
                 <div style="text-align:center;">
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Urnas</label>
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->log_urnas ?? 0 }}</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;"><?php echo e($entrada->log_urnas ?? 0); ?></p>
                 </div>
                 <div style="text-align:center;">
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Cuartos oscuros</label>
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->log_cuartos ?? 0 }}</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;"><?php echo e($entrada->log_cuartos ?? 0); ?></p>
                 </div>
                 <div style="text-align:center;">
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Tintas</label>
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->log_tintas ?? 0 }}</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;"><?php echo e($entrada->log_tintas ?? 0); ?></p>
                 </div>
             </div>
         </div>
-        @endif
+        <?php endif; ?>
 
-        {{-- SECCIÓN CHARLA --}}
-        @if($entrada->asunto_char)
+        
+        <?php if($entrada->asunto_char): ?>
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
                 <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0; display:flex; align-items:center; gap:8px;">
                     Detalle de Charla
-                    @if($entrada->charla)
-                        @php
+                    <?php if($entrada->charla): ?>
+                        <?php
                             $dotColor = match($entrada->charla->estado) {
                                 'realizada'  => '#16a34a',
                                 'cancelada'  => '#dc2626',
@@ -137,17 +147,18 @@
                                 'vencida'    => '#dc2626',
                                 default      => '#eab308',
                             };
-                        @endphp
+                        ?>
                         <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
-                            <span style="width:9px; height:9px; border-radius:50%; background:{{ $dotColor }}; display:inline-block;"></span>
-                            {{ ucfirst($entrada->charla->estado) }}
+                            <span style="width:9px; height:9px; border-radius:50%; background:<?php echo e($dotColor); ?>; display:inline-block;"></span>
+                            <?php echo e(ucfirst($entrada->charla->estado)); ?>
+
                         </span>
-                    @endif
+                    <?php endif; ?>
                 </h3>
                 <div style="display:flex; gap:8px; align-items:center;">
 
                     <button id="btn-editar-charla" onclick="activarEdicion()"
-                            style="display:{{ $entrada->charla ? 'inline-flex' : 'none' }}; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
+                            style="display:<?php echo e($entrada->charla ? 'inline-flex' : 'none'); ?>; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                             <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -157,61 +168,63 @@
                 </div>
             </div>
 
-            {{-- VISTA SOLO LECTURA --}}
-            <div id="charla-readonly" style="display:{{ $entrada->charla ? 'grid' : 'none' }}; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+            
+            <div id="charla-readonly" style="display:<?php echo e($entrada->charla ? 'grid' : 'none'); ?>; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                 <div>
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Modalidad</label>
                     <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">
-                        {{ $entrada->charla?->modalidad == 'virtual' ? 'Virtual' : ($entrada->charla?->modalidad == 'presencial_oficina' ? 'Presencial — Oficina' : 'Presencial — Externa') }}
+                        <?php echo e($entrada->charla?->modalidad == 'virtual' ? 'Virtual' : ($entrada->charla?->modalidad == 'presencial_oficina' ? 'Presencial — Oficina' : 'Presencial — Externa')); ?>
+
                     </p>
                 </div>
-                @if($entrada->charla?->char_tipo)
+                <?php if($entrada->charla?->char_tipo): ?>
                 <div>
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Tipo de charla</label>
-                    @php
+                    <?php
                         $tipoLabel = match($entrada->charla->char_tipo) {
                             'proceso_electoral' => 'Charla sobre Proceso Electoral',
                             'mmrv'              => 'Charla para MMRV',
                             'ambos'             => 'Charla sobre Proceso - Charla MMRV',
                             default             => '—',
                         };
-                    @endphp
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $tipoLabel }}</p>
+                    ?>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;"><?php echo e($tipoLabel); ?></p>
                 </div>
-                @endif
+                <?php endif; ?>
                 <div>
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora</label>
                     <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">
-                        {{ $entrada->charla?->fecha_hora?->format('d/m/Y H:i') ?? '—' }}
+                        <?php echo e($entrada->charla?->fecha_hora?->format('d/m/Y H:i') ?? '—'); ?>
+
                     </p>
                 </div>
-                @if($entrada->charla?->direccion)
+                <?php if($entrada->charla?->direccion): ?>
                 <div style="grid-column:span 2;">
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Dirección</label>
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->charla->direccion }}</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;"><?php echo e($entrada->charla->direccion); ?></p>
                 </div>
-                @endif
-                @if($entrada->charla?->descripcion)
+                <?php endif; ?>
+                <?php if($entrada->charla?->descripcion): ?>
                 <div style="grid-column:span 2;">
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Descripción</label>
-                    <p style="font-size:14px; color:#111827; margin:0;">{{ $entrada->charla->descripcion }}</p>
+                    <p style="font-size:14px; color:#111827; margin:0;"><?php echo e($entrada->charla->descripcion); ?></p>
                 </div>
-                @endif
+                <?php endif; ?>
             </div>
 
-            {{-- FORMULARIO EDITABLE --}}
-            <form id="charla-form" method="POST" action="{{ route('asesor.charla.store', $entrada) }}"
-                  style="display:{{ $entrada->charla ? 'none' : 'block' }};">
-                @csrf
+            
+            <form id="charla-form" method="POST" action="<?php echo e(route('asesor.charla.store', $entrada)); ?>"
+                  style="display:<?php echo e($entrada->charla ? 'none' : 'block'); ?>;">
+                <?php echo csrf_field(); ?>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                     <div>
                         <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Modalidad *</label>
                         <select name="modalidad" id="modalidad-select"
                                 style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
                             <option value="">Seleccionar...</option>
-                            <option value="virtual" {{ $entrada->charla?->modalidad == 'virtual' ? 'selected' : '' }}>Virtual</option>
-                            <option value="presencial_oficina" {{ $entrada->charla?->modalidad == 'presencial_oficina' ? 'selected' : '' }}>Presencial — Oficina</option>
-                            <option value="presencial_externa" {{ $entrada->charla?->modalidad == 'presencial_externa' ? 'selected' : '' }}>Presencial — Externa</option>
+                            <option value="virtual" <?php echo e($entrada->charla?->modalidad == 'virtual' ? 'selected' : ''); ?>>Virtual</option>
+                            <option value="presencial_oficina" <?php echo e($entrada->charla?->modalidad == 'presencial_oficina' ? 'selected' : ''); ?>>Presencial — Oficina</option>
+                            <option value="presencial_externa" <?php echo e($entrada->charla?->modalidad == 'presencial_externa' ? 'selected' : ''); ?>>Presencial — Externa</option>
                         </select>
                     </div>
                     <div>
@@ -219,9 +232,9 @@
                         <select name="char_tipo"
                                 style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
                             <option value="">-- Seleccionar --</option>
-                            <option value="proceso_electoral" {{ $entrada->charla?->char_tipo == 'proceso_electoral' ? 'selected' : '' }}>Charla sobre Proceso Electoral</option>
-                            <option value="mmrv" {{ $entrada->charla?->char_tipo == 'mmrv' ? 'selected' : '' }}>Charla para MMRV</option>
-<option value="ambos" {{ $entrada->charla?->char_tipo == 'ambos' ? 'selected' : '' }}>Charla sobre Proceso - Charla MMRV</option>
+                            <option value="proceso_electoral" <?php echo e($entrada->charla?->char_tipo == 'proceso_electoral' ? 'selected' : ''); ?>>Charla sobre Proceso Electoral</option>
+                            <option value="mmrv" <?php echo e($entrada->charla?->char_tipo == 'mmrv' ? 'selected' : ''); ?>>Charla para MMRV</option>
+<option value="ambos" <?php echo e($entrada->charla?->char_tipo == 'ambos' ? 'selected' : ''); ?>>Charla sobre Proceso - Charla MMRV</option>
                         </select>
                     </div>
                     <div>
@@ -229,19 +242,19 @@
                         <div style="position:relative;">
                             <input type="text" id="fecha_hora_display"
                                    placeholder="Seleccionar fecha y hora..."
-                                   value="{{ $entrada->charla?->fecha_hora?->format('d/m/Y H:i') }}"
+                                   value="<?php echo e($entrada->charla?->fecha_hora?->format('d/m/Y H:i')); ?>"
                                    style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 32px 7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; cursor:pointer;">
                             <button type="button" onclick="limpiarFecha()"
                                     style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#9ca3af; font-size:14px; padding:0; line-height:1;">✕</button>
                         </div>
                         <input type="hidden" name="fecha_hora" id="fecha_hora_input"
-                               value="{{ $entrada->charla?->fecha_hora?->format('Y-m-d H:i:s') }}">
+                               value="<?php echo e($entrada->charla?->fecha_hora?->format('Y-m-d H:i:s')); ?>">
                     </div>
                 </div>
-                <div id="seccion-direccion" style="display:{{ $entrada->charla?->modalidad == 'presencial_externa' ? 'block' : 'none' }}; margin-bottom:12px;">
+                <div id="seccion-direccion" style="display:<?php echo e($entrada->charla?->modalidad == 'presencial_externa' ? 'block' : 'none'); ?>; margin-bottom:12px;">
                     <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Dirección *</label>
                     <input type="text" name="direccion"
-                           value="{{ $entrada->charla?->direccion }}"
+                           value="<?php echo e($entrada->charla?->direccion); ?>"
                            placeholder="Dirección del local donde se realizará la charla..."
                            style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
                 </div>
@@ -249,15 +262,15 @@
                     <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Descripción <span style="color:#9ca3af; font-weight:400;">(opcional)</span></label>
                     <textarea name="descripcion" rows="3"
                               placeholder="Ej: Charla a confirmar, pendiente de respuesta del representante..."
-                              style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; resize:vertical;">{{ $entrada->charla?->descripcion }}</textarea>
+                              style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; resize:vertical;"><?php echo e($entrada->charla?->descripcion); ?></textarea>
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:8px;">
-                    @if($entrada->charla)
+                    <?php if($entrada->charla): ?>
                     <button type="button" onclick="cancelarEdicion()"
                             style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
                         Cancelar
                     </button>
-                    @endif
+                    <?php endif; ?>
                     <button type="submit"
                             style="display:inline-flex; align-items:center; gap:6px; background:#2563eb; color:white; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
                         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -268,12 +281,12 @@
                 </div>
             </form>
 
-            @if($entrada->charla)
+            <?php if($entrada->charla): ?>
             <div style="border-top:1px solid #f3f4f6; margin-top:16px; padding-top:16px;">
                 <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;">Cambiar estado</p>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <form method="POST" action="{{ route('asesor.charla.estado', $entrada->charla) }}">
-                        @csrf @method('PATCH')
+                    <form method="POST" action="<?php echo e(route('asesor.charla.estado', $entrada->charla)); ?>">
+                        <?php echo csrf_field(); ?> <?php echo method_field('PATCH'); ?>
                         <input type="hidden" name="estado" value="realizada">
                         <button type="submit" onclick="return confirm('¿Marcar la charla como realizada?')"
                                 style="display:inline-flex; align-items:center; gap:6px; background:#16a34a; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
@@ -281,8 +294,8 @@
                             Realizada
                         </button>
                     </form>
-                    <form method="POST" action="{{ route('asesor.charla.estado', $entrada->charla) }}">
-                        @csrf @method('PATCH')
+                    <form method="POST" action="<?php echo e(route('asesor.charla.estado', $entrada->charla)); ?>">
+                        <?php echo csrf_field(); ?> <?php echo method_field('PATCH'); ?>
                         <input type="hidden" name="estado" value="suspendida">
                         <button type="submit" onclick="return confirm('¿Marcar la charla como suspendida?')"
                                 style="display:inline-flex; align-items:center; gap:6px; background:#f97316; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
@@ -290,8 +303,8 @@
                             Suspendida
                         </button>
                     </form>
-                    <form method="POST" action="{{ route('asesor.charla.estado', $entrada->charla) }}">
-                        @csrf @method('PATCH')
+                    <form method="POST" action="<?php echo e(route('asesor.charla.estado', $entrada->charla)); ?>">
+                        <?php echo csrf_field(); ?> <?php echo method_field('PATCH'); ?>
                         <input type="hidden" name="estado" value="cancelada">
                         <button type="submit" onclick="return confirm('¿Confirmar cancelación de la charla?')"
                                 style="display:inline-flex; align-items:center; gap:6px; background:#dc2626; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
@@ -301,33 +314,34 @@
                     </form>
                 </div>
             </div>
-            @endif
+            <?php endif; ?>
         </div>
-        @endif
+        <?php endif; ?>
 
-        {{-- SECCIÓN OBSERVADORES --}}
-        @if($entrada->asunto_obs)
+        
+        <?php if($entrada->asunto_obs): ?>
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
                 <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0; display:flex; align-items:center; gap:8px;">
                     Observadores
-                    @if($entrada->observador)
-                        @php
+                    <?php if($entrada->observador): ?>
+                        <?php
                             $obsDot = match($entrada->observador->estado) {
                                 'realizada'  => '#16a34a',
                                 'cancelada'  => '#dc2626',
                                 'suspendida' => '#f97316',
                                 default      => '#eab308',
                             };
-                        @endphp
+                        ?>
                         <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
-                            <span style="width:9px; height:9px; border-radius:50%; background:{{ $obsDot }}; display:inline-block;"></span>
-                            {{ ucfirst($entrada->observador->estado) }}
+                            <span style="width:9px; height:9px; border-radius:50%; background:<?php echo e($obsDot); ?>; display:inline-block;"></span>
+                            <?php echo e(ucfirst($entrada->observador->estado)); ?>
+
                         </span>
-                    @endif
+                    <?php endif; ?>
                 </h3>
                 <button id="btn-editar-obs" onclick="activarEdicionObs()"
-                        style="display:{{ $entrada->observador ? 'inline-flex' : 'none' }}; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
+                        style="display:<?php echo e($entrada->observador ? 'inline-flex' : 'none'); ?>; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
                     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                         <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -336,64 +350,65 @@
                 </button>
             </div>
 
-            <div id="obs-readonly" style="display:{{ $entrada->observador ? 'grid' : 'none' }}; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+            <div id="obs-readonly" style="display:<?php echo e($entrada->observador ? 'grid' : 'none'); ?>; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                 <div>
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora</label>
                     <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">
-                        {{ $entrada->observador?->fecha_hora?->format('d/m/Y H:i') ?? '—' }}
+                        <?php echo e($entrada->observador?->fecha_hora?->format('d/m/Y H:i') ?? '—'); ?>
+
                     </p>
                 </div>
-                @if($entrada->observador?->observadores)
+                <?php if($entrada->observador?->observadores): ?>
                 <div>
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Observadores asistentes</label>
-                    <p style="font-size:14px; color:#111827; margin:0;">{{ $entrada->observador->observadores }}</p>
+                    <p style="font-size:14px; color:#111827; margin:0;"><?php echo e($entrada->observador->observadores); ?></p>
                 </div>
-                @endif
-                @if($entrada->observador?->descripcion)
+                <?php endif; ?>
+                <?php if($entrada->observador?->descripcion): ?>
                 <div style="grid-column:span 2;">
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Descripción</label>
-                    <p style="font-size:14px; color:#111827; margin:0;">{{ $entrada->observador->descripcion }}</p>
+                    <p style="font-size:14px; color:#111827; margin:0;"><?php echo e($entrada->observador->descripcion); ?></p>
                 </div>
-                @endif
+                <?php endif; ?>
             </div>
 
-            <form id="obs-form" method="POST" action="{{ route('asesor.observador.store', $entrada) }}"
-                  style="display:{{ $entrada->observador ? 'none' : 'block' }};">
-                @csrf
+            <form id="obs-form" method="POST" action="<?php echo e(route('asesor.observador.store', $entrada)); ?>"
+                  style="display:<?php echo e($entrada->observador ? 'none' : 'block'); ?>;">
+                <?php echo csrf_field(); ?>
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                     <div>
                         <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora <span style="color:#9ca3af; font-weight:400;">(opcional)</span></label>
                         <div style="position:relative;">
                             <input type="text" id="obs_fecha_hora_display"
                                    placeholder="Seleccionar fecha y hora..."
-                                   value="{{ $entrada->observador?->fecha_hora?->format('d/m/Y H:i') }}"
+                                   value="<?php echo e($entrada->observador?->fecha_hora?->format('d/m/Y H:i')); ?>"
                                    style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 32px 7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; cursor:pointer;">
                             <button type="button" onclick="limpiarFechaObs()"
                                     style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#9ca3af; font-size:14px; padding:0; line-height:1;">✕</button>
                         </div>
                         <input type="hidden" name="fecha_hora" id="obs_fecha_hora_input"
-                               value="{{ $entrada->observador?->fecha_hora?->format('Y-m-d H:i:s') }}">
+                               value="<?php echo e($entrada->observador?->fecha_hora?->format('Y-m-d H:i:s')); ?>">
                     </div>
                     <div>
                         <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Descripción <span style="color:#9ca3af; font-weight:400;">(opcional)</span></label>
                         <textarea name="descripcion" rows="2"
                                   placeholder="Observaciones adicionales..."
-                                  style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; resize:vertical;">{{ $entrada->observador?->descripcion }}</textarea>
+                                  style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; resize:vertical;"><?php echo e($entrada->observador?->descripcion); ?></textarea>
                     </div>
                 </div>
                 <div style="margin-bottom:12px;">
                     <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Observadores asistentes <span style="color:#9ca3af; font-weight:400;">(opcional)</span></label>
                     <textarea name="observadores" rows="3"
                               placeholder="Ej: Juan Pérez, María García, Carlos López..."
-                              style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; resize:vertical;">{{ $entrada->observador?->observadores }}</textarea>
+                              style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; resize:vertical;"><?php echo e($entrada->observador?->observadores); ?></textarea>
                 </div>
                 <div style="display:flex; justify-content:flex-end; gap:8px;">
-                    @if($entrada->observador)
+                    <?php if($entrada->observador): ?>
                     <button type="button" onclick="cancelarEdicionObs()"
                             style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
                         Cancelar
                     </button>
-                    @endif
+                    <?php endif; ?>
                     <button type="submit"
                             style="display:inline-flex; align-items:center; gap:6px; background:#2563eb; color:white; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
                         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -404,12 +419,12 @@
                 </div>
             </form>
 
-            @if($entrada->observador)
+            <?php if($entrada->observador): ?>
             <div style="border-top:1px solid #f3f4f6; margin-top:16px; padding-top:16px;">
                 <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;">Cambiar estado</p>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <form method="POST" action="{{ route('asesor.observador.estado', $entrada->observador) }}">
-                        @csrf @method('PATCH')
+                    <form method="POST" action="<?php echo e(route('asesor.observador.estado', $entrada->observador)); ?>">
+                        <?php echo csrf_field(); ?> <?php echo method_field('PATCH'); ?>
                         <input type="hidden" name="estado" value="realizada">
                         <button type="submit" onclick="return confirm('¿Marcar como realizada?')"
                                 style="display:inline-flex; align-items:center; gap:6px; background:#16a34a; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
@@ -417,8 +432,8 @@
                             Realizada
                         </button>
                     </form>
-                    <form method="POST" action="{{ route('asesor.observador.estado', $entrada->observador) }}">
-                        @csrf @method('PATCH')
+                    <form method="POST" action="<?php echo e(route('asesor.observador.estado', $entrada->observador)); ?>">
+                        <?php echo csrf_field(); ?> <?php echo method_field('PATCH'); ?>
                         <input type="hidden" name="estado" value="suspendida">
                         <button type="submit" onclick="return confirm('¿Marcar como suspendida?')"
                                 style="display:inline-flex; align-items:center; gap:6px; background:#f97316; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
@@ -426,8 +441,8 @@
                             Suspendida
                         </button>
                     </form>
-                    <form method="POST" action="{{ route('asesor.observador.estado', $entrada->observador) }}">
-                        @csrf @method('PATCH')
+                    <form method="POST" action="<?php echo e(route('asesor.observador.estado', $entrada->observador)); ?>">
+                        <?php echo csrf_field(); ?> <?php echo method_field('PATCH'); ?>
                         <input type="hidden" name="estado" value="cancelada">
                         <button type="submit" onclick="return confirm('¿Confirmar cancelación?')"
                                 style="display:inline-flex; align-items:center; gap:6px; background:#dc2626; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
@@ -437,25 +452,26 @@
                     </form>
                 </div>
             </div>
-            @endif
+            <?php endif; ?>
         </div>
-        @endif
-{{-- SECCIÓN TÉCNICA (ASESOR) --}}
-@if($entrada->asunto_tec)
+        <?php endif; ?>
+
+<?php if($entrada->asunto_tec): ?>
 <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
         <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0; display:flex; align-items:center; gap:8px;">
             Detalle Técnico
-            @if($entrada->detalleTecnico)
-                @php $tecDot = $entrada->detalleTecnico->enviado_tecnica ? '#16a34a' : '#eab308'; @endphp
+            <?php if($entrada->detalleTecnico): ?>
+                <?php $tecDot = $entrada->detalleTecnico->enviado_tecnica ? '#16a34a' : '#eab308'; ?>
                 <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
-                    <span style="width:9px; height:9px; border-radius:50%; background:{{ $tecDot }}; display:inline-block;"></span>
-                    {{ $entrada->detalleTecnico->enviado_tecnica ? 'Enviado a Técnica' : 'Pendiente' }}
+                    <span style="width:9px; height:9px; border-radius:50%; background:<?php echo e($tecDot); ?>; display:inline-block;"></span>
+                    <?php echo e($entrada->detalleTecnico->enviado_tecnica ? 'Enviado a Técnica' : 'Pendiente'); ?>
+
                 </span>
-            @endif
+            <?php endif; ?>
         </h3>
         <button id="btn-editar-tec" onclick="activarEdicionTec()"
-                style="display:{{ $entrada->detalleTecnico ? 'inline-flex' : 'none' }}; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
+                style="display:<?php echo e($entrada->detalleTecnico ? 'inline-flex' : 'none'); ?>; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
                 <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
@@ -464,129 +480,130 @@
         </button>
     </div>
 
-    {{-- VISTA SOLO LECTURA --}}
-    <div id="tec-readonly" style="display:{{ $entrada->detalleTecnico ? 'block' : 'none' }};">
-    {{-- FILA SUPERIOR --}}
+    
+    <div id="tec-readonly" style="display:<?php echo e($entrada->detalleTecnico ? 'block' : 'none'); ?>;">
+    
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
         <div>
             <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Órgano Electoral</label>
-            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->detalleTecnico?->organo_electoral ?? '—' }}</p>
+            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;"><?php echo e($entrada->detalleTecnico?->organo_electoral ?? '—'); ?></p>
         </div>
 
         <div>
             <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Listas</label>
-            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->detalleTecnico?->cantidad_listas ?? '—' }}</p>
+            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;"><?php echo e($entrada->detalleTecnico?->cantidad_listas ?? '—'); ?></p>
         </div>
         <div>
             <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Papeletas</label>
-            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->detalleTecnico?->cantidad_papeletas ?? '—' }}</p>
+            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;"><?php echo e($entrada->detalleTecnico?->cantidad_papeletas ?? '—'); ?></p>
         </div>
         <div>
             <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Mesas</label>
-            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->detalleTecnico?->cantidad_mesas ?? '—' }}</p>
+            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;"><?php echo e($entrada->detalleTecnico?->cantidad_mesas ?? '—'); ?></p>
         </div>
     </div>
 
-    {{-- PAPELETAS SOLO LECTURA --}}
-    @php
+    
+    <?php
         $cantPap = $entrada->detalleTecnico?->cantidad_papeletas ?? 0;
         $ordinal = ['Primera','Segunda','Tercera','Cuarta','Quinta','Sexta','Séptima','Octava','Novena','Décima'];
-    @endphp
-    @if($cantPap > 0)
+    ?>
+    <?php if($cantPap > 0): ?>
     <div style="margin-bottom:12px;">
         <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Papeletas</label>
-        @for($p = 1; $p <= min($cantPap, 10); $p++)
-        @php
+        <?php for($p = 1; $p <= min($cantPap, 10); $p++): ?>
+        <?php
             $candidatura = $entrada->detalleTecnico?->{"pap_{$p}_lista_1_candidatura"} ?? '—';
             $sistema     = $entrada->detalleTecnico?->{"pap_{$p}_sistema_eleccion"} ?? '—';
-        @endphp
+        ?>
         <div style="display:flex; align-items:center; gap:12px; padding:8px 12px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; margin-bottom:6px;">
-            <span style="font-size:12px; font-weight:700; color:#374151; white-space:nowrap;">{{ $ordinal[$p-1] }}</span>
-            <span style="font-size:13px; color:#111827; flex:1;">{{ $candidatura }}</span>
-            <span style="font-size:11px; color:#6b7280; white-space:nowrap;">{{ $sistema }}</span>
+            <span style="font-size:12px; font-weight:700; color:#374151; white-space:nowrap;"><?php echo e($ordinal[$p-1]); ?></span>
+            <span style="font-size:13px; color:#111827; flex:1;"><?php echo e($candidatura); ?></span>
+            <span style="font-size:11px; color:#6b7280; white-space:nowrap;"><?php echo e($sistema); ?></span>
         </div>
-        @endfor
+        <?php endfor; ?>
     </div>
-    @endif
+    <?php endif; ?>
 
-    {{-- ESTIMADO --}}
-    @if($entrada->detalleTecnico?->cantidad_mesas && $entrada->detalleTecnico?->cantidad_papeletas)
-    @php
+    
+    <?php if($entrada->detalleTecnico?->cantidad_mesas && $entrada->detalleTecnico?->cantidad_papeletas): ?>
+    <?php
         $mesas     = $entrada->detalleTecnico->cantidad_mesas;
         $papeletas = $entrada->detalleTecnico->cantidad_papeletas;
         $actas     = $mesas * 3;
         $padrones  = $mesas * 3;
         $cuartos   = $mesas;
         $urnas     = $mesas * $papeletas;
-    @endphp
+    ?>
     <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px;">
         <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Estimado de materiales</p>
         <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:8px;">
             <div style="text-align:center;">
                 <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Actas</p>
-                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $actas }}</p>
+                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;"><?php echo e($actas); ?></p>
             </div>
             <div style="text-align:center;">
                 <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Padrones</p>
-                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $padrones }}</p>
+                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;"><?php echo e($padrones); ?></p>
             </div>
             <div style="text-align:center;">
                 <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Cuartos Oscuros</p>
-                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $cuartos }}</p>
+                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;"><?php echo e($cuartos); ?></p>
             </div>
             <div style="text-align:center;">
                 <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Urnas</p>
-                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $urnas }}</p>
+                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;"><?php echo e($urnas); ?></p>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 </div>
 
-    {{-- FORMULARIO EDITABLE --}}
-    <form id="tec-form" method="POST" action="{{ route('asesor.detalle_tecnico.saveAsesor', $entrada->id) }}"
-          style="display:{{ $entrada->detalleTecnico ? 'none' : 'block' }};">
-        @csrf
+    
+    <form id="tec-form" method="POST" action="<?php echo e(route('asesor.detalle_tecnico.saveAsesor', $entrada->id)); ?>"
+          style="display:<?php echo e($entrada->detalleTecnico ? 'none' : 'block'); ?>;">
+        <?php echo csrf_field(); ?>
 
-        {{-- ÓRGANO ELECTORAL --}}
+        
         <div style="margin-bottom:14px;">
             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Órgano Electoral</label>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
-                @foreach(['TEI' => 'T.E.I.', 'JEI' => 'J.E.I.', 'CEI' => 'C.E.I.'] as $value => $label)
+                <?php $__currentLoopData = ['TEI' => 'T.E.I.', 'JEI' => 'J.E.I.', 'CEI' => 'C.E.I.']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $value => $label): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <label style="display:flex; align-items:center; gap:8px; padding:8px 14px; border:1px solid #d1d5db; border-radius:8px; cursor:pointer; background:#fff;">
-                    <input type="radio" name="organo_electoral" value="{{ $value }}"
-                        {{ old('organo_electoral', $entrada->detalleTecnico?->organo_electoral) == $value ? 'checked' : '' }}
+                    <input type="radio" name="organo_electoral" value="<?php echo e($value); ?>"
+                        <?php echo e(old('organo_electoral', $entrada->detalleTecnico?->organo_electoral) == $value ? 'checked' : ''); ?>
+
                         style="width:15px; height:15px; accent-color:#2563eb;">
-                    <span style="font-size:13px; font-weight:600; color:#374151;">{{ $label }}</span>
+                    <span style="font-size:13px; font-weight:600; color:#374151;"><?php echo e($label); ?></span>
                 </label>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </div>
         </div>
 
-       {{-- CANTIDAD LISTAS, PAPELETAS Y MESAS --}}
+       
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:14px;">
             <div>
     <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Listas</label>
     <input type="number" name="cantidad_listas" min="1"
-        value="{{ old('cantidad_listas', $entrada->detalleTecnico?->cantidad_listas) }}"
+        value="<?php echo e(old('cantidad_listas', $entrada->detalleTecnico?->cantidad_listas)); ?>"
                     style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
             </div>
             <div>
                 <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Papeletas</label>
                 <input type="number" name="cantidad_papeletas" id="asesor_input_papeletas" min="1" max="10"
-    value="{{ old('cantidad_papeletas', $entrada->detalleTecnico?->cantidad_papeletas) }}"
+    value="<?php echo e(old('cantidad_papeletas', $entrada->detalleTecnico?->cantidad_papeletas)); ?>"
                     style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
             </div>
             <div>
                 <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Mesas</label>
                 <input type="number" name="cantidad_mesas" id="asesor_input_mesas" min="1"
-    value="{{ old('cantidad_mesas', $entrada->detalleTecnico?->cantidad_mesas) }}"
+    value="<?php echo e(old('cantidad_mesas', $entrada->detalleTecnico?->cantidad_mesas)); ?>"
                     style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
             </div>
         </div>
 
-       {{-- PAPELETAS DINÁMICAS --}}
-@php
+       
+<?php
     $datosGuardadosBlade = [];
     for ($p = 1; $p <= 10; $p++) {
         $datosGuardadosBlade[$p] = [
@@ -598,7 +615,7 @@
             $datosGuardadosBlade[$p]['listas'][$l] = $entrada->detalleTecnico?->{"pap_{$p}_lista_{$l}_nombre"} ?? '';
         }
     }
-@endphp
+?>
 
 <div style="margin-bottom:14px;">
     <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Papeletas</label>
@@ -627,7 +644,7 @@
     </datalist>
 </div>
 
-{{-- MATERIALES ESTIMADOS --}}
+
 <div style="margin-bottom:14px;">
     <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 10px;">Materiales Estimados</p>
     <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:16px;">
@@ -636,25 +653,25 @@
             <div>
                 <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Actas</label>
                 <input type="number" id="asesor_mat_actas" name="mat_final_actas" min="0"
-                    value="{{ old('mat_final_actas', $entrada->detalleTecnico?->mat_final_actas) }}"
+                    value="<?php echo e(old('mat_final_actas', $entrada->detalleTecnico?->mat_final_actas)); ?>"
                     style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
             </div>
             <div>
                 <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Padrones</label>
                 <input type="number" id="asesor_mat_padrones" name="mat_final_padrones" min="0"
-                    value="{{ old('mat_final_padrones', $entrada->detalleTecnico?->mat_final_padrones) }}"
+                    value="<?php echo e(old('mat_final_padrones', $entrada->detalleTecnico?->mat_final_padrones)); ?>"
                     style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
             </div>
             <div>
                 <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Cuartos Oscuros</label>
                 <input type="number" id="asesor_mat_cuartos" name="mat_final_cuartos" min="0"
-                    value="{{ old('mat_final_cuartos', $entrada->detalleTecnico?->mat_final_cuartos) }}"
+                    value="<?php echo e(old('mat_final_cuartos', $entrada->detalleTecnico?->mat_final_cuartos)); ?>"
                     style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
             </div>
             <div>
                 <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Urnas</label>
                 <input type="number" id="asesor_mat_urnas" name="mat_final_urnas" min="0"
-                    value="{{ old('mat_final_urnas', $entrada->detalleTecnico?->mat_final_urnas) }}"
+                    value="<?php echo e(old('mat_final_urnas', $entrada->detalleTecnico?->mat_final_urnas)); ?>"
                     style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
             </div>
         </div>
@@ -662,12 +679,12 @@
 </div>
 
         <div style="display:flex; justify-content:flex-end; gap:8px;">
-            @if($entrada->detalleTecnico)
+            <?php if($entrada->detalleTecnico): ?>
             <button type="button" onclick="cancelarEdicionTec()"
                     style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
                 Cancelar
             </button>
-            @endif
+            <?php endif; ?>
             <button type="submit"
                     style="display:inline-flex; align-items:center; gap:6px; background:#2563eb; color:white; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -678,11 +695,11 @@
         </div>
     </form>
 
-    {{-- BOTÓN ENVIAR A TÉCNICA --}}
-    @if($entrada->detalleTecnico && !$entrada->detalleTecnico->enviado_tecnica)
+    
+    <?php if($entrada->detalleTecnico && !$entrada->detalleTecnico->enviado_tecnica): ?>
     <div style="border-top:1px solid #f3f4f6; margin-top:16px; padding-top:16px;">
-        <form method="POST" action="{{ route('asesor.detalle_tecnico.enviarTecnica', $entrada->id) }}">
-            @csrf
+        <form method="POST" action="<?php echo e(route('asesor.detalle_tecnico.enviarTecnica', $entrada->id)); ?>">
+            <?php echo csrf_field(); ?>
             <button type="submit" onclick="return confirm('¿Enviar datos a Técnica?')"
                     style="display:inline-flex; align-items:center; gap:6px; background:#16a34a; color:white; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -692,13 +709,13 @@
             </button>
         </form>
     </div>
-    @endif
+    <?php endif; ?>
 
 </div>
-@endif
-        {{-- BOTONES --}}
+<?php endif; ?>
+        
         <div style="display:flex; justify-content:flex-end; gap:10px;">
-            <a href="{{ route('asesor.mis-organizaciones') }}"
+            <a href="<?php echo e(route('asesor.mis-organizaciones')); ?>"
                style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:10px 20px; border-radius:8px; font-size:14px; text-decoration:none; font-weight:500;">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <polyline points="15 18 9 12 15 6"/>
@@ -844,7 +861,7 @@ const ordinalListas = ['Primera','Segunda','Tercera','Cuarta','Quinta'];
 
 const ordinalPapJS = ['Primera','Segunda','Tercera','Cuarta','Quinta','Sexta','Séptima','Octava','Novena','Décima'];
 const ordinalLisJS = ['Primera','Segunda','Tercera','Cuarta','Quinta'];
-const savedData    = @json($datosGuardadosBlade);
+const savedData    = <?php echo json_encode($datosGuardadosBlade, 15, 512) ?>;
 
 function generarPapeletas() {
     const cantPap = parseInt(document.getElementById('asesor_input_papeletas')?.value) || 1;
@@ -939,4 +956,14 @@ document.getElementById('asesor_input_mesas')?.addEventListener('input', calcula
 
 calcularMaterialesAsesor();
 </script>
-</x-panel-layout>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald3474b09374f7a1c6aabd4f89d6847dc)): ?>
+<?php $attributes = $__attributesOriginald3474b09374f7a1c6aabd4f89d6847dc; ?>
+<?php unset($__attributesOriginald3474b09374f7a1c6aabd4f89d6847dc); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald3474b09374f7a1c6aabd4f89d6847dc)): ?>
+<?php $component = $__componentOriginald3474b09374f7a1c6aabd4f89d6847dc; ?>
+<?php unset($__componentOriginald3474b09374f7a1c6aabd4f89d6847dc); ?>
+<?php endif; ?>
+<?php /**PATH /var/www/html/resources/views/asesor/edit.blade.php ENDPATH**/ ?>

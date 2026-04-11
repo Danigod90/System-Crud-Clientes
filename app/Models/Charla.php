@@ -13,6 +13,7 @@ class Charla extends Model
     'direccion',
     'estado',
     'descripcion',
+    'char_tipo',
 ];
 
     protected $casts = [

@@ -139,7 +139,7 @@
 </div>
 
             {{-- SECCIÓN LOGÍSTICA --}}
-            <div id="seccion-logistica" style="display:none; background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+            <div id="seccion-logistica" style="display:{{ ($conNota->asunto_log && !$conNota->asunto_tec) ? 'block' : 'none' }}; background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
                 <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:6px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px;">Detalle Logístico</h3>
                 <p style="font-size:11px; color:#9ca3af; margin-bottom:14px;">Cargá las cantidades según la nota. Dejá en 0 si no aplica.</p>
                 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
@@ -188,9 +188,13 @@
 <script>
     const checkLog = document.getElementById('check-log');
     const seccionLog = document.getElementById('seccion-logistica');
-    function toggleLogistica() { seccionLog.style.display = checkLog.checked ? 'block' : 'none'; }
+   function toggleLogistica() {
+    const tieneTec = document.querySelector('input[name="asunto[]"][value="tec"]')?.checked ?? false;
+    seccionLog.style.display = (checkLog.checked && !tieneTec) ? 'block' : 'none';
+}
     checkLog.addEventListener('change', toggleLogistica);
-    toggleLogistica();
+document.querySelector('input[name="asunto[]"][value="tec"]')?.addEventListener('change', toggleLogistica);
+toggleLogistica();
 </script>
 
 </x-panel-layout>

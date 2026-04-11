@@ -215,6 +215,20 @@
                             {{ $conNota->charla->modalidad == 'virtual' ? 'Virtual' : ($conNota->charla->modalidad == 'presencial_oficina' ? 'Presencial — Oficina' : 'Presencial — Externa') }}
                         </p>
                     </div>
+                    @if($conNota->charla->char_tipo)
+                    <div>
+                        <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Tipo de charla</p>
+                        @php
+                            $tipoLabel = match($conNota->charla->char_tipo) {
+                                'proceso_electoral' => 'Charla sobre Proceso Electoral',
+                                'mmrv'              => 'Charla para MMRV',
+                                'ambos'             => 'Charla sobre Proceso - Charla MMRV',
+                                default             => '—',
+                            };
+                        @endphp
+                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $tipoLabel }}</p>
+                    </div>
+                    @endif
                     <div>
                         <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Fecha y hora</p>
                         <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">

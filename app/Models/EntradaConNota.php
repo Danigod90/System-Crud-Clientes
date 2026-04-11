@@ -56,6 +56,10 @@ public function charla()
 {
     return $this->hasOne(Observador::class, 'entrada_con_nota_id');
 }
+public function detalleTecnico()
+{
+    return $this->hasOne(DetalleTecnico::class, 'entrada_id');
+}
 // Genera codigo ORG automaticamente al crear
     protected static function boot()
 {

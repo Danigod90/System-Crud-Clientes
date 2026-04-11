@@ -13,9 +13,12 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
         $rol = $user->roles->first()?->name;
-        $esAsesor = $rol === 'Asesor';
 
-        if ($esAsesor) {
+        if ($rol === 'Tecnico') {
+            return redirect()->route('tecnico.dashboard');
+        }
+
+        if ($rol === 'Asesor') {
             $entradas = EntradaConNota::with('charla')->where('asesor_asignado', $user->name)->latest()->take(10)->get();
             $elecciones = EntradaConNota::where('asesor_asignado', $user->name)
                 ->whereNotNull('fecha_eleccion')
