@@ -87,7 +87,7 @@ class DetalleTecnicoController extends Controller
         $detalle->mat_actas_electorales_formato = $request->mat_actas_electorales_formato;
         $detalle->mat_padron                    = $request->mat_padron ?? $detalle->mat_padron ?? ($mesas * 3);
         $detalle->mat_padron_formato            = $request->mat_padron_formato;
-        $detalle->mat_matriz_boletin            = $request->mat_matriz_boletin ?? $detalle->mat_matriz_boletin ?? ($mesas * 3);
+        $detalle->mat_matriz_boletin = $request->mat_matriz_boletin ?? $detalle->mat_matriz_boletin ?? $detalle->cantidad_papeletas;
         $detalle->mat_matriz_boletin_formato    = $request->mat_matriz_boletin_formato;
         $detalle->mat_actas_proclamacion        = $request->mat_actas_proclamacion;
         $detalle->mat_certificados              = $request->mat_certificados;
