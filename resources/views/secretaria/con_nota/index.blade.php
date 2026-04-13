@@ -178,13 +178,13 @@
                                     <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>
                                 </span>
                             @endif
-                            @if($entrada->asunto_tec)
-                                @php $tecDot = ($entrada->tec_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; @endphp
-                                <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
-                                    <span style="font-size:11px; color:#6b7280;">Tec</span>
-                                    <span style="width:9px; height:9px; border-radius:50%; background:{{ $tecDot }}; display:inline-block;"></span>
-                                </span>
-                            @endif
+                           @if($entrada->asunto_tec)
+    @php $tecDot = $entrada->detalleTecnico?->tec_realizado ? '#16a34a' : '#eab308'; @endphp
+    <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
+        <span style="font-size:11px; color:#6b7280;">Tec</span>
+        <span style="width:9px; height:9px; border-radius:50%; background:{{ $tecDot }}; display:inline-block;"></span>
+    </span>
+@endif
                             @if($entrada->asunto_obs)
                                 @php $obsDot = match($entrada->observador?->estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', default => '#eab308' }; @endphp
                                 <span style="display:inline-flex; align-items:center; gap:3px;">

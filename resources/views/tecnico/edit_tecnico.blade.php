@@ -39,35 +39,6 @@
             </div>
         </div>
 
-        {{-- SECCIÓN LOGÍSTICA (solo lectura) --}}
-        @if($entrada->asunto_log)
-        <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
-            <div style="margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
-                <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0; display:flex; align-items:center; gap:8px;">
-                    Detalle Logístico
-                    @php $logDot = ($entrada->log_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; @endphp
-                    <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
-                        <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>
-                        {{ ($entrada->log_estado ?? 'pendiente') === 'entregada' ? 'Entregada' : 'Pendiente' }}
-                    </span>
-                </h3>
-            </div>
-            <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
-                <div style="text-align:center;">
-                    <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Urnas</label>
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->log_urnas ?? 0 }}</p>
-                </div>
-                <div style="text-align:center;">
-                    <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Cuartos oscuros</label>
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->log_cuartos ?? 0 }}</p>
-                </div>
-                <div style="text-align:center;">
-                    <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Tintas</label>
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->log_tintas ?? 0 }}</p>
-                </div>
-            </div>
-        </div>
-        @endif
 
         {{-- DATOS DEL ASESOR --}}
 @if($entrada->detalleTecnico)
@@ -169,7 +140,7 @@
     </div>
 
     {{-- FORMULARIO EDITABLE ASESOR --}}
-    <form id="asesor-form" method="POST" action="{{ route('asesor.detalle_tecnico.saveAsesor', $entrada->id) }}"
+    <form id="asesor-form" method="POST" action="{{ route('tecnico.detalle_tecnico.saveTecnico', $entrada->id) }}"
           style="display:none;">
         @csrf
 
@@ -283,17 +254,29 @@
     </form>
 </div>
 @endif
-        {{-- SECCIÓN TÉCNICA --}}
+
+
+{{-- SECCIÓN TÉCNICA --}}
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
                 <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0;">
                     Detalle Técnico
                 </h3>
-                @if($entrada->detalleTecnico?->impreso)
-                <span style="display:inline-flex; align-items:center; gap:6px; background:#d1fae5; color:#065f46; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:500;">
-                    ✓ Impreso {{ $entrada->detalleTecnico->impreso_at?->format('d/m/Y H:i') }}
-                </span>
-                @endif
+                <div style="display:flex; gap:8px; align-items:center;">
+                    @if($entrada->detalleTecnico?->impreso)
+                    <span style="display:inline-flex; align-items:center; gap:6px; background:#d1fae5; color:#065f46; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:500;">
+                        ✓ Impreso {{ $entrada->detalleTecnico->impreso_at?->format('d/m/Y H:i') }}
+                    </span>
+                    @endif
+                    <button id="btn-editar-tec" onclick="activarEdicionTec()"
+                            style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                        Editar
+                    </button>
+                </div>
             </div>
 
             @if(session('success'))
@@ -302,74 +285,133 @@
             </div>
             @endif
 
-            <form method="POST" action="{{ route('tecnico.detalle_tecnico.saveTecnico', $entrada->id) }}">
-                @csrf
+            {{-- VISTA SOLO LECTURA --}}
+<div id="tec-readonly" style="display:block;">
 
+    {{-- MATERIALES ENTREGADOS --}}
+    <div style="margin-bottom:16px;">
+        <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 10px;">Materiales Entregados</p>
+        @php
+            $mesasRO = $entrada->detalleTecnico?->cantidad_mesas ?? 0;
+            $defaultsRO = [
+                'mat_mesas'              => $entrada->detalleTecnico?->mat_mesas ?? $mesasRO,
+                'mat_actas_electorales'  => $entrada->detalleTecnico?->mat_actas_electorales ?? ($mesasRO * 3),
+                'mat_padron'             => $entrada->detalleTecnico?->mat_padron ?? ($mesasRO * 3),
+                'mat_matriz_boletin'     => $entrada->detalleTecnico?->mat_matriz_boletin ?? ($mesasRO * 3),
+                'mat_actas_proclamacion' => $entrada->detalleTecnico?->mat_actas_proclamacion,
+                'mat_certificados'       => $entrada->detalleTecnico?->mat_certificados,
+                'mat_cuenta_votos'       => $entrada->detalleTecnico?->mat_cuenta_votos,
+            ];
+        @endphp
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+            @foreach([
+                ['mat_mesas', 'Mesa/s', false],
+                ['mat_actas_electorales', 'Actas Electorales', 'mat_actas_electorales_formato'],
+                ['mat_padron', 'Padrón Electoral', 'mat_padron_formato'],
+                ['mat_matriz_boletin', 'Matriz de Boletín', 'mat_matriz_boletin_formato'],
+                ['mat_actas_proclamacion', 'Actas de Proclamación', false],
+                ['mat_certificados', 'Certificados de Resultados', false],
+                ['mat_cuenta_votos', 'Cuenta Votos', false],
+            ] as [$field, $label, $formatoField])
+            <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:10px;">
+                <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">{{ $label }}</label>
+                <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $defaultsRO[$field] ?? '—' }}</p>
+                @if($formatoField)
+                <p style="font-size:11px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($entrada->detalleTecnico?->$formatoField ?? '') }}</p>
+                @endif
+            </div>
+            @endforeach
+        </div>
+    </div>
 
-                {{-- MATERIALES CALCULADOS --}}
-<div style="margin-bottom:20px;">
-    <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 14px;">Materiales Estimados</p>
-    <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:16px; margin-bottom:12px;">
-        <p style="font-size:11px; font-weight:600; color:#1e40af; margin:0 0 12px; text-transform:uppercase;">Calculado automáticamente — podés editar los valores</p>
-        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+    {{-- PADRÓN --}}
+    <div style="margin-bottom:16px;">
+        <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 10px;">Padrón</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+            <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:10px;">
+                <p style="font-size:13px; font-weight:600; color:#111827; margin:0;">
+                    {{ $entrada->detalleTecnico?->padron_definitivo ? '✓ Padrón Definitivo' : '✗ Sin Padrón Definitivo' }}
+                </p>
+            </div>
+            <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:10px;">
+                <p style="font-size:13px; font-weight:600; color:#111827; margin:0;">
+                    {{ $entrada->detalleTecnico?->padron_con_cedula ? '✓ Padrón con Cédula' : '✗ Sin Padrón con Cédula' }}
+                </p>
+            </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
             <div>
-                <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Actas</label>
-                <input type="number" id="mat_final_actas" name="mat_final_actas" min="0"
-                    value="{{ old('mat_final_actas', $entrada->detalleTecnico?->mat_final_actas) }}"
-                    style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
+                <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase;">Cantidad de Electores</label>
+                <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->detalleTecnico?->cantidad_electores ?? '—' }}</p>
             </div>
             <div>
-                <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Padrones</label>
-                <input type="number" id="mat_final_padrones" name="mat_final_padrones" min="0"
-                    value="{{ old('mat_final_padrones', $entrada->detalleTecnico?->mat_final_padrones) }}"
-                    style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
+                <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase;">Electores sin C.I.</label>
+                <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->detalleTecnico?->cantidad_electores_sin_ci ?? '—' }}</p>
             </div>
+        </div>
+    </div>
+
+    {{-- RESPONSABLES --}}
+    <div>
+        <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 10px;">Responsables</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+            @foreach([
+                ['resp_actas_electorales', 'Actas Electorales'],
+                ['resp_papeletas', 'Papeletas / Boletín'],
+                ['resp_padron_electoral', 'Padrón Electoral'],
+            ] as [$field, $label])
             <div>
-                <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Cuartos Oscuros</label>
-                <input type="number" id="mat_final_cuartos" name="mat_final_cuartos" min="0"
-                    value="{{ old('mat_final_cuartos', $entrada->detalleTecnico?->mat_final_cuartos) }}"
-                    style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
+                <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase;">{{ $label }}</label>
+                <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->detalleTecnico?->$field ?? '—' }}</p>
             </div>
-            <div>
-                <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Urnas</label>
-                <input type="number" id="mat_final_urnas" name="mat_final_urnas" min="0"
-                    value="{{ old('mat_final_urnas', $entrada->detalleTecnico?->mat_final_urnas) }}"
-                    style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
-            </div>
+            @endforeach
         </div>
     </div>
 </div>
 
-{{-- MATERIALES ENTREGADOS --}}
-<div style="margin-bottom:20px;">
-    <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 14px;">Materiales Entregados</p>
-    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
-        @foreach([
-            ['mat_mesas', 'Mesa/s', false],
-            ['mat_actas_electorales', 'Actas Electorales', true],
-            ['mat_padron', 'Padrón Electoral', true],
-            ['mat_matriz_boletin', 'Matriz de Boletín', true],
-            ['mat_actas_proclamacion', 'Actas de Proclamación', false],
-            ['mat_certificados', 'Certificados de Resultados', false],
-            ['mat_cuenta_votos', 'Cuenta Votos', false],
-        ] as [$field, $label, $hasFormato])
-        <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:12px;">
-            <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">{{ $label }}</label>
-            <input type="number" name="{{ $field }}" min="0"
-                value="{{ old($field, $entrada->detalleTecnico?->$field) }}"
-                style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:6px 8px; font-size:13px; color:#111827; background:#fff; box-sizing:border-box; margin-bottom:{{ $hasFormato ? '6px' : '0' }};">
-            @if($hasFormato)
-            <select name="{{ $field }}_formato"
-                style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:6px 8px; font-size:12px; color:#374151; background:#fff; box-sizing:border-box;">
-                <option value="">Formato...</option>
-                <option value="impreso" {{ old("{$field}_formato", $entrada->detalleTecnico?->{"{$field}_formato"}) == 'impreso' ? 'selected' : '' }}>Impreso</option>
-                <option value="digital" {{ old("{$field}_formato", $entrada->detalleTecnico?->{"{$field}_formato"}) == 'digital' ? 'selected' : '' }}>Digital</option>
-            </select>
-            @endif
-        </div>
-        @endforeach
-    </div>
-</div>
+            {{-- FORMULARIO EDITABLE --}}
+<form id="tec-form" method="POST" action="{{ route('tecnico.detalle_tecnico.saveTecnico', $entrada->id) }}" style="display:none;">
+    @csrf
+
+    @php
+        $mesas          = $entrada->detalleTecnico?->cantidad_mesas ?? 0;
+        $defaultMesas   = $entrada->detalleTecnico?->mat_mesas ?? $mesas;
+        $defaultActas   = $entrada->detalleTecnico?->mat_actas_electorales ?? ($mesas * 3);
+        $defaultPadron  = $entrada->detalleTecnico?->mat_padron ?? ($mesas * 3);
+        $defaultBoletin = $entrada->detalleTecnico?->mat_matriz_boletin ?? ($mesas * 3);
+    @endphp
+
+    {{-- MATERIALES ENTREGADOS --}}
+                <div style="margin-bottom:20px;">
+                    <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 14px;">Materiales Entregados</p>
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+                       @foreach([
+    ['mat_mesas', 'Mesa/s', false, $defaultMesas],
+    ['mat_actas_electorales', 'Actas Electorales', true, $defaultActas],
+    ['mat_padron', 'Padrón Electoral', true, $defaultPadron],
+    ['mat_matriz_boletin', 'Matriz de Boletín', true, $defaultBoletin],
+    ['mat_actas_proclamacion', 'Actas de Proclamación', false, null],
+    ['mat_certificados', 'Certificados de Resultados', false, null],
+    ['mat_cuenta_votos', 'Cuenta Votos', false, null],
+] as [$field, $label, $hasFormato, $default])
+                        <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:12px;">
+                            <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">{{ $label }}</label>
+                            <input type="number" name="{{ $field }}" min="0"
+                                value="{{ old($field, $entrada->detalleTecnico?->$field ?? $default) }}"
+                                style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:6px 8px; font-size:13px; color:#111827; background:#fff; box-sizing:border-box; margin-bottom:{{ $hasFormato ? '6px' : '0' }};">
+                            @if($hasFormato)
+                            <select name="{{ $field }}_formato"
+                                style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:6px 8px; font-size:12px; color:#374151; background:#fff; box-sizing:border-box;">
+                                <option value="">Formato...</option>
+                                <option value="impreso" {{ old("{$field}_formato", $entrada->detalleTecnico?->{"{$field}_formato"}) == 'impreso' ? 'selected' : '' }}>Impreso</option>
+                                <option value="digital" {{ old("{$field}_formato", $entrada->detalleTecnico?->{"{$field}_formato"}) == 'digital' ? 'selected' : '' }}>Digital</option>
+                            </select>
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+
                 {{-- PADRÓN --}}
                 <div style="margin-bottom:20px;">
                     <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 14px;">Padrón</p>
@@ -422,25 +464,15 @@
                         </div>
                         @endforeach
                     </div>
-                    <datalist id="tecnicos-list">
-                        {{-- Se pueden agregar técnicos registrados aquí --}}
-                    </datalist>
+                    <datalist id="tecnicos-list"></datalist>
                 </div>
 
-                {{-- BOTONES --}}
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <form method="POST" action="{{ route('tecnico.detalle_tecnico.imprimir', $entrada->id) }}">
-                        @csrf
-                        <button type="submit" onclick="return confirm('¿Marcar como impreso?')"
-                            style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:10px 20px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
-                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <polyline points="6 9 6 2 18 2 18 9"/>
-                                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-                                <rect x="6" y="14" width="12" height="8"/>
-                            </svg>
-                            Imprimir Logística
-                        </button>
-                    </form>
+                {{-- BOTONES FORM --}}
+                <div style="display:flex; justify-content:flex-end; gap:8px;">
+                    <button type="button" onclick="cancelarEdicionTec()"
+                        style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:10px 20px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                        Cancelar
+                    </button>
                     <button type="submit"
                         style="display:inline-flex; align-items:center; gap:6px; background:#2563eb; color:white; padding:10px 24px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
                         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -449,8 +481,43 @@
                         Guardar
                     </button>
                 </div>
-
             </form>
+
+            {{-- BOTONES EXTERNOS --}}
+            <div style="display:flex; gap:10px; margin-top:16px; padding-top:16px; border-top:1px solid #f3f4f6;">
+                <form method="POST" action="{{ route('tecnico.detalle_tecnico.imprimir', $entrada->id) }}">
+                    @csrf
+                    <button type="submit" onclick="return confirm('¿Marcar como impreso?')"
+                        style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:10px 20px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <polyline points="6 9 6 2 18 2 18 9"/>
+                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                            <rect x="6" y="14" width="12" height="8"/>
+                        </svg>
+                        Imprimir Logística
+                    </button>
+                </form>
+
+                @if(!$entrada->detalleTecnico?->tec_realizado)
+                <form method="POST" action="{{ route('tecnico.detalle_tecnico.realizado', $entrada->id) }}">
+                    @csrf @method('PATCH')
+                    <button type="submit" onclick="return confirm('¿Marcar trabajo técnico como realizado?')"
+                        style="display:inline-flex; align-items:center; gap:6px; background:#16a34a; color:white; padding:10px 20px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Marcar como Realizado
+                    </button>
+                </form>
+                @else
+                <span style="display:inline-flex; align-items:center; gap:6px; background:#bbf7d0; color:#166534; padding:10px 20px; border-radius:8px; font-size:13px; font-weight:500;">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Realizado
+                </span>
+                @endif
+            </div>
         </div>
 
         {{-- VOLVER --}}
@@ -467,38 +534,50 @@
     </div>
 </div>
 <script>
-function calcularMateriales() {
-    const mesas     = parseInt(document.getElementById('input_mesas')?.value) || 0;
-    const papeletas = parseInt(document.getElementById('input_papeletas')?.value) || 0;
-
-    const actas   = mesas * 3;
-    const padrones = mesas * 3;
-    const cuartos = mesas;
-    const urnas   = mesas * papeletas;
-
-    const fActas    = document.getElementById('mat_final_actas');
-    const fPadrones = document.getElementById('mat_final_padrones');
-    const fCuartos  = document.getElementById('mat_final_cuartos');
-    const fUrnas    = document.getElementById('mat_final_urnas');
-
-    if (fActas && !fActas.dataset.editado)    fActas.value    = actas;
-    if (fPadrones && !fPadrones.dataset.editado) fPadrones.value = padrones;
-    if (fCuartos && !fCuartos.dataset.editado)  fCuartos.value  = cuartos;
-    if (fUrnas && !fUrnas.dataset.editado)    fUrnas.value    = urnas;
+function activarEdicionAsesor() {
+    document.getElementById('asesor-readonly').style.display = 'none';
+    document.getElementById('asesor-form').style.display = 'block';
+    document.getElementById('btn-editar-asesor').style.display = 'none';
 }
 
-// Marcar como editado manualmente
-['mat_final_actas','mat_final_padrones','mat_final_cuartos','mat_final_urnas'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('input', () => el.dataset.editado = '1');
-});
+function cancelarEdicionAsesor() {
+    document.getElementById('asesor-readonly').style.display = 'block';
+    document.getElementById('asesor-form').style.display = 'none';
+    document.getElementById('btn-editar-asesor').style.display = 'inline-flex';
+}
 
-// Escuchar cambios en mesas y papeletas
-document.getElementById('input_mesas')?.addEventListener('input', calcularMateriales);
-document.getElementById('input_papeletas')?.addEventListener('input', calcularMateriales);
+function activarEdicionTec() {
+    document.getElementById('tec-readonly').style.display = 'none';
+    document.getElementById('tec-form').style.display = 'block';
+    document.getElementById('btn-editar-tec').style.display = 'none';
+}
 
-// Calcular al cargar si no hay valores guardados
-calcularMateriales();
+function cancelarEdicionTec() {
+    document.getElementById('tec-readonly').style.display = 'block';
+    document.getElementById('tec-form').style.display = 'none';
+    document.getElementById('btn-editar-tec').style.display = 'inline-flex';
+}
 </script>
 
+<div id="banner-actualizacion" style="display:none; position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:9999; background:#fef3c7; border:1px solid #f59e0b; border-radius:10px; padding:12px 20px; font-size:13px; font-weight:500; color:#92400e; box-shadow:0 4px 12px rgba(0,0,0,0.15); align-items:center; gap:10px;">
+    ⚠️ El asesor actualizó los datos —
+    <a href="javascript:location.reload()" style="color:#92400e; font-weight:700; text-decoration:underline;">recargá la página</a>
+</div>
+
+<script>
+const entradaId = {{ $entrada->id }};
+const timestampInicial = "{{ $entrada->detalleTecnico?->asesor_updated_at ?? '' }}";
+
+if (timestampInicial) {
+    setInterval(async function() {
+        try {
+            const r = await fetch('/tecnico/detalle/' + entradaId + '/check-update');
+            const d = await r.json();
+            if (d.asesor_updated_at && d.asesor_updated_at !== timestampInicial) {
+                document.getElementById('banner-actualizacion').style.display = 'flex';
+            }
+        } catch(e) {}
+    }, 30000);
+}
+</script>
 </x-panel-layout>

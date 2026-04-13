@@ -36,6 +36,7 @@ class DetalleTecnicoController extends Controller
         $detalle->{"pap_{$p}_sistema_eleccion"} = $request->{"pap_{$p}_sistema_eleccion"};
     }
 
+ $detalle->asesor_updated_at = now();
     $detalle->save();
 
     return redirect()->back()->with('success', 'Datos técnicos guardados correctamente.');
@@ -46,6 +47,7 @@ class DetalleTecnicoController extends Controller
         $detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();
         $detalle->enviado_tecnica    = true;
         $detalle->enviado_tecnica_at = now();
+        $detalle->asesor_updated_at = now();
         $detalle->save();
 
         return redirect()->back()->with('success', 'Enviado a técnica correctamente.');
@@ -74,17 +76,18 @@ class DetalleTecnicoController extends Controller
         }
 
 
-        // Materiales finales calculados
+       // Materiales finales calculados
         $detalle->mat_final_actas    = $request->mat_final_actas;
         $detalle->mat_final_padrones = $request->mat_final_padrones;
         $detalle->mat_final_cuartos  = $request->mat_final_cuartos;
         $detalle->mat_final_urnas    = $request->mat_final_urnas;
-        $detalle->mat_mesas                     = $request->mat_mesas;
-        $detalle->mat_actas_electorales         = $request->mat_actas_electorales;
+        $mesas = $detalle->cantidad_mesas ?? 0;
+        $detalle->mat_mesas                     = $request->mat_mesas ?? $detalle->mat_mesas ?? $mesas;
+        $detalle->mat_actas_electorales         = $request->mat_actas_electorales ?? $detalle->mat_actas_electorales ?? ($mesas * 3);
         $detalle->mat_actas_electorales_formato = $request->mat_actas_electorales_formato;
-        $detalle->mat_padron                    = $request->mat_padron;
+        $detalle->mat_padron                    = $request->mat_padron ?? $detalle->mat_padron ?? ($mesas * 3);
         $detalle->mat_padron_formato            = $request->mat_padron_formato;
-        $detalle->mat_matriz_boletin            = $request->mat_matriz_boletin;
+        $detalle->mat_matriz_boletin            = $request->mat_matriz_boletin ?? $detalle->mat_matriz_boletin ?? ($mesas * 3);
         $detalle->mat_matriz_boletin_formato    = $request->mat_matriz_boletin_formato;
         $detalle->mat_actas_proclamacion        = $request->mat_actas_proclamacion;
         $detalle->mat_certificados              = $request->mat_certificados;
@@ -115,4 +118,20 @@ class DetalleTecnicoController extends Controller
 
         return redirect()->back()->with('success', 'Marcado como impreso.');
     }
+    public function marcarRealizado($entrada_id)
+{
+    $detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();
+    $detalle->tec_realizado    = true;
+    $detalle->tec_realizado_at = now();
+    $detalle->save();
+
+    return redirect()->back()->with('success', 'Trabajo técnico marcado como realizado.');
+}
+public function checkAsesorUpdate($entrada_id)
+{
+    $detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();
+    return response()->json([
+        'asesor_updated_at' => $detalle->asesor_updated_at
+    ]);
+}
 }

@@ -447,10 +447,13 @@
         <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0; display:flex; align-items:center; gap:8px;">
             Detalle Técnico
             @if($entrada->detalleTecnico)
-                @php $tecDot = $entrada->detalleTecnico->enviado_tecnica ? '#16a34a' : '#eab308'; @endphp
+                @php
+                    $tecDot   = $entrada->detalleTecnico->tec_realizado ? '#16a34a' : '#eab308';
+                    $tecLabel = $entrada->detalleTecnico->tec_realizado ? 'Realizado' : 'Pendiente';
+                @endphp
                 <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
                     <span style="width:9px; height:9px; border-radius:50%; background:{{ $tecDot }}; display:inline-block;"></span>
-                    {{ $entrada->detalleTecnico->enviado_tecnica ? 'Enviado a Técnica' : 'Pendiente' }}
+                    {{ $tecLabel }}
                 </span>
             @endif
         </h3>
@@ -466,13 +469,11 @@
 
     {{-- VISTA SOLO LECTURA --}}
     <div id="tec-readonly" style="display:{{ $entrada->detalleTecnico ? 'block' : 'none' }};">
-    {{-- FILA SUPERIOR --}}
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
         <div>
             <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Órgano Electoral</label>
             <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->detalleTecnico?->organo_electoral ?? '—' }}</p>
         </div>
-
         <div>
             <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Listas</label>
             <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->detalleTecnico?->cantidad_listas ?? '—' }}</p>
@@ -487,7 +488,6 @@
         </div>
     </div>
 
-    {{-- PAPELETAS SOLO LECTURA --}}
     @php
         $cantPap = $entrada->detalleTecnico?->cantidad_papeletas ?? 0;
         $ordinal = ['Primera','Segunda','Tercera','Cuarta','Quinta','Sexta','Séptima','Octava','Novena','Décima'];
@@ -509,7 +509,6 @@
     </div>
     @endif
 
-    {{-- ESTIMADO --}}
     @if($entrada->detalleTecnico?->cantidad_mesas && $entrada->detalleTecnico?->cantidad_papeletas)
     @php
         $mesas     = $entrada->detalleTecnico->cantidad_mesas;
@@ -541,14 +540,13 @@
         </div>
     </div>
     @endif
-</div>
+    </div>
 
     {{-- FORMULARIO EDITABLE --}}
     <form id="tec-form" method="POST" action="{{ route('asesor.detalle_tecnico.saveAsesor', $entrada->id) }}"
           style="display:{{ $entrada->detalleTecnico ? 'none' : 'block' }};">
         @csrf
 
-        {{-- ÓRGANO ELECTORAL --}}
         <div style="margin-bottom:14px;">
             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Órgano Electoral</label>
             <div style="display:flex; gap:10px; flex-wrap:wrap;">
@@ -563,103 +561,100 @@
             </div>
         </div>
 
-       {{-- CANTIDAD LISTAS, PAPELETAS Y MESAS --}}
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:14px;">
             <div>
-    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Listas</label>
-    <input type="number" name="cantidad_listas" min="1"
-        value="{{ old('cantidad_listas', $entrada->detalleTecnico?->cantidad_listas) }}"
+                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Listas</label>
+                <input type="number" name="cantidad_listas" min="1"
+                    value="{{ old('cantidad_listas', $entrada->detalleTecnico?->cantidad_listas) }}"
                     style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
             </div>
             <div>
                 <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Papeletas</label>
                 <input type="number" name="cantidad_papeletas" id="asesor_input_papeletas" min="1" max="10"
-    value="{{ old('cantidad_papeletas', $entrada->detalleTecnico?->cantidad_papeletas) }}"
+                    value="{{ old('cantidad_papeletas', $entrada->detalleTecnico?->cantidad_papeletas) }}"
                     style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
             </div>
             <div>
                 <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Mesas</label>
                 <input type="number" name="cantidad_mesas" id="asesor_input_mesas" min="1"
-    value="{{ old('cantidad_mesas', $entrada->detalleTecnico?->cantidad_mesas) }}"
+                    value="{{ old('cantidad_mesas', $entrada->detalleTecnico?->cantidad_mesas) }}"
                     style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
             </div>
         </div>
 
-       {{-- PAPELETAS DINÁMICAS --}}
-@php
-    $datosGuardadosBlade = [];
-    for ($p = 1; $p <= 10; $p++) {
-        $datosGuardadosBlade[$p] = [
-            'sistema'      => $entrada->detalleTecnico?->{"pap_{$p}_sistema_eleccion"} ?? '',
-            'candidatura'  => $entrada->detalleTecnico?->{"pap_{$p}_lista_1_candidatura"} ?? '',
-            'listas'       => []
-        ];
-        for ($l = 1; $l <= 5; $l++) {
-            $datosGuardadosBlade[$p]['listas'][$l] = $entrada->detalleTecnico?->{"pap_{$p}_lista_{$l}_nombre"} ?? '';
-        }
-    }
-@endphp
+        @php
+            $datosGuardadosBlade = [];
+            for ($p = 1; $p <= 10; $p++) {
+                $datosGuardadosBlade[$p] = [
+                    'sistema'      => $entrada->detalleTecnico?->{"pap_{$p}_sistema_eleccion"} ?? '',
+                    'candidatura'  => $entrada->detalleTecnico?->{"pap_{$p}_lista_1_candidatura"} ?? '',
+                    'listas'       => []
+                ];
+                for ($l = 1; $l <= 5; $l++) {
+                    $datosGuardadosBlade[$p]['listas'][$l] = $entrada->detalleTecnico?->{"pap_{$p}_lista_{$l}_nombre"} ?? '';
+                }
+            }
+        @endphp
 
-<div style="margin-bottom:14px;">
-    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Papeletas</label>
-    <div id="papeletas-container"></div>
-    <datalist id="candidaturas-asesor-list">
-        <option value="Presidente y Vicepresidentes">
-        <option value="Presidente y Vicepresidente">
-        <option value="Secretario General y Adjunto">
-        <option value="Comisión Directiva">
-        <option value="Miembros Titulares">
-        <option value="Miembros Titulares y Suplentes">
-        <option value="Vocales Titulares">
-        <option value="Vocales Titulares y Suplentes">
-        <option value="Tribunal Electoral Independiente">
-        <option value="Junta Electoral">
-        <option value="Colegio Electoral">
-        <option value="Síndico">
-        <option value="Comité Revisadora de Cuentas">
-    </datalist>
-    <datalist id="sistemas-asesor-list">
-        <option value="Lista Única">
-        <option value="Lista Cerrada">
-        <option value="Lista Desbloqueada">
-        <option value="Lista Cerrada Bloqueada">
-        <option value="Nominal">
-    </datalist>
-</div>
+        <div style="margin-bottom:14px;">
+            <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Papeletas</label>
+            <div id="papeletas-container"></div>
+            <datalist id="candidaturas-asesor-list">
+                <option value="Presidente y Vicepresidentes">
+                <option value="Presidente y Vicepresidente">
+                <option value="Secretario General y Adjunto">
+                <option value="Comisión Directiva">
+                <option value="Miembros Titulares">
+                <option value="Miembros Titulares y Suplentes">
+                <option value="Vocales Titulares">
+                <option value="Vocales Titulares y Suplentes">
+                <option value="Tribunal Electoral Independiente">
+                <option value="Junta Electoral">
+                <option value="Colegio Electoral">
+                <option value="Síndico">
+                <option value="Comité Revisadora de Cuentas">
+            </datalist>
+            <datalist id="sistemas-asesor-list">
+                <option value="Lista Única">
+                <option value="Lista Cerrada">
+                <option value="Lista Desbloqueada">
+                <option value="Lista Cerrada Bloqueada">
+                <option value="Nominal">
+            </datalist>
+        </div>
 
-{{-- MATERIALES ESTIMADOS --}}
-<div style="margin-bottom:14px;">
-    <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 10px;">Materiales Estimados</p>
-    <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:16px;">
-        <p style="font-size:11px; font-weight:600; color:#1e40af; margin:0 0 12px; text-transform:uppercase;">Calculado automáticamente — podés editar los valores</p>
-        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
-            <div>
-                <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Actas</label>
-                <input type="number" id="asesor_mat_actas" name="mat_final_actas" min="0"
-                    value="{{ old('mat_final_actas', $entrada->detalleTecnico?->mat_final_actas) }}"
-                    style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
-            </div>
-            <div>
-                <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Padrones</label>
-                <input type="number" id="asesor_mat_padrones" name="mat_final_padrones" min="0"
-                    value="{{ old('mat_final_padrones', $entrada->detalleTecnico?->mat_final_padrones) }}"
-                    style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
-            </div>
-            <div>
-                <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Cuartos Oscuros</label>
-                <input type="number" id="asesor_mat_cuartos" name="mat_final_cuartos" min="0"
-                    value="{{ old('mat_final_cuartos', $entrada->detalleTecnico?->mat_final_cuartos) }}"
-                    style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
-            </div>
-            <div>
-                <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Urnas</label>
-                <input type="number" id="asesor_mat_urnas" name="mat_final_urnas" min="0"
-                    value="{{ old('mat_final_urnas', $entrada->detalleTecnico?->mat_final_urnas) }}"
-                    style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
+        <div style="margin-bottom:14px;">
+            <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 10px;">Materiales Estimados</p>
+            <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:16px;">
+                <p style="font-size:11px; font-weight:600; color:#1e40af; margin:0 0 12px; text-transform:uppercase;">Calculado automáticamente — podés editar los valores</p>
+                <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Actas</label>
+                        <input type="number" id="asesor_mat_actas" name="mat_final_actas" min="0"
+                            value="{{ old('mat_final_actas', $entrada->detalleTecnico?->mat_final_actas) }}"
+                            style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Padrones</label>
+                        <input type="number" id="asesor_mat_padrones" name="mat_final_padrones" min="0"
+                            value="{{ old('mat_final_padrones', $entrada->detalleTecnico?->mat_final_padrones) }}"
+                            style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Cuartos Oscuros</label>
+                        <input type="number" id="asesor_mat_cuartos" name="mat_final_cuartos" min="0"
+                            value="{{ old('mat_final_cuartos', $entrada->detalleTecnico?->mat_final_cuartos) }}"
+                            style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Urnas</label>
+                        <input type="number" id="asesor_mat_urnas" name="mat_final_urnas" min="0"
+                            value="{{ old('mat_final_urnas', $entrada->detalleTecnico?->mat_final_urnas) }}"
+                            style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
         <div style="display:flex; justify-content:flex-end; gap:8px;">
             @if($entrada->detalleTecnico)
@@ -692,10 +687,95 @@
             </button>
         </form>
     </div>
+    @elseif($entrada->detalleTecnico && $entrada->detalleTecnico->enviado_tecnica)
+    <div style="border-top:1px solid #f3f4f6; margin-top:16px; padding-top:16px;">
+        <span style="display:inline-flex; align-items:center; gap:6px; background:#bbf7d0; color:#166534; padding:8px 18px; border-radius:8px; font-size:13px; font-weight:500; cursor:default;">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            Enviado a Técnica
+        </span>
+    </div>
     @endif
+</div>
 
+{{-- TRABAJO TÉCNICO REALIZADO --}}
+@if($entrada->detalleTecnico?->tec_realizado)
+<div style="background:#f0fdf4; border-radius:12px; border:1px solid #bbf7d0; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #bbf7d0;">
+        <h3 style="font-size:13px; font-weight:600; color:#166534; text-transform:uppercase; letter-spacing:0.5px; margin:0;">✓ Trabajo Técnico Realizado</h3>
+        <span style="font-size:11px; color:#16a34a;">{{ $entrada->detalleTecnico->tec_realizado_at ? \Carbon\Carbon::parse($entrada->detalleTecnico->tec_realizado_at)->format('d/m/Y H:i') : '' }}</span>
+    </div>
+    @php
+        $mTec = $entrada->detalleTecnico;
+        $mesasTec = $mTec->cantidad_mesas ?? 0;
+        $matDefaults = [
+            'mat_mesas'              => $mTec->mat_mesas ?? $mesasTec,
+            'mat_actas_electorales'  => $mTec->mat_actas_electorales ?? ($mesasTec * 3),
+            'mat_padron'             => $mTec->mat_padron ?? ($mesasTec * 3),
+            'mat_matriz_boletin'     => $mTec->mat_matriz_boletin ?? ($mesasTec * 3),
+            'mat_actas_proclamacion' => $mTec->mat_actas_proclamacion,
+            'mat_certificados'       => $mTec->mat_certificados,
+            'mat_cuenta_votos'       => $mTec->mat_cuenta_votos,
+        ];
+    @endphp
+    <p style="font-size:11px; font-weight:700; color:#166534; text-transform:uppercase; margin:0 0 10px;">Materiales Entregados</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:16px;">
+        @foreach([
+            ['mat_mesas', 'Mesa/s', false],
+            ['mat_actas_electorales', 'Actas Electorales', 'mat_actas_electorales_formato'],
+            ['mat_padron', 'Padrón Electoral', 'mat_padron_formato'],
+            ['mat_matriz_boletin', 'Matriz de Boletín', 'mat_matriz_boletin_formato'],
+            ['mat_actas_proclamacion', 'Actas de Proclamación', false],
+            ['mat_certificados', 'Certificados de Resultados', false],
+            ['mat_cuenta_votos', 'Cuenta Votos', false],
+        ] as [$field, $label, $formatoField])
+        <div style="background:#fff; border:1px solid #d1fae5; border-radius:8px; padding:10px;">
+            <label style="display:block; font-size:11px; font-weight:600; color:#16a34a; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">{{ $label }}</label>
+            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $matDefaults[$field] ?? '—' }}</p>
+            @if($formatoField && $mTec->$formatoField)
+            <p style="font-size:11px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($mTec->$formatoField) }}</p>
+            @endif
+        </div>
+        @endforeach
+    </div>
+    <p style="font-size:11px; font-weight:700; color:#166534; text-transform:uppercase; margin:0 0 10px;">Padrón</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+        <div style="background:#fff; border:1px solid #d1fae5; border-radius:8px; padding:10px;">
+            <p style="font-size:13px; font-weight:600; color:#111827; margin:0;">{{ $mTec->padron_definitivo ? '✓ Padrón Definitivo' : '✗ Sin Padrón Definitivo' }}</p>
+        </div>
+        <div style="background:#fff; border:1px solid #d1fae5; border-radius:8px; padding:10px;">
+            <p style="font-size:13px; font-weight:600; color:#111827; margin:0;">{{ $mTec->padron_con_cedula ? '✓ Padrón con Cédula' : '✗ Sin Padrón con Cédula' }}</p>
+        </div>
+    </div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+        <div>
+            <label style="display:block; font-size:11px; font-weight:600; color:#16a34a; margin-bottom:4px; text-transform:uppercase;">Cantidad de Electores</label>
+            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $mTec->cantidad_electores ?? '—' }}</p>
+        </div>
+        <div>
+            <label style="display:block; font-size:11px; font-weight:600; color:#16a34a; margin-bottom:4px; text-transform:uppercase;">Electores sin C.I.</label>
+            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $mTec->cantidad_electores_sin_ci ?? '—' }}</p>
+        </div>
+    </div>
+    <p style="font-size:11px; font-weight:700; color:#166534; text-transform:uppercase; margin:0 0 10px;">Responsables</p>
+    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+        @foreach([
+            ['resp_actas_electorales', 'Actas Electorales'],
+            ['resp_papeletas', 'Papeletas / Boletín'],
+            ['resp_padron_electoral', 'Padrón Electoral'],
+        ] as [$field, $label])
+        <div>
+            <label style="display:block; font-size:11px; font-weight:600; color:#16a34a; margin-bottom:4px; text-transform:uppercase;">{{ $label }}</label>
+            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $mTec->$field ?? '—' }}</p>
+        </div>
+        @endforeach
+    </div>
 </div>
 @endif
+
+@endif
+
         {{-- BOTONES --}}
         <div style="display:flex; justify-content:flex-end; gap:10px;">
             <a href="{{ route('asesor.mis-organizaciones') }}"
@@ -844,7 +924,7 @@ const ordinalListas = ['Primera','Segunda','Tercera','Cuarta','Quinta'];
 
 const ordinalPapJS = ['Primera','Segunda','Tercera','Cuarta','Quinta','Sexta','Séptima','Octava','Novena','Décima'];
 const ordinalLisJS = ['Primera','Segunda','Tercera','Cuarta','Quinta'];
-const savedData    = @json($datosGuardadosBlade);
+const savedData    = @json($datosGuardadosBlade ?? []);
 
 function generarPapeletas() {
     const cantPap = parseInt(document.getElementById('asesor_input_papeletas')?.value) || 1;
