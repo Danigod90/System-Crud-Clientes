@@ -150,7 +150,7 @@
     </div>
 
     
-    <form id="asesor-form" method="POST" action="<?php echo e(route('tecnico.detalle_tecnico.saveTecnico', $entrada->id)); ?>"
+    <form id="asesor-form" method="POST" action="<?php echo e(route('tecnico.detalle_tecnico.saveAsesor', $entrada->id)); ?>"
           style="display:none;">
         <?php echo csrf_field(); ?>
 
@@ -311,7 +311,7 @@
                 'mat_actas_electorales'  => $entrada->detalleTecnico?->mat_actas_electorales ?? ($mesasRO * 3),
                 'mat_padron'             => $entrada->detalleTecnico?->mat_padron ?? ($mesasRO * 3),
                 'mat_matriz_boletin'     => $entrada->detalleTecnico?->mat_matriz_boletin ?? ($entrada->detalleTecnico?->cantidad_papeletas ?? 0),
-                'mat_actas_proclamacion' => $entrada->detalleTecnico?->mat_actas_proclamacion,
+                'mat_actas_proclamacion' => $entrada->detalleTecnico?->mat_actas_proclamacion ?? 3,
                 'mat_certificados'       => $entrada->detalleTecnico?->mat_certificados,
                 'mat_cuenta_votos'       => $entrada->detalleTecnico?->mat_cuenta_votos,
             ];
@@ -405,7 +405,7 @@
     ['mat_actas_electorales', 'Actas Electorales', true, $defaultActas],
     ['mat_padron', 'Padrón Electoral', true, $defaultPadron],
     ['mat_matriz_boletin', 'Matriz de Boletín', true, $defaultBoletin],
-    ['mat_actas_proclamacion', 'Actas de Proclamación', false, null],
+   ['mat_actas_proclamacion', 'Actas de Proclamación', false, $entrada->detalleTecnico?->mat_actas_proclamacion ?? 3],
     ['mat_certificados', 'Certificados de Resultados', false, null],
     ['mat_cuenta_votos', 'Cuenta Votos', false, null],
 ]; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as [$field, $label, $hasFormato, $default]): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -481,7 +481,15 @@
                         </div>
                         <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                     </div>
-                    <datalist id="tecnicos-list"></datalist>
+                    <datalist id="tecnicos-list">
+    <option value="Selica Gamarra">
+    <option value="Cristhian Maidana">
+    <option value="Marcos Ramírez">
+    <option value="Santiago Acuña">
+    <option value="Liliana López">
+    <option value="David Cousirat">
+    <option value="Lilian Martinez">
+</datalist>
                 </div>
 
                 

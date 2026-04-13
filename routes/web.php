@@ -78,6 +78,7 @@ Route::middleware(['auth', 'role:Tecnico|Admin'])->prefix('tecnico')->name('tecn
     Route::post('detalle/{entrada_id}/imprimir', [\App\Http\Controllers\DetalleTecnicoController::class, 'imprimirLogistica'])->name('detalle_tecnico.imprimir');
     Route::patch('detalle/{entrada_id}/realizado', [\App\Http\Controllers\DetalleTecnicoController::class, 'marcarRealizado'])->name('detalle_tecnico.realizado');
     Route::get('detalle/{entrada_id}/check-update', [\App\Http\Controllers\DetalleTecnicoController::class, 'checkAsesorUpdate'])->name('detalle_tecnico.checkUpdate');
+    Route::post('detalle/{entrada_id}/asesor', [\App\Http\Controllers\DetalleTecnicoController::class, 'saveAsesor'])->name('detalle_tecnico.saveAsesor');
 });
 require __DIR__.'/auth.php';
 

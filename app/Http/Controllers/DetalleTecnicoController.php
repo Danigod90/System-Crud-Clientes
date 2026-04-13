@@ -27,14 +27,21 @@ class DetalleTecnicoController extends Controller
     $detalle->cantidad_mesas           = $request->cantidad_mesas;
     $detalle->sistema_eleccion_general = null;
 
-    // Papeletas
-    for ($p = 1; $p <= 10; $p++) {
-        for ($l = 1; $l <= 5; $l++) {
-            $detalle->{"pap_{$p}_lista_{$l}_nombre"}      = $request->{"pap_{$p}_lista_{$l}_nombre"};
-            $detalle->{"pap_{$p}_lista_{$l}_candidatura"} = $request->{"pap_{$p}_lista_{$l}_candidatura"};
+    // Papeletas — solo actualiza si vienen en el request
+// Papeletas — solo actualiza si vienen en el request con valor
+for ($p = 1; $p <= 10; $p++) {
+    for ($l = 1; $l <= 5; $l++) {
+        if ($request->has("pap_{$p}_lista_{$l}_nombre")) {
+            $detalle->{"pap_{$p}_lista_{$l}_nombre"} = $request->{"pap_{$p}_lista_{$l}_nombre"} ?: null;
         }
-        $detalle->{"pap_{$p}_sistema_eleccion"} = $request->{"pap_{$p}_sistema_eleccion"};
+        if ($request->has("pap_{$p}_lista_{$l}_candidatura")) {
+            $detalle->{"pap_{$p}_lista_{$l}_candidatura"} = $request->{"pap_{$p}_lista_{$l}_candidatura"} ?: null;
+        }
     }
+    if ($request->has("pap_{$p}_sistema_eleccion")) {
+        $detalle->{"pap_{$p}_sistema_eleccion"} = $request->{"pap_{$p}_sistema_eleccion"} ?: null;
+    }
+}
 
  $detalle->asesor_updated_at = now();
     $detalle->save();
@@ -66,14 +73,20 @@ class DetalleTecnicoController extends Controller
         $detalle = DetalleTecnico::firstOrNew(['entrada_id' => $entrada_id]);
         $detalle->entrada_id = $entrada_id;
 
-        // Papeletas
-        for ($p = 1; $p <= 10; $p++) {
-            for ($l = 1; $l <= 5; $l++) {
-                $detalle->{"pap_{$p}_lista_{$l}_nombre"}      = $request->{"pap_{$p}_lista_{$l}_nombre"};
-                $detalle->{"pap_{$p}_lista_{$l}_candidatura"} = $request->{"pap_{$p}_lista_{$l}_candidatura"};
-            }
-            $detalle->{"pap_{$p}_sistema_eleccion"} = $request->{"pap_{$p}_sistema_eleccion"};
+       // Papeletas — solo actualiza si vienen en el request
+for ($p = 1; $p <= 10; $p++) {
+    for ($l = 1; $l <= 5; $l++) {
+        if ($request->has("pap_{$p}_lista_{$l}_nombre")) {
+            $detalle->{"pap_{$p}_lista_{$l}_nombre"} = $request->{"pap_{$p}_lista_{$l}_nombre"} ?: null;
         }
+        if ($request->has("pap_{$p}_lista_{$l}_candidatura")) {
+            $detalle->{"pap_{$p}_lista_{$l}_candidatura"} = $request->{"pap_{$p}_lista_{$l}_candidatura"} ?: null;
+        }
+    }
+    if ($request->has("pap_{$p}_sistema_eleccion")) {
+        $detalle->{"pap_{$p}_sistema_eleccion"} = $request->{"pap_{$p}_sistema_eleccion"} ?: null;
+    }
+}
 
 
        // Materiales finales calculados
