@@ -465,6 +465,9 @@
                         @endforeach
                     </div>
                     <datalist id="tecnicos-list">
+    <option value="Sin Actas">
+    <option value="Sin Papeleta">
+    <option value="Sin Padrón">
     <option value="Selica Gamarra">
     <option value="Cristhian Maidana">
     <option value="Marcos Ramírez">
