@@ -43,12 +43,16 @@
                                 <td class="p-3">{{ $user->email }}</td>
                                 <td class="p-3">{{ $user->roles->pluck('name')->join(', ') }}</td>
                                 <td class="p-3">
-                                    <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('¿Eliminar usuario?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Eliminar</button>
-                                    </form>
-                                </td>
+    <div style="display:flex; gap:6px;">
+        <a href="{{ route('admin.users.edit', $user) }}"
+           class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Editar</a>
+        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" onsubmit="return confirm('¿Eliminar usuario?')">
+            @csrf
+            @method('DELETE')
+            <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Eliminar</button>
+        </form>
+    </div>
+</td>
                             </tr>
                             @endforeach
                         </tbody>

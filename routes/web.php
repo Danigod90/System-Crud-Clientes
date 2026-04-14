@@ -28,7 +28,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'destroy']);
+    Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'destroy', 'edit', 'update']);
     Route::resource('asesores', \App\Http\Controllers\Admin\AsesorController::class)
     ->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])
     ->parameters(['asesores' => 'asesor']);

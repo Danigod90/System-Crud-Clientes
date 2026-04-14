@@ -53,12 +53,16 @@
                                 <td class="p-3"><?php echo e($user->email); ?></td>
                                 <td class="p-3"><?php echo e($user->roles->pluck('name')->join(', ')); ?></td>
                                 <td class="p-3">
-                                    <form action="<?php echo e(route('admin.users.destroy', $user)); ?>" method="POST" onsubmit="return confirm('¿Eliminar usuario?')">
-                                        <?php echo csrf_field(); ?>
-                                        <?php echo method_field('DELETE'); ?>
-                                        <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Eliminar</button>
-                                    </form>
-                                </td>
+    <div style="display:flex; gap:6px;">
+        <a href="<?php echo e(route('admin.users.edit', $user)); ?>"
+           class="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600">Editar</a>
+        <form action="<?php echo e(route('admin.users.destroy', $user)); ?>" method="POST" onsubmit="return confirm('¿Eliminar usuario?')">
+            <?php echo csrf_field(); ?>
+            <?php echo method_field('DELETE'); ?>
+            <button class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Eliminar</button>
+        </form>
+    </div>
+</td>
                             </tr>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </tbody>
