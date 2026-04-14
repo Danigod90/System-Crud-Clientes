@@ -29,7 +29,9 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'destroy']);
-    Route::resource('asesores', \App\Http\Controllers\Admin\AsesorController::class)->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    Route::resource('asesores', \App\Http\Controllers\Admin\AsesorController::class)
+    ->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])
+    ->parameters(['asesores' => 'asesor']);
     Route::get('configuracion', [\App\Http\Controllers\Admin\ConfiguracionController::class, 'index'])->name('configuracion.index');
     Route::patch('configuracion', [\App\Http\Controllers\Admin\ConfiguracionController::class, 'update'])->name('configuracion.update');
     Route::get('tipo-organizaciones', [\App\Http\Controllers\Admin\TipoOrganizacionController::class, 'index'])->name('tipo-organizaciones.index');

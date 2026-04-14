@@ -19,7 +19,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('admin.asesores.update', $asesor) }}">
+                <form method="POST" action="{{ url('admin/asesores/' . $asesor->id) }}">
                     @csrf
                     @method('PUT')
 
@@ -42,14 +42,26 @@
                     </div>
 
                     <div class="mb-4">
-                        <label class="flex items-center gap-2">
-                            <input type="checkbox" name="activo" value="1"
-                                   {{ old('activo', $asesor->activo) ? 'checked' : '' }}>
-                            <span class="text-gray-700 font-semibold">Asesor Activo</span>
-                        </label>
-                    </div>
+    <label class="flex items-center gap-2">
+        <input type="checkbox" name="activo" value="1"
+               {{ old('activo', $asesor->activo) ? 'checked' : '' }}>
+        <span class="text-gray-700 font-semibold">Asesor Activo</span>
+    </label>
+</div>
 
-                    <div class="flex gap-4">
+<div class="mb-4">
+    <label class="block text-gray-700 font-semibold mb-1">Usuario vinculado</label>
+    <select name="user_id" class="w-full border rounded px-3 py-2">
+        <option value="">-- Sin usuario --</option>
+        @foreach($usuarios as $usuario)
+        <option value="{{ $usuario->id }}" {{ old('user_id', $asesor->user_id) == $usuario->id ? 'selected' : '' }}>
+            {{ $usuario->name }} ({{ $usuario->email }})
+        </option>
+        @endforeach
+    </select>
+</div>
+
+<div class="flex gap-4">
                         <button type="submit"
                                 class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
                             Actualizar Asesor

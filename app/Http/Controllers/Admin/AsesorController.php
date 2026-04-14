@@ -38,9 +38,10 @@ class AsesorController extends Controller
     }
 
     public function edit(Asesor $asesor)
-    {
-        return view('admin.asesores.edit', compact('asesor'));
-    }
+{
+    $usuarios = \App\Models\User::role('Asesor')->orderBy('name')->get();
+    return view('admin.asesores.edit', compact('asesor', 'usuarios'));
+}
 
     public function update(Request $request, Asesor $asesor)
     {
@@ -51,11 +52,12 @@ class AsesorController extends Controller
         ]);
 
         $asesor->update([
-            'nombre'   => $request->nombre,
-            'apellido' => $request->apellido,
-            'cargo'    => $request->cargo,
-            'activo'   => $request->has('activo'),
-        ]);
+    'nombre'   => $request->nombre,
+    'apellido' => $request->apellido,
+    'cargo'    => $request->cargo,
+    'activo'   => $request->has('activo'),
+    'user_id'  => $request->user_id,
+]);
 
         return redirect()->route('admin.asesores.index')
             ->with('success', 'Asesor actualizado correctamente.');

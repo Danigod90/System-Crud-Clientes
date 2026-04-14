@@ -14,7 +14,9 @@ class MisOrganizacionesController extends Controller
         $user = Auth::user();
         $asesores = Asesor::orderBy('nombre')->get();
 
-        $query = EntradaConNota::where('asesor_asignado', $user->name);
+       $asesor = \App\Models\Asesor::where('user_id', $user->id)->first();
+        $nombreAsesor = $asesor ? $asesor->nombre . ' ' . $asesor->apellido : $user->name;
+        $query = EntradaConNota::where('asesor_asignado', $nombreAsesor);
 
         if (request('organizacion')) {
             $query->where('nombre_organizacion', 'like', '%' . request('organizacion') . '%');

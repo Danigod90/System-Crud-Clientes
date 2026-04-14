@@ -87,7 +87,7 @@
                         <th class="border border-gray-200 px-2 py-3 text-left" style="width:100px;">Codigo ORG</th>
                         <th class="border border-gray-200 px-2 py-3 text-left" style="width:220px;">Organizacion</th>
                         <th class="border border-gray-200 px-2 py-3 text-left" style="width:80px;">Asunto</th>
-                        <th class="border border-gray-200 px-2 py-3 text-left" style="width:75px;">Via</th>
+                        <th class="border border-gray-200 px-2 py-3 text-left" style="width:100px;">Asesor</th>
                         <th class="border border-gray-200 px-2 py-3 text-left" style="width:90px;">Fecha eleccion</th>
                         <th class="border border-gray-200 px-2 py-3 text-left" style="width:90px;">Fecha ingreso</th>
                         <th class="border border-gray-200 px-2 py-3 text-left" style="width:80px;">Estado</th>
@@ -106,8 +106,8 @@
                         <td class="border border-gray-200 px-2 py-2">
                             <span class="font-mono font-semibold text-gray-800">{{ $entrada->asunto_texto }}</span>
                         </td>
-                        <td class="border border-gray-200 px-2 py-2 capitalize">
-                            {{ $entrada->via_ingreso }}
+                        <td class="border border-gray-200 px-2 py-2" style="font-size:11px;">
+                                  {{ $entrada->asesor_asignado ?? '—' }}
                         </td>
                         <td class="border border-gray-200 px-2 py-2" style="white-space:nowrap;">
                             @if($entrada->fecha_eleccion)
