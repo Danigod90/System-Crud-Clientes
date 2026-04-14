@@ -97,10 +97,20 @@
                 $sistemaRO     = $entrada->detalleTecnico->{"pap_{$p}_sistema_eleccion"} ?? '—';
             @endphp
             <div style="display:flex; align-items:center; gap:12px; padding:8px 12px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; margin-bottom:6px;">
-                <span style="font-size:12px; font-weight:700; color:#374151; white-space:nowrap;">{{ $ordinalRO[$p-1] }}</span>
-                <span style="font-size:13px; color:#111827; flex:1;">{{ $candidaturaRO }}</span>
-                <span style="font-size:11px; color:#6b7280; white-space:nowrap;">{{ $sistemaRO }}</span>
-            </div>
+    <span style="font-size:12px; font-weight:700; color:#374151; white-space:nowrap;">{{ $ordinalRO[$p-1] }} Papeleta</span>
+    @php
+        $listaNombres = [];
+        for ($l = 1; $l <= ($entrada->detalleTecnico?->cantidad_listas ?? 1); $l++) {
+            $n = $entrada->detalleTecnico?->{"pap_{$p}_lista_{$l}_nombre"} ?? null;
+            if ($n) $listaNombres[] = $n;
+        }
+    @endphp
+    @if(count($listaNombres))
+    <span style="font-size:11px; background:#e5e7eb; color:#374151; padding:2px 8px; border-radius:4px; white-space:nowrap;">Lista {{ implode(', ', $listaNombres) }}</span>
+    @endif
+    <span style="font-size:13px; color:#111827; flex:1;">{{ $candidaturaRO }}</span>
+    <span style="font-size:11px; color:#6b7280; white-space:nowrap;">{{ $sistemaRO }}</span>
+</div>
             @endfor
         </div>
         @endif
