@@ -44,9 +44,18 @@ class EntradaConNotaController extends Controller
                   ->whereMonth('fecha_eleccion', substr($request->mes_eleccion, 5, 2))
             )
             ->latest()
-            ->paginate(10);
+->paginate(10);
 
-        return view('secretaria.con_nota.index', compact('entradas', 'asesores'));
+$charlasPendientes = \App\Models\Charla::with('entrada')
+    ->where('estado', 'pendiente')
+    ->whereNotNull('fecha_hora')
+    ->where('fecha_hora', '>=', now())
+    ->orderBy('fecha_hora')
+    ->take(5)
+    ->get();
+
+return view('secretaria.con_nota.index', compact('entradas', 'asesores', 'charlasPendientes'));
+
     }
 
     public function create()

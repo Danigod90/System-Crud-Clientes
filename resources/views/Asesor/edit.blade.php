@@ -1,4 +1,4 @@
-<x-panel-layout title="Editar Organización — {{ $entrada->codigo_org }}">
+<x-panel-layout title="Editar Organización — {{ $entrada->codigo_org }}" :charlasPendientes="$charlasPendientes">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>

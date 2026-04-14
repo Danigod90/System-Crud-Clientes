@@ -3,12 +3,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Sistema de Gestion') }}</title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title><?php echo e(config('app.name', 'Sistema de Gestion')); ?></title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link rel="icon" type="image/x-icon" href="/favicon-tsje.ico">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     <style>
     @keyframes humo {
         0%   { background-position: 0% 50%; }
@@ -23,7 +23,7 @@
 
 <body class="font-sans antialiased" style="min-height:100vh; overflow:hidden; height:100vh;">
 
-{{-- FONDO ANIMADO --}}
+
 <div style="position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1;
     background: linear-gradient(135deg, #f0f2f5 0%, #e2e8f8 35%, #ede8f5 65%, #f0f2f5 100%);
     background-size: 400% 400%;
@@ -32,60 +32,60 @@
 
 <div style="display:flex; height:100vh; background:transparent; overflow:hidden;">
 
-    {{-- SIDEBAR --}}
+    
     <div style="width:220px; min-width:220px; background:linear-gradient(180deg, rgba(30,50,160,0.75) 0%, rgba(20,35,120,0.85) 50%, rgba(30,50,160,0.75) 100%); display:flex; flex-direction:column; backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border-right:1px solid rgba(255,255,255,0.12); box-shadow:2px 0 16px rgba(43,78,200,0.15);">
 
-        {{-- LOGO --}}
+        
         <div style="padding:20px 16px 16px; border-bottom:1px solid rgba(255,255,255,0.07);">
             <div style="font-size:14px; font-weight:600; color:#fff; letter-spacing:0.3px;">Dir. Org. Intermedias</div>
             <div style="font-size:11px; color:rgba(255,255,255,0.35); margin-top:2px;">Sistema de Gestion</div>
         </div>
 
-        {{-- ROL ACTIVO --}}
+        
         <div style="margin:14px 12px 6px; padding:9px 12px; background:rgba(255,255,255,0.06); border-radius:8px; border:1px solid rgba(255,255,255,0.08);">
             <div style="font-size:10px; color:rgba(255,255,255,0.35); margin-bottom:2px;">Rol activo</div>
-            <div style="font-size:13px; font-weight:500; color:#fff;">{{ auth()->user()->getRoleNames()->first() }}</div>
+            <div style="font-size:13px; font-weight:500; color:#fff;"><?php echo e(auth()->user()->getRoleNames()->first()); ?></div>
         </div>
 
-        {{-- NAV PRINCIPAL --}}
+        
         <div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Principal</div>
-        <a href="{{ route('panel.dashboard') }}"
-            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('panel.dashboard') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('panel.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('panel.dashboard') ? '1px solid rgba(99,130,255,0.3)' : '1px solid transparent' }}; transition:all 0.2s;"
+        <a href="<?php echo e(route('panel.dashboard')); ?>"
+            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:<?php echo e(request()->routeIs('panel.dashboard') ? '#fff' : 'rgba(255,255,255,0.55)'); ?>; background:<?php echo e(request()->routeIs('panel.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent'); ?>; text-decoration:none; border:<?php echo e(request()->routeIs('panel.dashboard') ? '1px solid rgba(99,130,255,0.3)' : '1px solid transparent'); ?>; transition:all 0.2s;"
             onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-            onmouseout="this.style.background='{{ request()->routeIs('panel.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}'">
+            onmouseout="this.style.background='<?php echo e(request()->routeIs('panel.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent'); ?>'">
             <span style="width:7px; height:7px; border-radius:50%; background:#60a5fa; flex-shrink:0;"></span>
             Panel General
         </a>
 
-        {{-- NAV ENTRADAS --}}
+        
         <div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Entradas</div>
-        <a href="{{ route('secretaria.con-nota.index') }}"
-            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('secretaria.con-nota.*') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('secretaria.con-nota.*') ? 'rgba(52,211,153,0.15)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('secretaria.con-nota.*') ? '1px solid rgba(52,211,153,0.25)' : '1px solid transparent' }}; transition:all 0.2s;"
+        <a href="<?php echo e(route('secretaria.con-nota.index')); ?>"
+            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:<?php echo e(request()->routeIs('secretaria.con-nota.*') ? '#fff' : 'rgba(255,255,255,0.55)'); ?>; background:<?php echo e(request()->routeIs('secretaria.con-nota.*') ? 'rgba(52,211,153,0.15)' : 'transparent'); ?>; text-decoration:none; border:<?php echo e(request()->routeIs('secretaria.con-nota.*') ? '1px solid rgba(52,211,153,0.25)' : '1px solid transparent'); ?>; transition:all 0.2s;"
             onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-            onmouseout="this.style.background='{{ request()->routeIs('secretaria.con-nota.*') ? 'rgba(52,211,153,0.15)' : 'transparent' }}'">
+            onmouseout="this.style.background='<?php echo e(request()->routeIs('secretaria.con-nota.*') ? 'rgba(52,211,153,0.15)' : 'transparent'); ?>'">
             <span style="width:7px; height:7px; border-radius:50%; background:#34d399; flex-shrink:0;"></span>
             Mesa de Entrada
         </a>
-        @if(auth()->user()->roles->first()?->name === 'Asesor')
-<a href="{{ route('asesor.mis-organizaciones') }}"
-    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('asesor.*') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('asesor.*') ? 'rgba(52,211,153,0.15)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('asesor.*') ? '1px solid rgba(52,211,153,0.25)' : '1px solid transparent' }}; transition:all 0.2s;"
+        <?php if(auth()->user()->roles->first()?->name === 'Asesor'): ?>
+<a href="<?php echo e(route('asesor.mis-organizaciones')); ?>"
+    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:<?php echo e(request()->routeIs('asesor.*') ? '#fff' : 'rgba(255,255,255,0.55)'); ?>; background:<?php echo e(request()->routeIs('asesor.*') ? 'rgba(52,211,153,0.15)' : 'transparent'); ?>; text-decoration:none; border:<?php echo e(request()->routeIs('asesor.*') ? '1px solid rgba(52,211,153,0.25)' : '1px solid transparent'); ?>; transition:all 0.2s;"
     onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-    onmouseout="this.style.background='{{ request()->routeIs('asesor.*') ? 'rgba(52,211,153,0.15)' : 'transparent' }}'">
-    <span style="width:7px; height:7px; border-radius:50%; background:{{ request()->routeIs('asesor.*') ? '#34d399' : 'rgba(255,255,255,0.28)' }}; flex-shrink:0;"></span>
+    onmouseout="this.style.background='<?php echo e(request()->routeIs('asesor.*') ? 'rgba(52,211,153,0.15)' : 'transparent'); ?>'">
+    <span style="width:7px; height:7px; border-radius:50%; background:<?php echo e(request()->routeIs('asesor.*') ? '#34d399' : 'rgba(255,255,255,0.28)'); ?>; flex-shrink:0;"></span>
     Mis organizaciones
 </a>
-@else
-<a href="{{ route('secretaria.sin-nota.index') }}"
-    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('secretaria.sin-nota.*') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('secretaria.sin-nota.*') ? 'rgba(255,255,255,0.1)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('secretaria.sin-nota.*') ? '1px solid rgba(255,255,255,0.15)' : '1px solid transparent' }}; transition:all 0.2s;"
+<?php else: ?>
+<a href="<?php echo e(route('secretaria.sin-nota.index')); ?>"
+    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:<?php echo e(request()->routeIs('secretaria.sin-nota.*') ? '#fff' : 'rgba(255,255,255,0.55)'); ?>; background:<?php echo e(request()->routeIs('secretaria.sin-nota.*') ? 'rgba(255,255,255,0.1)' : 'transparent'); ?>; text-decoration:none; border:<?php echo e(request()->routeIs('secretaria.sin-nota.*') ? '1px solid rgba(255,255,255,0.15)' : '1px solid transparent'); ?>; transition:all 0.2s;"
     onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-    onmouseout="this.style.background='{{ request()->routeIs('secretaria.sin-nota.*') ? 'rgba(255,255,255,0.1)' : 'transparent' }}'">
+    onmouseout="this.style.background='<?php echo e(request()->routeIs('secretaria.sin-nota.*') ? 'rgba(255,255,255,0.1)' : 'transparent'); ?>'">
     <span style="width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.28); flex-shrink:0;"></span>
     Entradas sin nota
 </a>
-@endif
+<?php endif; ?>
         </a>
 
-        {{-- NAV TRABAJO --}}
+        
         <div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Trabajo</div>
         <a href="#"
             style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:rgba(255,255,255,0.55); text-decoration:none; border:1px solid transparent; transition:all 0.2s;"
@@ -109,7 +109,7 @@
             Borrador privado
         </a>
 
-        {{-- NAV UTILIDADES --}}
+        
         <div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Utilidades</div>
         <a href="#"
             style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:rgba(255,255,255,0.55); text-decoration:none; border:1px solid transparent; transition:all 0.2s;"
@@ -120,30 +120,30 @@
         </a>
 
     </div>
-    {{-- FIN SIDEBAR --}}
+    
 
-    {{-- CONTENIDO PRINCIPAL --}}
+    
     <div style="flex:1; display:flex; flex-direction:column; overflow:hidden; background:transparent;">
 
-        {{-- TOPBAR --}}
+        
         <div style="background:rgba(255,255,255,0.4); backdrop-filter:blur(8px); border-bottom:1px solid #e5e7eb; padding:13px 22px; display:flex; align-items:center; justify-content:space-between;">
 
-            {{-- TITULO --}}
+            
             <div style="display:flex; align-items:center; gap:8px;">
                 <svg width="16" height="16" fill="none" stroke="#6b7280" stroke-width="1.8" viewBox="0 0 24 24">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                     <polyline points="14 2 14 8 20 8"/>
                 </svg>
-                <span style="font-size:15px; font-weight:500; color:#111827;">{{ $title ?? 'Dashboard' }}</span>
+                <span style="font-size:15px; font-weight:500; color:#111827;"><?php echo e($title ?? 'Dashboard'); ?></span>
             </div>
 
-            {{-- DERECHA --}}
+            
             <div style="display:flex; align-items:center; gap:14px;">
 
-               {{-- TICKER ELECCIONES --}}
-                @isset($elecciones)
-                @if($elecciones->count() > 0)
-                @php $primera = $elecciones->first(); $diasPrimera = (int) now()->startOfDay()->diffInDays($primera->fecha_eleccion->startOfDay(), false); @endphp
+               
+                <?php if(isset($elecciones)): ?>
+                <?php if($elecciones->count() > 0): ?>
+                <?php $primera = $elecciones->first(); $diasPrimera = (int) now()->startOfDay()->diffInDays($primera->fecha_eleccion->startOfDay(), false); ?>
                 <div onclick="toggleElecciones()" id="ticker-box"
                      style="display:flex; align-items:center; gap:8px; background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; padding:5px 12px; cursor:pointer; min-width:180px; max-width:260px;">
                     <svg width="13" height="13" fill="none" stroke="#0369a1" stroke-width="1.8" viewBox="0 0 24 24" style="flex-shrink:0;">
@@ -153,146 +153,149 @@
                         <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
                     <span style="font-size:11px; color:#0369a1; font-weight:600; white-space:nowrap; flex-shrink:0;">Próxima:</span>
-                    <span id="ticker-nombre" style="font-size:12px; color:#0c4a6e; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">{{ $primera->nombre_organizacion }}</span>
+                    <span id="ticker-nombre" style="font-size:12px; color:#0c4a6e; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;"><?php echo e($primera->nombre_organizacion); ?></span>
                     <span id="ticker-dias" style="font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px; flex-shrink:0;
-                        background:{{ $diasPrimera <= 7 ? '#fee2e2' : ($diasPrimera <= 15 ? '#fef3c7' : '#d1fae5') }};
-                        color:{{ $diasPrimera <= 7 ? '#991b1b' : ($diasPrimera <= 15 ? '#92400e' : '#065f46') }};">
-                        {{ $diasPrimera }} días
+                        background:<?php echo e($diasPrimera <= 7 ? '#fee2e2' : ($diasPrimera <= 15 ? '#fef3c7' : '#d1fae5')); ?>;
+                        color:<?php echo e($diasPrimera <= 7 ? '#991b1b' : ($diasPrimera <= 15 ? '#92400e' : '#065f46')); ?>;">
+                        <?php echo e($diasPrimera); ?> días
                     </span>
                 </div>
-                @endif
-                @endisset
+                <?php endif; ?>
+                <?php endif; ?>
 
-                {{-- TICKER CHARLAS --}}
-@php $cp = $charlasPendientes ?? null; @endphp
-@if($cp && $cp->count() > 0)
-@php $primeraCharla = $cp->first(); $diasCharla = (int) now()->startOfDay()->diffInDays($primeraCharla->fecha_hora->startOfDay(), false); @endphp
+                
+<?php $cp = $charlasPendientes ?? null; ?>
+<?php if($cp && $cp->count() > 0): ?>
+<?php $primeraCharla = $cp->first(); $diasCharla = (int) now()->startOfDay()->diffInDays($primeraCharla->fecha_hora->startOfDay(), false); ?>
                 <div onclick="toggleCharlas()" id="ticker-box-charla"
                      style="display:flex; align-items:center; gap:8px; background:#fefce8; border:1px solid #fde68a; border-radius:8px; padding:5px 12px; cursor:pointer; min-width:180px; max-width:260px;">
                     <svg width="13" height="13" fill="none" stroke="#854d0e" stroke-width="1.8" viewBox="0 0 24 24" style="flex-shrink:0;">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                     </svg>
                     <span style="font-size:11px; color:#854d0e; font-weight:600; white-space:nowrap; flex-shrink:0;">Charla:</span>
-                    <span id="ticker-charla-nombre" style="font-size:12px; color:#713f12; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">{{ $primeraCharla->entrada->nombre_organizacion ?? '—' }}</span>
+                    <span id="ticker-charla-nombre" style="font-size:12px; color:#713f12; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;"><?php echo e($primeraCharla->entrada->nombre_organizacion ?? '—'); ?></span>
                     <span style="font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px; flex-shrink:0; background:#fef9c3; color:#854d0e;">
-                        {{ $diasCharla }} días
+                        <?php echo e($diasCharla); ?> días
                     </span>
                 </div>
-                @endif
+                <?php endif; ?>
 
-                {{-- CAMPANITA --}}
+                
                 <div style="position:relative; cursor:pointer;" onclick="toggleNotif()">
                     <svg width="20" height="20" fill="none" stroke="#6b7280" stroke-width="1.5" viewBox="0 0 24 24">
                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
                         <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
                     </svg>
-                    @php $unread = auth()->user()->unreadNotifications->count(); @endphp
-                    @if($unread > 0)
+                    <?php $unread = auth()->user()->unreadNotifications->count(); ?>
+                    <?php if($unread > 0): ?>
                     <span style="position:absolute; top:-5px; right:-5px; background:#e24b4a; color:#fff; font-size:9px; font-weight:600; width:15px; height:15px; border-radius:50%; display:flex; align-items:center; justify-content:center;">
-                        {{ $unread }}
+                        <?php echo e($unread); ?>
+
                     </span>
-                    @endif
+                    <?php endif; ?>
                 </div>
 
-                {{-- AVATAR --}}
+                
                 <div onclick="toggleMenu()" style="width:32px; height:32px; border-radius:50%; background:#185FA5; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; color:#fff; cursor:pointer; user-select:none;">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 2)) }}
+                    <?php echo e(strtoupper(substr(auth()->user()->name, 0, 2))); ?>
+
                 </div>
 
             </div>
         </div>
-        {{-- FIN TOPBAR --}}
+        
 
-        {{-- SLOT PRINCIPAL --}}
+        
        <div style="flex:1; padding:10px 8px 60px 8px; overflow-y:auto; overflow-x:hidden; background:transparent;">
-    {{ $slot }}
+    <?php echo e($slot); ?>
+
 </div>
 
     </div>
-    {{-- FIN CONTENIDO PRINCIPAL --}}
+    
 
 </div>
 
-{{-- DROPDOWN ELECCIONES --}}
+
 <div id="eleccionesMenu" style="display:none; position:fixed; top:52px; right:80px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.12); width:290px; z-index:99999; overflow:hidden;">
     <div style="padding:10px 14px; border-bottom:1px solid #f3f4f6;">
     <span style="font-size:11px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px;">Elecciones próximas</span>
 </div>
-@isset($elecciones)
-@forelse($elecciones as $e)
-@php $dias = (int) now()->startOfDay()->diffInDays($e->fecha_eleccion->startOfDay(), false); @endphp
+<?php if(isset($elecciones)): ?>
+<?php $__empty_1 = true; $__currentLoopData = $elecciones; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $e): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+<?php $dias = (int) now()->startOfDay()->diffInDays($e->fecha_eleccion->startOfDay(), false); ?>
 <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 14px; border-bottom:1px solid #f9fafb;">
     <div>
-        <div style="font-size:12px; font-weight:500; color:#111827;">{{ $e->nombre_organizacion }}</div>
-        <div style="font-size:10.5px; color:#6b7280;">{{ $e->fecha_eleccion->format('d M Y') }} — {{ $e->asesor_asignado }}</div>
+        <div style="font-size:12px; font-weight:500; color:#111827;"><?php echo e($e->nombre_organizacion); ?></div>
+        <div style="font-size:10.5px; color:#6b7280;"><?php echo e($e->fecha_eleccion->format('d M Y')); ?> — <?php echo e($e->asesor_asignado); ?></div>
     </div>
     <span style="font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:20px; flex-shrink:0;
-        background:{{ $dias <= 7 ? '#fee2e2' : ($dias <= 15 ? '#fef3c7' : '#d1fae5') }};
-        color:{{ $dias <= 7 ? '#991b1b' : ($dias <= 15 ? '#92400e' : '#065f46') }};">
-        {{ $dias }} días
+        background:<?php echo e($dias <= 7 ? '#fee2e2' : ($dias <= 15 ? '#fef3c7' : '#d1fae5')); ?>;
+        color:<?php echo e($dias <= 7 ? '#991b1b' : ($dias <= 15 ? '#92400e' : '#065f46')); ?>;">
+        <?php echo e($dias); ?> días
     </span>
 </div>
-    @empty
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
     <div style="padding:16px; text-align:center; font-size:12px; color:#9ca3af;">Sin elecciones próximas.</div>
-    @endforelse
-    @endisset
+    <?php endif; ?>
+    <?php endif; ?>
 </div>
 
-{{-- DROPDOWN CHARLAS --}}
-@php $cp = $charlasPendientes ?? null; @endphp
-@if($cp && $cp->count() > 0)
+
+<?php $cp = $charlasPendientes ?? null; ?>
+<?php if($cp && $cp->count() > 0): ?>
 <div id="charlasMenu" style="display:none; position:fixed; top:52px; right:80px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.12); width:290px; z-index:99999; overflow:hidden;">
     <div style="padding:10px 14px; border-bottom:1px solid #f3f4f6;">
         <span style="font-size:11px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px;">Charlas Pendientes</span>
     </div>
-    @forelse($cp as $c)
-    @php $dc = (int) now()->startOfDay()->diffInDays($c->fecha_hora->startOfDay(), false); @endphp
+    <?php $__empty_1 = true; $__currentLoopData = $cp; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $c): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+    <?php $dc = (int) now()->startOfDay()->diffInDays($c->fecha_hora->startOfDay(), false); ?>
     <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 14px; border-bottom:1px solid #f9fafb;">
         <div>
-            <div style="font-size:12px; font-weight:500; color:#111827;">{{ $c->entrada->nombre_organizacion ?? '—' }}</div>
-            <div style="font-size:10.5px; color:#6b7280;">{{ $c->fecha_hora->format('d M Y H:i') }} — {{ $c->entrada->asesor_asignado ?? '—' }}</div>
+            <div style="font-size:12px; font-weight:500; color:#111827;"><?php echo e($c->entrada->nombre_organizacion ?? '—'); ?></div>
+            <div style="font-size:10.5px; color:#6b7280;"><?php echo e($c->fecha_hora->format('d M Y H:i')); ?> — <?php echo e($c->entrada->asesor_asignado ?? '—'); ?></div>
         </div>
         <span style="font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:20px; flex-shrink:0; background:#fef9c3; color:#854d0e;">
-            {{ $dc }} días
+            <?php echo e($dc); ?> días
         </span>
     </div>
-    @empty
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
     <div style="padding:16px; text-align:center; font-size:12px; color:#9ca3af;">Sin charlas pendientes.</div>
-    @endforelse
+    <?php endif; ?>
 </div>
-@endif
+<?php endif; ?>
 
-{{-- DROPDOWN NOTIFICACIONES --}}
+
 <div id="notifMenu" style="display:none; position:fixed; top:52px; right:60px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.12); width:300px; z-index:99999; overflow:hidden;">
     <div style="padding:12px 16px; border-bottom:1px solid #f3f4f6; display:flex; justify-content:space-between; align-items:center;">
         <span style="font-size:12px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px;">Notificaciones</span>
-        @if($unread > 0)
-        <span style="background:#e24b4a; color:#fff; font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px;">{{ $unread }}</span>
-        @endif
+        <?php if($unread > 0): ?>
+        <span style="background:#e24b4a; color:#fff; font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px;"><?php echo e($unread); ?></span>
+        <?php endif; ?>
     </div>
     <div style="max-height:320px; overflow:auto;">
-        @forelse(auth()->user()->notifications->take(8) as $notif)
+        <?php $__empty_1 = true; $__currentLoopData = auth()->user()->notifications->take(8); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $notif): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
         <div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px;">
-            <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:{{ $notif->read_at ? '#d1d5db' : '#185FA5' }};"></span>
+            <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:<?php echo e($notif->read_at ? '#d1d5db' : '#185FA5'); ?>;"></span>
             <div style="flex:1;">
-                <div style="font-size:12px; color:#111827; line-height:1.4;">{{ $notif->data['mensaje'] ?? '' }}</div>
-                @if(isset($notif->data['seccion']))
-                <div style="font-size:10.5px; color:#6b7280; margin-top:2px;">{{ $notif->data['seccion'] }}</div>
-                @endif
-                <div style="font-size:10px; color:#9ca3af; margin-top:3px;">{{ $notif->created_at->diffForHumans() }}</div>
+                <div style="font-size:12px; color:#111827; line-height:1.4;"><?php echo e($notif->data['mensaje'] ?? ''); ?></div>
+                <?php if(isset($notif->data['seccion'])): ?>
+                <div style="font-size:10.5px; color:#6b7280; margin-top:2px;"><?php echo e($notif->data['seccion']); ?></div>
+                <?php endif; ?>
+                <div style="font-size:10px; color:#9ca3af; margin-top:3px;"><?php echo e($notif->created_at->diffForHumans()); ?></div>
             </div>
         </div>
-        @empty
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
         <div style="padding:20px 16px; text-align:center; font-size:12px; color:#9ca3af;">Sin notificaciones.</div>
-        @endforelse
+        <?php endif; ?>
     </div>
 </div>
 
-{{-- DROPDOWN USUARIO --}}
+
 <div id="userMenu" style="display:none; position:fixed; top:52px; right:16px; background:#fff; border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.15); min-width:160px; z-index:99999; overflow:hidden;">
     <div style="padding:10px 14px; border-bottom:1px solid #f3f4f6;">
-        <div style="font-size:12px; font-weight:500; color:#111827;">{{ auth()->user()->name }}</div>
-        <div style="font-size:11px; color:#9ca3af; margin-top:1px;">{{ auth()->user()->getRoleNames()->first() }}</div>
+        <div style="font-size:12px; font-weight:500; color:#111827;"><?php echo e(auth()->user()->name); ?></div>
+        <div style="font-size:11px; color:#9ca3af; margin-top:1px;"><?php echo e(auth()->user()->getRoleNames()->first()); ?></div>
     </div>
     <a href="#" style="display:flex; align-items:center; gap:8px; padding:9px 14px; font-size:13px; color:#374151; text-decoration:none;"
         onmouseover="this.style.background='#f9fafb'"
@@ -303,8 +306,8 @@
         </svg>
         Perfil
     </a>
-    <form method="POST" action="{{ route('logout') }}">
-        @csrf
+    <form method="POST" action="<?php echo e(route('logout')); ?>">
+        <?php echo csrf_field(); ?>
         <button type="submit" style="width:100%; display:flex; align-items:center; gap:8px; padding:9px 14px; font-size:13px; color:#e24b4a; background:transparent; border:none; cursor:pointer; text-align:left;"
             onmouseover="this.style.background='#fff5f5'"
             onmouseout="this.style.background='transparent'">
@@ -319,17 +322,17 @@
 </div>
 
 <script>
-@isset($elecciones)
-@if($elecciones->count() > 1)
-@php
+<?php if(isset($elecciones)): ?>
+<?php if($elecciones->count() > 1): ?>
+<?php
     $tickerData = $elecciones->map(function($e) {
         $dias = (int) now()->startOfDay()->diffInDays($e->fecha_eleccion->startOfDay(), false);
         $bg = $dias <= 7 ? '#fee2e2' : ($dias <= 15 ? '#fef3c7' : '#d1fae5');
         $color = $dias <= 7 ? '#991b1b' : ($dias <= 15 ? '#92400e' : '#065f46');
         return ['nombre' => $e->nombre_organizacion, 'dias' => $dias, 'bg' => $bg, 'color' => $color];
     });
-@endphp
-const tickerItems = @json($tickerData);
+?>
+const tickerItems = <?php echo json_encode($tickerData, 15, 512) ?>;
 let tickerIdx = 0;
 const tickerNombre = document.getElementById('ticker-nombre');
 const tickerDias = document.getElementById('ticker-dias');
@@ -349,16 +352,16 @@ if (tickerNombre && tickerItems.length > 1) {
         }, 300);
     }, 3000);
 }
-@endif
-@endisset
+<?php endif; ?>
+<?php endif; ?>
 
-@if($cp && $cp->count() > 1)
-@php
+<?php if($cp && $cp->count() > 1): ?>
+<?php
     $charlasData = $cp->map(function($c) {
         return ['nombre' => $c->entrada->nombre_organizacion ?? '—'];
     });
-@endphp
-const charlasItems = @json($charlasData);
+?>
+const charlasItems = <?php echo json_encode($charlasData, 15, 512) ?>;
 let charlasIdx = 0;
 const tickerCharlaNombre = document.getElementById('ticker-charla-nombre');
 if (tickerCharlaNombre && charlasItems.length > 1) {
@@ -371,7 +374,7 @@ if (tickerCharlaNombre && charlasItems.length > 1) {
         }, 300);
     }, 3000);
 }
-@endif
+<?php endif; ?>
 function closeAll() {
     document.getElementById('notifMenu').style.display = 'none';
     document.getElementById('userMenu').style.display = 'none';
@@ -420,3 +423,4 @@ document.addEventListener('click', function(e) {
 </script>
 </body>
 </html>
+<?php /**PATH /var/www/html/resources/views/layouts/panel.blade.php ENDPATH**/ ?>

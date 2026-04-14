@@ -19,8 +19,10 @@ class DashboardController extends Controller
         }
 
         if ($rol === 'Asesor') {
-            $entradas = EntradaConNota::with('charla')->where('asesor_asignado', $user->name)->latest()->take(10)->get();
-            $elecciones = EntradaConNota::where('asesor_asignado', $user->name)
+            $asesor = \App\Models\Asesor::where('user_id', $user->id)->first();
+            $nombreAsesor = $asesor ? $asesor->nombre . ' ' . $asesor->apellido : $user->name;
+            $entradas = EntradaConNota::with('charla')->where('asesor_asignado', $nombreAsesor)->latest()->take(10)->get();
+            $elecciones = EntradaConNota::where('asesor_asignado', $nombreAsesor)
                 ->whereNotNull('fecha_eleccion')
                 ->where('fecha_eleccion', '>=', now())
                 ->where('fecha_eleccion', '<=', now()->addDays(30))
@@ -28,16 +30,24 @@ class DashboardController extends Controller
                 ->orderBy('fecha_eleccion')
                 ->take(5)
                 ->get();
+            $charlasPendientes = \App\Models\Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', 'Santiago Acuña'))
+                ->where('estado', 'pendiente')
+                ->whereNotNull('fecha_hora')
+                ->where('fecha_hora', '>=', now())
+                ->orderBy('fecha_hora')
+                ->take(5)
+                ->get();
             $stats = [
-                'organizaciones'      => EntradaConNota::where('asesor_asignado', $user->name)->count(),
-                'charlas_realizadas'  => Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', $user->name))->where('estado', 'realizada')->count(),
-                'charlas_pendientes'  => Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', $user->name))->where('estado', 'pendiente')->count(),
+                'organizaciones'      => EntradaConNota::where('asesor_asignado', $nombreAsesor)->count(),
+                'charlas_realizadas'  => Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', $nombreAsesor))->where('estado', 'realizada')->count(),
+                'charlas_pendientes'  => Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', $nombreAsesor))->where('estado', 'pendiente')->count(),
                 'elecciones_proximas' => $elecciones->count(),
-                'sin_fecha'           => EntradaConNota::where('asesor_asignado', $user->name)->whereNull('fecha_eleccion')->count(),
-                'tec_pendientes'      => EntradaConNota::where('asesor_asignado', $user->name)->where('asunto_tec', true)->count(),
+                'sin_fecha'           => EntradaConNota::where('asesor_asignado', $nombreAsesor)->whereNull('fecha_eleccion')->count(),
+                'tec_pendientes'      => EntradaConNota::where('asesor_asignado', $nombreAsesor)->where('asunto_tec', true)->count(),
                 'borradores'          => 0,
             ];
-            return view('panel.dashboard-asesor', compact('entradas', 'elecciones', 'stats'));
+session(['charlasPendientes' => $charlasPendientes]);
+return view('panel.dashboard-asesor', compact('entradas', 'elecciones', 'stats', 'charlasPendientes'));
         }
 
         $entradas = EntradaConNota::with('charla')->latest()->take(10)->get();

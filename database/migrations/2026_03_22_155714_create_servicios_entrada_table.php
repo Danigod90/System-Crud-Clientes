@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
+    /**docker compose exec laravel.test php artisan migrate
      * Run the migrations.
      */
     public function up(): void
