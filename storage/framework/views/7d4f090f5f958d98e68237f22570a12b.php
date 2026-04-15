@@ -6,7 +6,7 @@
     <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
     <title><?php echo e(config('app.name', 'Sistema de Gestion')); ?></title>
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link rel="icon" type="image/x-icon" href="/favicon-tsje.ico">
+   <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/app.js']); ?>
     <style>
@@ -58,7 +58,10 @@
         </a>
 
         
+        <?php if(auth()->user()->hasAnyRole(['Admin', 'Asesor', 'Secretaria Con Nota', 'Secretaria Sin Nota'])): ?>
         <div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Entradas</div>
+        <?php endif; ?>
+      <?php if(auth()->user()->hasAnyRole(['Admin', 'Asesor', 'Secretaria Con Nota'])): ?>
         <a href="<?php echo e(route('secretaria.con-nota.index')); ?>"
             style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:<?php echo e(request()->routeIs('secretaria.con-nota.*') ? '#fff' : 'rgba(255,255,255,0.55)'); ?>; background:<?php echo e(request()->routeIs('secretaria.con-nota.*') ? 'rgba(52,211,153,0.15)' : 'transparent'); ?>; text-decoration:none; border:<?php echo e(request()->routeIs('secretaria.con-nota.*') ? '1px solid rgba(52,211,153,0.25)' : '1px solid transparent'); ?>; transition:all 0.2s;"
             onmouseover="this.style.background='rgba(255,255,255,0.12)'"
@@ -66,6 +69,7 @@
             <span style="width:7px; height:7px; border-radius:50%; background:#34d399; flex-shrink:0;"></span>
             Mesa de Entrada
         </a>
+        <?php endif; ?>
         <?php if(auth()->user()->roles->first()?->name === 'Asesor'): ?>
 <a href="<?php echo e(route('asesor.mis-organizaciones')); ?>"
     style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:<?php echo e(request()->routeIs('asesor.*') ? '#fff' : 'rgba(255,255,255,0.55)'); ?>; background:<?php echo e(request()->routeIs('asesor.*') ? 'rgba(52,211,153,0.15)' : 'transparent'); ?>; text-decoration:none; border:<?php echo e(request()->routeIs('asesor.*') ? '1px solid rgba(52,211,153,0.25)' : '1px solid transparent'); ?>; transition:all 0.2s;"
@@ -74,7 +78,7 @@
     <span style="width:7px; height:7px; border-radius:50%; background:<?php echo e(request()->routeIs('asesor.*') ? '#34d399' : 'rgba(255,255,255,0.28)'); ?>; flex-shrink:0;"></span>
     Mis organizaciones
 </a>
-<?php else: ?>
+<?php elseif(auth()->user()->hasAnyRole(['Secretaria Sin Nota', 'Secretaria Con Nota'])): ?>
 <a href="<?php echo e(route('secretaria.sin-nota.index')); ?>"
     style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:<?php echo e(request()->routeIs('secretaria.sin-nota.*') ? '#fff' : 'rgba(255,255,255,0.55)'); ?>; background:<?php echo e(request()->routeIs('secretaria.sin-nota.*') ? 'rgba(255,255,255,0.1)' : 'transparent'); ?>; text-decoration:none; border:<?php echo e(request()->routeIs('secretaria.sin-nota.*') ? '1px solid rgba(255,255,255,0.15)' : '1px solid transparent'); ?>; transition:all 0.2s;"
     onmouseover="this.style.background='rgba(255,255,255,0.12)'"
@@ -86,14 +90,19 @@
         </a>
 
         
+        <?php if(auth()->user()->hasAnyRole(['Tecnico', 'Asesor'])): ?>
         <div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Trabajo</div>
-        <a href="#"
+        <?php endif; ?>
+        <?php if(auth()->user()->hasRole('Tecnico')): ?>
+        <a href="<?php echo e(route('tecnico.organizaciones')); ?>"
             style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:rgba(255,255,255,0.55); text-decoration:none; border:1px solid transparent; transition:all 0.2s;"
             onmouseover="this.style.background='rgba(255,255,255,0.12)'"
             onmouseout="this.style.background='transparent'">
             <span style="width:7px; height:7px; border-radius:50%; background:#fbbf24; flex-shrink:0;"></span>
             Panel tecnico
         </a>
+        <?php endif; ?>
+        <?php if(auth()->user()->hasRole('Asesor')): ?>
         <a href="#"
             style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:rgba(255,255,255,0.55); text-decoration:none; border:1px solid transparent; transition:all 0.2s;"
             onmouseover="this.style.background='rgba(255,255,255,0.12)'"
@@ -108,6 +117,7 @@
             <span style="width:7px; height:7px; border-radius:50%; background:#f472b6; flex-shrink:0;"></span>
             Borrador privado
         </a>
+        <?php endif; ?>
 
         
         <div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Utilidades</div>

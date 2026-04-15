@@ -44,6 +44,8 @@ class DetalleTecnico extends Model
             'mat_actas_proclamacion',
             'mat_certificados',
             'mat_cuenta_votos',
+            'mat_tintas',
+            'mat_final_tintas',
             'padron_definitivo',
             'padron_con_cedula',
             'cantidad_electores',
