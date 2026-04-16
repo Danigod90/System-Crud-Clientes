@@ -84,107 +84,126 @@ class NotaPdfController extends Controller
     }
 
     public function reciboLogistica(EntradaConNota $conNota)
-    {
-        $fecha      = now()->locale('es')->isoFormat('D [de] MMMM [del] YYYY');
-        $fechaCorta = now()->format('d/m/Y');
-        $org        = strtoupper($conNota->nombre_organizacion);
-        $codigo     = $conNota->codigo_org;
+{
+    $fechaCorta = now()->format('d/m/Y');
+    $org        = strtoupper($conNota->nombre_organizacion);
+    $codigo     = $conNota->codigo_org;
+    $fechaElec  = $conNota->fecha_eleccion?->format('d/m/Y') ?? '—';
 
-        // Armar detalle de materiales
-        $materiales = [];
-        if ($conNota->log_urnas   > 0) $materiales[] = '(' . $conNota->log_urnas   . ') urna(s) de plastico';
-        if ($conNota->log_cuartos > 0) $materiales[] = '(' . $conNota->log_cuartos . ') cuarto(s) oscuro(s)';
-        if ($conNota->log_tintas  > 0) $materiales[] = '(' . $conNota->log_tintas  . ') tinta(s)';
-        $detalleMateriales = implode(', ', $materiales) ?: '—';
+    $urnas   = str_pad($conNota->log_urnas   ?? 0, 2, '0', STR_PAD_LEFT);
+    $cuartos = str_pad($conNota->log_cuartos ?? 0, 2, '0', STR_PAD_LEFT);
+    $tintas  = str_pad($conNota->log_tintas  ?? 0, 2, '0', STR_PAD_LEFT);
 
-        $html = '
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    font-size: 12px;
-                    margin: 50px;
-                    color: #000;
-                    line-height: 1.7;
-                }
-                h2 { font-size: 14px; text-align: center; margin-bottom: 4px; text-transform: uppercase; }
-                .subtitulo { text-align: center; font-size: 11px; color: #444; margin-bottom: 24px; }
-                .dato { margin-bottom: 10px; }
-                .dato span { font-weight: bold; }
-                .linea-firma { border-top: 1px solid #000; width: 60%; margin: 40px auto 4px auto; }
-                .firma-label { text-align: center; font-size: 11px; }
-                .separador {
-                    border: none;
-                    border-top: 2px dashed #000;
-                    margin: 40px 0;
-                }
-                .parte-inferior { font-size: 11px; }
-                .parte-inferior h3 { font-size: 12px; text-align: center; margin-bottom: 12px; }
-                .aviso {
-                    margin-top: 20px;
-                    font-size: 10px;
-                    font-style: italic;
-                    border: 1px solid #000;
-                    padding: 8px 12px;
-                    line-height: 1.5;
-                }
-            </style>
-        </head>
-        <body>
+    $logoPath   = public_path('images/logo.png');
+    $logoBase64 = base64_encode(file_get_contents($logoPath));
+    $logoSrc    = 'data:image/png;base64,' . $logoBase64;
 
-            {{-- PARTE SUPERIOR — se lleva la organización --}}
-            <h2>Direccion de Organizaciones Intermedias</h2>
-            <p class="subtitulo">Recibo de Prestamo de Materiales Logisticos</p>
+    $html = '<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 11px; color: #000; margin: 8px 36px; line-height: 1.4; }
+        .header { display:flex; align-items:center; gap:12px; border-bottom:3px solid #1e3a5f; padding-bottom:8px; margin-bottom:10px; }
+        .inst h1 { font-size:12px; font-weight:700; margin:0 0 2px; text-transform:uppercase; color:#1e3a5f; }
+        .inst p { font-size:8px; color:#555; margin:0; }
+        .inst .codigo { font-size:10px; font-weight:700; color:#1e3a5f; margin-top:2px; }
+        .org-box { background:#f0f4f8; border-left:4px solid #1e3a5f; padding:6px 10px; margin-bottom:10px; }
+        .org-name { font-size:12px; font-weight:700; text-transform:uppercase; color:#1e3a5f; }
+        .org-meta { font-size:9px; color:#555; margin-top:2px; }
+        .sec-title { background:#1e3a5f; color:#fff; font-size:9px; font-weight:700; padding:3px 8px; margin:8px 0 6px; text-transform:uppercase; }
+        .dato { font-size:10px; margin-bottom:6px; }
+        .mat-grid { width:100%; border-collapse:collapse; margin:8px 0; }
+        .mat-grid td { border:1px solid #bfdbfe; background:#eff6ff; padding:6px; text-align:center; width:33%; }
+        .mat-label { font-size:8px; color:#1e40af; text-transform:uppercase; display:block; margin-bottom:2px; }
+        .mat-val { font-size:16px; font-weight:700; color:#1e40af; }
+        .firma-table { width:100%; border-collapse:collapse; margin-top:20px; }
+        .firma-table td { text-align:center; font-size:9px; color:#555; border-top:1px solid #000; padding-top:3px; }
+        .separador { border:none; border-top:2px dashed #1e3a5f; margin:14px 0; }
+        .aviso { border:2px solid #1e3a5f; background:#f0f4f8; padding:7px 10px; font-size:9px; font-weight:700; text-align:center; line-height:1.6; color:#1e3a5f; margin-top:8px; }
+        .dev-row { font-size:10px; margin-bottom:5px; }
+        .fecha-gen { text-align:right; font-size:9px; color:#888; margin-bottom:4px; }
+    </style>
+</head>
+<body>
 
-            <div class="dato">Codigo: <span>' . $codigo . '</span></div>
-            <div class="dato">Organizacion: <span>' . $org . '</span></div>
-            <div class="dato">Representante: <span>' . $conNota->nombre_representante . '</span></div>
-            <div class="dato">Fecha de entrega: <span>' . $fechaCorta . '</span></div>
-            <div class="dato">Materiales entregados: <span>' . $detalleMateriales . '</span></div>
-            <div class="dato">Fecha de eleccion: <span>' . ($conNota->fecha_eleccion?->format('d/m/Y') ?? '—') . '</span></div>
+<div class="fecha-gen">Generado el ' . $fechaCorta . ' — Sistema de Gestión Electoral</div>
 
-            <br>
-            <div class="dato">Nombre de quien retira: _______________________________________________</div>
-            <div class="dato">CI: ___________________________</div>
+<div class="header">
+    <img src="' . $logoSrc . '" style="width:52px; height:52px;">
+    <div class="inst">
+        <h1>Dirección de Organizaciones Intermedias</h1>
+        <p>Tribunal Superior de Justicia Electoral — República del Paraguay</p>
+        <p>Avda. E. Ayala No. 2929 c/Pasaje Tembetary &nbsp;|&nbsp; Teléf. 6180452 &nbsp;|&nbsp; org.intermedias@gmail.com</p>
+        <div class="codigo">Código: ' . $codigo . '</div>
+    </div>
+</div>
 
-            <div class="linea-firma"></div>
-            <p class="firma-label">Firma de quien retira</p>
+<div class="org-box">
+    <div class="org-name">' . $org . '</div>
+    <div class="org-meta">
+        <strong>Asesor/a:</strong> ' . ($conNota->asesor_asignado ?? '—') . ' &nbsp;&nbsp;
+        <strong>Fecha de Elección:</strong> ' . $fechaElec . ' &nbsp;&nbsp;
+        <strong>Fecha de Entrega:</strong> ' . $fechaCorta . '
+    </div>
+</div>
 
-            {{-- SEPARADOR PUNTEADO — se corta acá --}}
-            <hr class="separador">
+<div class="sec-title">[ 1 ] Préstamo de Materiales Logísticos</div>
 
-            {{-- PARTE INFERIOR — se queda en la direccion --}}
-            <div class="parte-inferior">
-                <h3>Constancia de Devolucion — Direccion de Organizaciones Intermedias</h3>
+<div class="dato">La Dirección de Organizaciones Intermedias del Tribunal Superior de Justicia Electoral, <strong>otorga en calidad de préstamo</strong> los siguientes materiales:</div>
 
-                <div class="dato">Codigo: <span>' . $codigo . '</span></div>
-                <div class="dato">Organizacion: <span>' . $org . '</span></div>
-                <div class="dato">Materiales prestados: <span>' . $detalleMateriales . '</span></div>
-                <div class="dato">Fecha de entrega: <span>' . $fechaCorta . '</span></div>
-                <div class="dato">Fecha de devolucion: _____ / _____ / _________</div>
-                <div class="dato">Funcionario/a que recibe: _______________________________________________</div>
+<table class="mat-grid">
+    <tr>
+        <td><span class="mat-label">Cuartos Oscuros</span><span class="mat-val">' . $cuartos . '</span></td>
+        <td><span class="mat-label">Urnas</span><span class="mat-val">' . $urnas . '</span></td>
+        <td><span class="mat-label">Tintas</span><span class="mat-val">' . $tintas . '</span></td>
+    </tr>
+</table>
 
-                <div class="aviso">
-                    LOS MATERIALES OTORGADOS EN CALIDAD DE PRESTAMO DEBEN SER DEVUELTOS EN LA
-                    DIRECCION DE SERVICIOS ELECTORALES 72 HS POSTERIORES A LA REALIZACION DE
-                    LAS ELECCIONES DE AUTORIDADES.
-                </div>
-            </div>
+<div style="font-size:10px; margin-top:10px; font-weight:700;">Datos de quien retira:</div>
 
-        </body>
-        </html>';
+<table class="firma-table">
+    <tr>
+        <td>Firma</td>
+        <td>Aclaración</td>
+        <td>N° de Teléfono</td>
+    </tr>
+</table>
+<div style="font-size:10px; margin-top:10px; border-bottom:1px solid #000; padding-bottom:2px;">Nombre del funcionario que otorga: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
 
-        $dompdf = new \Dompdf\Dompdf();
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
+<hr class="separador">
 
-        return new Response($dompdf->output(), 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="recibo-log-' . $codigo . '.pdf"',
-        ]);
-    }
+<div class="sec-title">[ 2 ] Devolución y Constancia — Dirección de Organizaciones Intermedias</div>
+
+<div class="dato"><strong>Código:</strong> ' . $codigo . ' &nbsp;&nbsp; <strong>Organización:</strong> ' . $org . '</div>
+<div class="dato"><strong>Detalle:</strong> (' . $urnas . ') urna(s) de plástico, (' . $cuartos . ') cuarto(s) oscuros, (' . $tintas . ') frasco(s) de tinta indeleble.</div>
+<div class="dato"><strong>Fecha de entrega:</strong> ' . $fechaCorta . '</div>
+
+<table style="width:100%; border-collapse:collapse; margin:8px 0;">
+    <tr>
+        <td style="font-size:9px; border-bottom:1px solid #999; padding:2px 4px; width:40%;">Fecha de devolución: _______ / _______ / _______</td>
+        <td style="font-size:9px; border-bottom:1px solid #999; padding:2px 4px; width:20%;">Urnas devueltas: _______</td>
+        <td style="font-size:9px; border-bottom:1px solid #999; padding:2px 4px; width:20%;">Cuartos devueltos: _______</td>
+        <td style="font-size:9px; border-bottom:1px solid #999; padding:2px 4px; width:20%;">Tintas devueltas: _______</td>
+    </tr>
+</table>
+<div style="font-size:10px; border-bottom:1px solid #000; padding-bottom:2px; margin-bottom:8px;">Funcionario que recibe: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+
+<div class="aviso">
+    LOS MATERIALES OTORGADOS EN CALIDAD DE PRÉSTAMO DEBEN SER DEVUELTOS EN LA DIRECCIÓN DE ORGANIZACIONES INTERMEDIAS 72 HS POSTERIORES A LA REALIZACIÓN DE LAS ELECCIONES DE AUTORIDADES.
+</div>
+
+</body>
+</html>';
+
+    $dompdf = new \Dompdf\Dompdf();
+    $dompdf->loadHtml($html);
+    $dompdf->setPaper('letter', 'portrait');
+    $dompdf->render();
+
+    return new Response($dompdf->output(), 200, [
+        'Content-Type'        => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="recibo-log-' . $codigo . '.pdf"',
+    ]);
+}
 }

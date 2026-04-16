@@ -35,7 +35,7 @@
                         Imprimir Nota
                     </a>
                     @endif
-                    @if($entrada->asunto_log && !$entrada->asunto_tec)
+                    @if($entrada->asunto_log)
                     <a href="{{ route('secretaria.con-nota.recibo-logistica', $entrada->id) }}" target="_blank"
                        style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -527,18 +527,18 @@
     </div>
     @endif
 
-    @if($entrada->detalleTecnico?->cantidad_mesas && $entrada->detalleTecnico?->cantidad_papeletas)
+    @if($entrada->detalleTecnico?->cantidad_mesas)
     @php
         $mesas     = $entrada->detalleTecnico->cantidad_mesas;
         $papeletas = $entrada->detalleTecnico->cantidad_papeletas;
-        $actas     = $mesas * 3;
-        $padrones  = $mesas * 3;
-        $cuartos   = $mesas;
-        $urnas     = $mesas * $papeletas;
-        $tintas    = $mesas;
+        $actas    = $entrada->detalleTecnico->mat_final_actas    !== null ? $entrada->detalleTecnico->mat_final_actas    : ($mesas * 3);
+$padrones = $entrada->detalleTecnico->mat_final_padrones !== null ? $entrada->detalleTecnico->mat_final_padrones : ($mesas * 3);
+$cuartos  = $entrada->detalleTecnico->mat_final_cuartos  !== null ? $entrada->detalleTecnico->mat_final_cuartos  : $mesas;
+$urnas    = $entrada->detalleTecnico->mat_final_urnas    !== null ? $entrada->detalleTecnico->mat_final_urnas    : ($mesas * $papeletas);
+$tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->detalleTecnico->mat_final_tintas   : $mesas;
     @endphp
     <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px;">
-        <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Estimado de materiales</p>
+        <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar</p>
         <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px;">
     <div style="text-align:center;">
         <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Actas</p>
@@ -586,15 +586,15 @@
 
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:14px;">
             <div>
-                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Listas</label>
-                <input type="number" name="cantidad_listas" min="1"
-                    value="{{ old('cantidad_listas', $entrada->detalleTecnico?->cantidad_listas) }}"
+                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Papeletas</label>
+                <input type="number" name="cantidad_papeletas" id="asesor_input_papeletas" min="0" max="10"
+                    value="{{ old('cantidad_papeletas', $entrada->detalleTecnico?->cantidad_papeletas) }}"
                     style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
             </div>
             <div>
-                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Papeletas</label>
-                <input type="number" name="cantidad_papeletas" id="asesor_input_papeletas" min="1" max="10"
-                    value="{{ old('cantidad_papeletas', $entrada->detalleTecnico?->cantidad_papeletas) }}"
+                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Listas</label>
+                <input type="number" name="cantidad_listas" min="0"
+                    value="{{ old('cantidad_listas', $entrada->detalleTecnico?->cantidad_listas) }}"
                     style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
             </div>
             <div>
@@ -650,7 +650,7 @@
             <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 10px;">Materiales Estimados</p>
             <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:16px;">
                 <p style="font-size:11px; font-weight:600; color:#1e40af; margin:0 0 12px; text-transform:uppercase;">Calculado automáticamente — podés editar los valores</p>
-                <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+                <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:12px;">
                     <div>
                         <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Actas</label>
                         <input type="number" id="asesor_mat_actas" name="mat_final_actas" min="0"
@@ -675,9 +675,16 @@
                             value="{{ old('mat_final_urnas', $entrada->detalleTecnico?->mat_final_urnas) }}"
                             style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
                     </div>
+                    <div>
+    <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Tintas</label>
+    <input type="number" id="asesor_mat_tintas" name="mat_final_tintas" min="0"
+        value="{{ old('mat_final_tintas', $entrada->detalleTecnico?->mat_final_tintas) }}"
+        style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
+</div>
                 </div>
             </div>
         </div>
+
 
         <div style="display:flex; justify-content:flex-end; gap:8px;">
             @if($entrada->detalleTecnico)
@@ -950,8 +957,8 @@ const ordinalLisJS = ['Primera','Segunda','Tercera','Cuarta','Quinta'];
 const savedData    = @json($datosGuardadosBlade ?? []);
 
 function generarPapeletas() {
-    const cantPap = parseInt(document.getElementById('asesor_input_papeletas')?.value) || 1;
-    const cantLis = parseInt(document.querySelector('[name="cantidad_listas"]')?.value) || 1;
+    const cantPap = parseInt(document.getElementById('asesor_input_papeletas')?.value) || 0;
+    const cantLis = parseInt(document.querySelector('[name="cantidad_listas"]')?.value) || 0;
     const container = document.getElementById('papeletas-container');
     if (!container) return;
 
@@ -1027,10 +1034,15 @@ function calcularMaterialesAsesor() {
     const fCuartos  = document.getElementById('asesor_mat_cuartos');
     const fUrnas    = document.getElementById('asesor_mat_urnas');
 
+  const tintas = mesas;
+
     if (fActas)    fActas.value    = actas;
     if (fPadrones) fPadrones.value = padrones;
     if (fCuartos)  fCuartos.value  = cuartos;
     if (fUrnas)    fUrnas.value    = urnas;
+
+    const fTintas = document.getElementById('asesor_mat_tintas');
+    if (fTintas) fTintas.value = tintas;
 }
 
 document.querySelector('[name="cantidad_listas"]')?.addEventListener('input', generarPapeletas);

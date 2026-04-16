@@ -123,17 +123,17 @@
         </div>
         @endif
 
-        {{-- ESTIMADO --}}
-        @if($entrada->detalleTecnico->cantidad_mesas && $entrada->detalleTecnico->cantidad_papeletas)
-        @php
-            $mesasRO    = $entrada->detalleTecnico->cantidad_mesas;
-            $papeletasRO = $entrada->detalleTecnico->cantidad_papeletas;
-            $actasRO    = $mesasRO * 3;
-            $padronesRO = $mesasRO * 3;
-            $cuartosRO  = $mesasRO;
-            $urnasRO    = $mesasRO * $papeletasRO;
-            $tintasRO   = $mesasRO;
-        @endphp
+       {{-- ESTIMADO --}}
+@if($entrada->detalleTecnico->cantidad_mesas)
+@php
+    $mesasRO     = $entrada->detalleTecnico->cantidad_mesas;
+    $papeletasRO = $entrada->detalleTecnico->cantidad_papeletas;
+    $actasRO     = $entrada->detalleTecnico->mat_final_actas    !== null ? $entrada->detalleTecnico->mat_final_actas    : ($mesasRO * 3);
+    $padronesRO  = $entrada->detalleTecnico->mat_final_padrones !== null ? $entrada->detalleTecnico->mat_final_padrones : ($mesasRO * 3);
+    $cuartosRO   = $entrada->detalleTecnico->mat_final_cuartos  !== null ? $entrada->detalleTecnico->mat_final_cuartos  : $mesasRO;
+    $urnasRO     = $entrada->detalleTecnico->mat_final_urnas     !== null ? $entrada->detalleTecnico->mat_final_urnas    : ($mesasRO * $papeletasRO);
+    $tintasRO    = $entrada->detalleTecnico->mat_final_tintas    !== null ? $entrada->detalleTecnico->mat_final_tintas   : $mesasRO;
+@endphp
         <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px;">
             <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar</p>
             <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px;">
@@ -184,13 +184,13 @@
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:14px;">
             <div>
                 <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Listas</label>
-                <input type="number" name="cantidad_listas" min="1" max="10"
+                <input type="number" name="cantidad_listas" min="0" max="10"
                     value="{{ $entrada->detalleTecnico->cantidad_listas }}"
                     style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
             </div>
             <div>
                 <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Papeletas</label>
-                <input type="number" name="cantidad_papeletas" id="input_papeletas" min="1" max="10"
+                <input type="number" name="cantidad_papeletas" id="input_papeletas" min="0" max="10"
     value="{{ $entrada->detalleTecnico->cantidad_papeletas }}"
                     style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
             </div>
@@ -204,7 +204,7 @@
 
         {{-- PAPELETAS --}}
         @php
-            $cantPapTec = $entrada->detalleTecnico->cantidad_papeletas ?? 1;
+            $cantPapTec = $entrada->detalleTecnico->cantidad_papeletas ?? 0;
             $cantListasTec = $entrada->detalleTecnico->cantidad_listas ?? 1;
             $candidaturasTec = ['Presidente y Vicepresidentes','Presidente y Vicepresidente','Secretario General y Adjunto','Comisión Directiva','Miembros Titulares','Miembros Titulares y Suplentes','Vocales Titulares','Vocales Titulares y Suplentes','Tribunal Electoral Independiente','Junta Electoral','Colegio Electoral','Síndico','Comité Revisadora de Cuentas'];
             $sistemasTec = ['Lista Única','Lista Cerrada','Lista Desbloqueada','Lista Cerrada Bloqueada','Nominal'];

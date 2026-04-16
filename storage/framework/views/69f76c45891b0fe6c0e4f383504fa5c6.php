@@ -21,7 +21,7 @@
 <div class="px-2 py-2">
     <div style="max-width:760px; margin:0 auto;">
 
-
+        
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
                 <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0;">Datos de la organización</h3>
@@ -44,7 +44,7 @@
                         Imprimir Nota
                     </a>
                     <?php endif; ?>
-                    <?php if($entrada->asunto_log && !$entrada->asunto_tec): ?>
+                    <?php if($entrada->asunto_log): ?>
                     <a href="<?php echo e(route('secretaria.con-nota.recibo-logistica', $entrada->id)); ?>" target="_blank"
                        style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -88,7 +88,7 @@
             </div>
         </div>
 
-
+        
         <?php if($entrada->asunto_log && !$entrada->asunto_tec): ?>
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
@@ -140,7 +140,7 @@
         </div>
         <?php endif; ?>
 
-
+        
         <?php if($entrada->asunto_char): ?>
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
@@ -176,7 +176,7 @@
                 </div>
             </div>
 
-
+            
             <div id="charla-readonly" style="display:<?php echo e($entrada->charla ? 'grid' : 'none'); ?>; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                 <div>
                     <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Modalidad</label>
@@ -220,7 +220,7 @@
                 <?php endif; ?>
             </div>
 
-
+            
             <form id="charla-form" method="POST" action="<?php echo e(route('asesor.charla.store', $entrada)); ?>"
                   style="display:<?php echo e($entrada->charla ? 'none' : 'block'); ?>;">
                 <?php echo csrf_field(); ?>
@@ -326,7 +326,7 @@
         </div>
         <?php endif; ?>
 
-
+        
         <?php if($entrada->asunto_obs): ?>
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
@@ -491,7 +491,7 @@
         </button>
     </div>
 
-
+    
     <div id="tec-readonly" style="display:<?php echo e($entrada->detalleTecnico ? 'block' : 'none'); ?>;">
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
         <div>
@@ -543,15 +543,15 @@
     </div>
     <?php endif; ?>
 
-    <?php if($entrada->detalleTecnico?->cantidad_mesas && $entrada->detalleTecnico?->cantidad_papeletas): ?>
+    <?php if($entrada->detalleTecnico?->cantidad_mesas): ?>
     <?php
         $mesas     = $entrada->detalleTecnico->cantidad_mesas;
         $papeletas = $entrada->detalleTecnico->cantidad_papeletas;
-        $actas     = $mesas * 3;
-        $padrones  = $mesas * 3;
-        $cuartos   = $mesas;
-        $urnas     = $mesas * $papeletas;
-        $tintas    = $mesas;
+        $actas    = $entrada->detalleTecnico->mat_final_actas    !== null ? $entrada->detalleTecnico->mat_final_actas    : ($mesas * 3);
+$padrones = $entrada->detalleTecnico->mat_final_padrones !== null ? $entrada->detalleTecnico->mat_final_padrones : ($mesas * 3);
+$cuartos  = $entrada->detalleTecnico->mat_final_cuartos  !== null ? $entrada->detalleTecnico->mat_final_cuartos  : $mesas;
+$urnas    = $entrada->detalleTecnico->mat_final_urnas    !== null ? $entrada->detalleTecnico->mat_final_urnas    : ($mesas * $papeletas);
+$tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->detalleTecnico->mat_final_tintas   : $mesas;
     ?>
     <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px;">
         <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar</p>
@@ -581,7 +581,7 @@
     <?php endif; ?>
     </div>
 
-
+    
     <form id="tec-form" method="POST" action="<?php echo e(route('asesor.detalle_tecnico.saveAsesor', $entrada->id)); ?>"
           style="display:<?php echo e($entrada->detalleTecnico ? 'none' : 'block'); ?>;">
         <?php echo csrf_field(); ?>
@@ -603,15 +603,15 @@
 
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:14px;">
             <div>
-                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Listas</label>
-                <input type="number" name="cantidad_listas" min="1"
-                    value="<?php echo e(old('cantidad_listas', $entrada->detalleTecnico?->cantidad_listas)); ?>"
+                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Papeletas</label>
+                <input type="number" name="cantidad_papeletas" id="asesor_input_papeletas" min="0" max="10"
+                    value="<?php echo e(old('cantidad_papeletas', $entrada->detalleTecnico?->cantidad_papeletas)); ?>"
                     style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
             </div>
             <div>
-                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Papeletas</label>
-                <input type="number" name="cantidad_papeletas" id="asesor_input_papeletas" min="1" max="10"
-                    value="<?php echo e(old('cantidad_papeletas', $entrada->detalleTecnico?->cantidad_papeletas)); ?>"
+                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Listas</label>
+                <input type="number" name="cantidad_listas" min="0"
+                    value="<?php echo e(old('cantidad_listas', $entrada->detalleTecnico?->cantidad_listas)); ?>"
                     style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
             </div>
             <div>
@@ -667,7 +667,7 @@
             <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 10px;">Materiales Estimados</p>
             <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:16px;">
                 <p style="font-size:11px; font-weight:600; color:#1e40af; margin:0 0 12px; text-transform:uppercase;">Calculado automáticamente — podés editar los valores</p>
-                <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+                <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:12px;">
                     <div>
                         <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Actas</label>
                         <input type="number" id="asesor_mat_actas" name="mat_final_actas" min="0"
@@ -692,9 +692,16 @@
                             value="<?php echo e(old('mat_final_urnas', $entrada->detalleTecnico?->mat_final_urnas)); ?>"
                             style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
                     </div>
+                    <div>
+    <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Tintas</label>
+    <input type="number" id="asesor_mat_tintas" name="mat_final_tintas" min="0"
+        value="<?php echo e(old('mat_final_tintas', $entrada->detalleTecnico?->mat_final_tintas)); ?>"
+        style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
+</div>
                 </div>
             </div>
         </div>
+
 
         <div style="display:flex; justify-content:flex-end; gap:8px;">
             <?php if($entrada->detalleTecnico): ?>
@@ -713,7 +720,7 @@
         </div>
     </form>
 
-
+    
     <?php if($entrada->detalleTecnico && !$entrada->detalleTecnico->enviado_tecnica): ?>
     <div style="border-top:1px solid #f3f4f6; margin-top:16px; padding-top:16px;">
         <form method="POST" action="<?php echo e(route('asesor.detalle_tecnico.enviarTecnica', $entrada->id)); ?>">
@@ -816,7 +823,7 @@
 
 <?php endif; ?>
 
-
+        
         <div style="display:flex; justify-content:flex-end; gap:10px;">
             <a href="<?php echo e(route('asesor.mis-organizaciones')); ?>"
                style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:10px 20px; border-radius:8px; font-size:14px; text-decoration:none; font-weight:500;">
@@ -967,8 +974,8 @@ const ordinalLisJS = ['Primera','Segunda','Tercera','Cuarta','Quinta'];
 const savedData    = <?php echo json_encode($datosGuardadosBlade ?? [], 15, 512) ?>;
 
 function generarPapeletas() {
-    const cantPap = parseInt(document.getElementById('asesor_input_papeletas')?.value) || 1;
-    const cantLis = parseInt(document.querySelector('[name="cantidad_listas"]')?.value) || 1;
+    const cantPap = parseInt(document.getElementById('asesor_input_papeletas')?.value) || 0;
+    const cantLis = parseInt(document.querySelector('[name="cantidad_listas"]')?.value) || 0;
     const container = document.getElementById('papeletas-container');
     if (!container) return;
 
@@ -1044,10 +1051,15 @@ function calcularMaterialesAsesor() {
     const fCuartos  = document.getElementById('asesor_mat_cuartos');
     const fUrnas    = document.getElementById('asesor_mat_urnas');
 
+  const tintas = mesas;
+
     if (fActas)    fActas.value    = actas;
     if (fPadrones) fPadrones.value = padrones;
     if (fCuartos)  fCuartos.value  = cuartos;
     if (fUrnas)    fUrnas.value    = urnas;
+
+    const fTintas = document.getElementById('asesor_mat_tintas');
+    if (fTintas) fTintas.value = tintas;
 }
 
 document.querySelector('[name="cantidad_listas"]')?.addEventListener('input', generarPapeletas);

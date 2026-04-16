@@ -189,6 +189,162 @@
                 </div>
             </div>
             @endif
+{{-- DATOS DEL ASESOR --}}
+@if($conNota->detalleTecnico)
+@php $mTec = $conNota->detalleTecnico; @endphp
+<div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-top:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+    <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; display:flex; align-items:center; gap:8px;">
+        Datos del Asesor
+        <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
+            <span style="width:9px; height:9px; border-radius:50%; background:{{ $mTec->enviado_tecnica ? '#16a34a' : '#eab308' }}; display:inline-block;"></span>
+            {{ $mTec->enviado_tecnica ? 'Enviado a Técnica' : 'Pendiente' }}
+        </span>
+    </h3>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+        <div>
+            <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase;">Órgano Electoral</label>
+            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $mTec->organo_electoral ?? '—' }}</p>
+        </div>
+        <div>
+            <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase;">Cantidad de Listas</label>
+            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $mTec->cantidad_listas ?? '—' }}</p>
+        </div>
+        <div>
+            <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase;">Cantidad de Papeletas</label>
+            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $mTec->cantidad_papeletas ?? '—' }}</p>
+        </div>
+        <div>
+            <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase;">Cantidad de Mesas</label>
+            <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $mTec->cantidad_mesas ?? '—' }}</p>
+        </div>
+    </div>
+
+    @php
+        $cantPap = $mTec->cantidad_papeletas ?? 0;
+        $ordinal = ['Primera','Segunda','Tercera','Cuarta','Quinta','Sexta','Séptima','Octava','Novena','Décima'];
+    @endphp
+    @if($cantPap > 0)
+    <div style="margin-bottom:12px;">
+        <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:8px; text-transform:uppercase;">Papeletas</label>
+        @for($p = 1; $p <= min($cantPap, 10); $p++)
+        @php
+            $listaNombres = [];
+            for ($l = 1; $l <= ($mTec->cantidad_listas ?? 1); $l++) {
+                $n = $mTec->{"pap_{$p}_lista_{$l}_nombre"} ?? null;
+                if ($n) $listaNombres[] = $n;
+            }
+        @endphp
+        <div style="display:flex; align-items:center; gap:12px; padding:8px 12px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; margin-bottom:6px;">
+            <span style="font-size:12px; font-weight:700; color:#374151; white-space:nowrap;">{{ $ordinal[$p-1] }} Papeleta</span>
+            @if(count($listaNombres))
+            <span style="font-size:11px; background:#e5e7eb; color:#374151; padding:2px 8px; border-radius:4px; white-space:nowrap;">Lista {{ implode(', ', $listaNombres) }}</span>
+            @endif
+            <span style="font-size:13px; color:#111827; flex:1;">{{ $mTec->{"pap_{$p}_lista_1_candidatura"} ?? '—' }}</span>
+            <span style="font-size:11px; color:#6b7280; white-space:nowrap;">{{ $mTec->{"pap_{$p}_sistema_eleccion"} ?? '—' }}</span>
+        </div>
+        @endfor
+    </div>
+    @endif
+
+    @php
+        $estActas    = $mTec->mat_final_actas    !== null ? $mTec->mat_final_actas    : (($mTec->cantidad_mesas ?? 0) * 3);
+        $estPadrones = $mTec->mat_final_padrones !== null ? $mTec->mat_final_padrones : (($mTec->cantidad_mesas ?? 0) * 3);
+        $estCuartos  = $mTec->mat_final_cuartos  !== null ? $mTec->mat_final_cuartos  : ($mTec->cantidad_mesas ?? 0);
+        $estUrnas    = $mTec->mat_final_urnas    !== null ? $mTec->mat_final_urnas    : (($mTec->cantidad_mesas ?? 0) * ($mTec->cantidad_papeletas ?? 0));
+        $estTintas   = $mTec->mat_final_tintas   !== null ? $mTec->mat_final_tintas   : ($mTec->cantidad_mesas ?? 0);
+    @endphp
+    <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px;">
+        <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar</p>
+        <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px;">
+            <div style="text-align:center;">
+                <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Actas</p>
+                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estActas }}</p>
+            </div>
+            <div style="text-align:center;">
+                <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Padrones</p>
+                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estPadrones }}</p>
+            </div>
+            <div style="text-align:center;">
+                <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Cuartos Oscuros</p>
+                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estCuartos }}</p>
+            </div>
+            <div style="text-align:center;">
+                <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Urnas</p>
+                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estUrnas }}</p>
+            </div>
+            <div style="text-align:center;">
+                <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Tintas</p>
+                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estTintas }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+@endif
+            {{-- DETALLE TÉCNICO (solo lectura) --}}
+            @if($conNota->detalleTecnico?->tec_realizado)
+            @php $mTec = $conNota->detalleTecnico; @endphp
+            <div style="background:#f0fdf4; border-radius:12px; border:1px solid #bbf7d0; padding:20px; margin-top:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #bbf7d0;">
+                    <h3 style="font-size:13px; font-weight:600; color:#166534; text-transform:uppercase; letter-spacing:0.5px; margin:0;">✓ Trabajo Técnico Realizado</h3>
+                    <span style="font-size:11px; color:#16a34a;">{{ $mTec->tec_realizado_at ? \Carbon\Carbon::parse($mTec->tec_realizado_at)->format('d/m/Y H:i') : '' }}</span>
+                </div>
+
+                <p style="font-size:11px; font-weight:700; color:#166534; text-transform:uppercase; margin:0 0 10px;">Materiales Entregados</p>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:16px;">
+                    @foreach([
+                        ['mat_mesas', 'Mesa/s', false],
+                        ['mat_actas_electorales', 'Actas Electorales', 'mat_actas_electorales_formato'],
+                        ['mat_padron', 'Padrón Electoral', 'mat_padron_formato'],
+                        ['mat_matriz_boletin', 'Matriz de Boletín', 'mat_matriz_boletin_formato'],
+                        ['mat_actas_proclamacion', 'Actas de Proclamación', false],
+                        ['mat_certificados', 'Certificados de Resultados', false],
+                        ['mat_cuenta_votos', 'Cuenta Votos', false],
+                    ] as [$field, $label, $formatoField])
+                    <div style="background:#fff; border:1px solid #d1fae5; border-radius:8px; padding:10px;">
+                        <label style="display:block; font-size:11px; font-weight:600; color:#16a34a; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">{{ $label }}</label>
+                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $mTec->$field ?? '—' }}</p>
+                        @if($formatoField && $mTec->$formatoField)
+                        <p style="font-size:11px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($mTec->$formatoField) }}</p>
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
+
+                <p style="font-size:11px; font-weight:700; color:#166534; text-transform:uppercase; margin:0 0 10px;">Padrón</p>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <div style="background:#fff; border:1px solid #d1fae5; border-radius:8px; padding:10px;">
+                        <p style="font-size:13px; font-weight:600; color:#111827; margin:0;">{{ $mTec->padron_definitivo ? '✓ Padrón Definitivo' : '✗ Sin Padrón Definitivo' }}</p>
+                    </div>
+                    <div style="background:#fff; border:1px solid #d1fae5; border-radius:8px; padding:10px;">
+                        <p style="font-size:13px; font-weight:600; color:#111827; margin:0;">{{ $mTec->padron_con_cedula ? '✓ Padrón con Cédula' : '✗ Sin Padrón con Cédula' }}</p>
+                    </div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px;">
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#16a34a; margin-bottom:4px; text-transform:uppercase;">Cantidad de Electores</label>
+                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $mTec->cantidad_electores ?? '—' }}</p>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#16a34a; margin-bottom:4px; text-transform:uppercase;">Electores sin C.I.</label>
+                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $mTec->cantidad_electores_sin_ci ?? '—' }}</p>
+                    </div>
+                </div>
+
+                <p style="font-size:11px; font-weight:700; color:#166534; text-transform:uppercase; margin:0 0 10px;">Responsables</p>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+                    @foreach([
+                        ['resp_actas_electorales', 'Actas Electorales'],
+                        ['resp_papeletas', 'Papeletas / Boletín'],
+                        ['resp_padron_electoral', 'Padrón Electoral'],
+                    ] as [$field, $label])
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#16a34a; margin-bottom:4px; text-transform:uppercase;">{{ $label }}</label>
+                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $mTec->$field ?? '—' }}</p>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
             {{-- DETALLE DE CHARLA --}}
             @if($conNota->asunto_char && $conNota->charla)
             @php
