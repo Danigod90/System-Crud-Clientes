@@ -1,63 +1,159 @@
-<x-guest-layout>
-    <!-- Session Status -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sistema de Gestión Electoral</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Figtree', sans-serif; height:100vh; overflow:hidden; display:flex; }
+
+        .carousel {
+            position:fixed; top:0; left:0; width:100%; height:100%;
+            z-index:0;
+        }
+        .carousel-slide {
+            position:absolute; top:0; left:0; width:100%; height:100%;
+            background-size:cover; background-position:center;
+            opacity:0; transition:opacity 1.2s ease-in-out;
+        }
+        .carousel-slide.active { opacity:1; }
+        .carousel-slide::after {
+            content:''; position:absolute; inset:0;
+            background:linear-gradient(to right, rgba(10,25,50,0.75) 0%, rgba(10,25,50,0.4) 100%);
+        }
+
+        .login-side {
+            position:relative; z-index:10;
+            width:420px; min-width:420px; height:100vh;
+            background:rgba(255,255,255,0.97);
+            display:flex; flex-direction:column; justify-content:center;
+            padding:48px 44px;
+            box-shadow:4px 0 32px rgba(0,0,0,0.15);
+        }
+
+        .logo-wrap { text-align:center; margin-bottom:32px; }
+        .logo-wrap img { width:90px; }
+        .logo-wrap h1 { font-size:15px; font-weight:600; color:#1e3a5f; margin-top:12px; line-height:1.4; }
+        .logo-wrap p { font-size:12px; color:#6b7280; margin-top:4px; }
+
+        .form-group { margin-bottom:18px; }
+        .form-group label { display:block; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px; }
+        .form-group input { width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:10px 14px; font-size:13px; color:#111827; outline:none; transition:border 0.2s; font-family:'Figtree',sans-serif; }
+        .form-group input:focus { border-color:#1e3a5f; }
+
+        .aviso-mayus { display:none; margin-top:6px; background:#fef9c3; color:#854d0e; font-size:11px; padding:4px 10px; border-radius:6px; }
+
+        .remember-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+        .remember-row label { display:flex; align-items:center; gap:8px; font-size:13px; color:#6b7280; cursor:pointer; }
+        .remember-row input[type=checkbox] { width:14px; height:14px; accent-color:#1e3a5f; }
+        .remember-row a { font-size:12px; color:#1e3a5f; text-decoration:none; }
+        .remember-row a:hover { text-decoration:underline; }
+
+        .btn-login { width:100%; padding:12px; background:#1e3a5f; color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; letter-spacing:0.3px; font-family:'Figtree',sans-serif; transition:background 0.2s; }
+        .btn-login:hover { background:#16304f; }
+
+        .error-msg { color:#dc2626; font-size:11px; margin-top:4px; }
+
+        .footer-text { text-align:center; font-size:11px; color:#9ca3af; margin-top:32px; line-height:1.6; }
+
+        .right-side {
+            flex:1; position:relative; z-index:5;
+            display:flex; align-items:flex-end; padding:48px;
+        }
+        .right-text { color:#fff; }
+        .right-text h2 { font-size:28px; font-weight:600; line-height:1.3; margin-bottom:8px; }
+        .right-text p { font-size:14px; opacity:0.75; }
+
+        .dots { display:flex; gap:8px; margin-top:20px; }
+        .dot { width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.4); cursor:pointer; transition:background 0.3s; }
+        .dot.active { background:#fff; }
+    </style>
+</head>
+<body>
+
+<div class="carousel">
+    <div class="carousel-slide active" style="background-image:url('/images/login1b.jpeg')"></div>
+    <div class="carousel-slide" style="background-image:url('/images/login2.jpeg')"></div>
+    <div class="carousel-slide" style="background-image:url('/images/login3.jpeg')"></div>
+</div>
+
+<div class="login-side">
+    <div class="logo-wrap">
+        <img src="/images/logo.png" alt="TSJE">
+        <h1>Dirección de Organizaciones<br>Intermedias</h1>
+        <p>Tribunal Superior de Justicia Electoral</p>
+    </div>
+
     <x-auth-session-status class="mb-4" :status="session('status')" />
 
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="form-group">
+            <label for="email">Correo electrónico</label>
+            <input type="email" id="email" name="email" value="{{ old('email') }}" required autofocus autocomplete="username" placeholder="usuario@tsje.gov.py">
+            @error('email')<p class="error-msg">{{ $message }}</p>@enderror
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            {{-- Aviso Bloq Mayús --}}
-<div id="aviso-mayus" style="display:none; margin-top:6px; background:#fef9c3; color:#854d0e; font-size:12px; padding:4px 10px; border-radius:6px;">
-    ⚠️ Bloq Mayús activado
+        <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="••••••••">
+            <div class="aviso-mayus" id="aviso-mayus">⚠️ Bloq Mayús activado</div>
+            @error('password')<p class="error-msg">{{ $message }}</p>@enderror
+        </div>
+
+        <div class="remember-row">
+            <label>
+                <input type="checkbox" name="remember" id="remember_me">
+                Recordarme
+            </label>
+            @if(Route::has('password.request'))
+            <a href="{{ route('password.request') }}">¿Olvidaste tu contraseña?</a>
+            @endif
+        </div>
+
+        <button type="submit" class="btn-login">Iniciar sesión</button>
+    </form>
+
+    <p class="footer-text">República del Paraguay &mdash; TSJE<br>Sistema de Gestión Electoral</p>
 </div>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+<div class="right-side">
+    <div class="right-text">
+        <h2>Sistema de Gestión<br>Electoral</h2>
+        <p>Dirección de Organizaciones Intermedias</p>
+        <div class="dots">
+            <div class="dot active" onclick="goTo(0)"></div>
+            <div class="dot" onclick="goTo(1)"></div>
+            <div class="dot" onclick="goTo(2)"></div>
         </div>
+    </div>
+</div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+<script>
+const passInput = document.getElementById('password');
+const avisoMayus = document.getElementById('aviso-mayus');
+passInput.addEventListener('keyup', e => avisoMayus.style.display = e.getModifierState('CapsLock') ? 'block' : 'none');
+passInput.addEventListener('keydown', e => avisoMayus.style.display = e.getModifierState('CapsLock') ? 'block' : 'none');
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
+const slides = document.querySelectorAll('.carousel-slide');
+const dots = document.querySelectorAll('.dot');
+let current = 0;
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-    <script>
-    const passInput = document.getElementById('password');
-    const avisoMayus = document.getElementById('aviso-mayus');
+function goTo(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+}
 
-    passInput.addEventListener('keyup', function(e) {
-        avisoMayus.style.display = e.getModifierState('CapsLock') ? 'block' : 'none';
-    });
-
-    passInput.addEventListener('keydown', function(e) {
-        avisoMayus.style.display = e.getModifierState('CapsLock') ? 'block' : 'none';
-    });
+setInterval(() => goTo((current + 1) % slides.length), 5000);
 </script>
-</x-guest-layout>
+
+</body>
+</html>
