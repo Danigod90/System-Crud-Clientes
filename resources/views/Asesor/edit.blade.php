@@ -536,34 +536,62 @@ $padrones = $entrada->detalleTecnico->mat_final_padrones !== null ? $entrada->de
 $cuartos  = $entrada->detalleTecnico->mat_final_cuartos  !== null ? $entrada->detalleTecnico->mat_final_cuartos  : $mesas;
 $urnas    = $entrada->detalleTecnico->mat_final_urnas    !== null ? $entrada->detalleTecnico->mat_final_urnas    : ($mesas * $papeletas);
 $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->detalleTecnico->mat_final_tintas   : $mesas;
-    @endphp
-    <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px;">
-        <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar</p>
-        <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px;">
-    <div style="text-align:center;">
-        <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Actas</p>
-        <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $actas }}</p>
-    </div>
-    <div style="text-align:center;">
-        <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Padrones</p>
-        <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $padrones }}</p>
-    </div>
-    <div style="text-align:center;">
-        <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Cuartos Oscuros</p>
-        <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $cuartos }}</p>
-    </div>
-    <div style="text-align:center;">
-        <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Urnas</p>
-        <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $urnas }}</p>
-    </div>
-    <div style="text-align:center;">
-        <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Tintas</p>
-       <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $tintas }}</p>
+   @endphp
+<div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px;">
+    <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar</p>
+    <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:8px;">
+        <div style="text-align:center;">
+            <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Papeletas</p>
+            <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $entrada->detalleTecnico->mat_final_papeletas !== null ? $entrada->detalleTecnico->mat_final_papeletas : ($entrada->detalleTecnico->cantidad_papeletas ?? 0) }}</p>
+            @if($entrada->detalleTecnico->mat_final_papeletas_formato)
+            <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($entrada->detalleTecnico->mat_final_papeletas_formato) }}</p>
+            @endif
+        </div>
+        <div style="text-align:center;">
+            <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Actas</p>
+            <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $actas }}</p>
+            @if($entrada->detalleTecnico->mat_final_actas_formato)
+            <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($entrada->detalleTecnico->mat_final_actas_formato) }}</p>
+            @endif
+        </div>
+        <div style="text-align:center;">
+            <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Padrones</p>
+            <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $padrones }}</p>
+            @if($entrada->detalleTecnico->mat_final_padrones_formato)
+            <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($entrada->detalleTecnico->mat_final_padrones_formato) }}</p>
+            @endif
+        </div>
+        <div style="text-align:center;">
+            <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Cuartos Oscuros</p>
+            <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $cuartos }}</p>
+        </div>
+        <div style="text-align:center;">
+            <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Urnas</p>
+            <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $urnas }}</p>
+        </div>
+        <div style="text-align:center;">
+            <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Tintas</p>
+            <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $tintas }}</p>
+        </div>
     </div>
 </div>
+
+@if($entrada->detalleTecnico->nota_asesor)
+<div style="margin-top:10px; background:#fef9c3; border:1px solid #fde047; border-radius:8px; padding:10px 14px; display:flex; gap:8px;">
+    <svg width="15" height="15" fill="none" stroke="#854d0e" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0; margin-top:1px;">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+    </svg>
+    <div>
+        <p style="font-size:11px; font-weight:700; color:#854d0e; text-transform:uppercase; margin:0 0 4px;">Importante</p>
+        <p style="font-size:13px; color:#713f12; margin:0;">{{ $entrada->detalleTecnico->nota_asesor }}</p>
     </div>
-    @endif
-    </div>
+</div>
+@endif
+@endif
+</div>
 
     {{-- FORMULARIO EDITABLE --}}
     <form id="tec-form" method="POST" action="{{ route('asesor.detalle_tecnico.saveAsesor', $entrada->id) }}"
@@ -645,47 +673,80 @@ $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->de
                 <option value="Nominal">
             </datalist>
         </div>
-
-        <div style="margin-bottom:14px;">
-            <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 10px;">Materiales Estimados</p>
-            <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:16px;">
-                <p style="font-size:11px; font-weight:600; color:#1e40af; margin:0 0 12px; text-transform:uppercase;">Calculado automáticamente — podés editar los valores</p>
-                <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:12px;">
-                    <div>
-                        <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Actas</label>
-                        <input type="number" id="asesor_mat_actas" name="mat_final_actas" min="0"
-                            value="{{ old('mat_final_actas', $entrada->detalleTecnico?->mat_final_actas) }}"
-                            style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
-                    </div>
-                    <div>
-                        <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Padrones</label>
-                        <input type="number" id="asesor_mat_padrones" name="mat_final_padrones" min="0"
-                            value="{{ old('mat_final_padrones', $entrada->detalleTecnico?->mat_final_padrones) }}"
-                            style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
-                    </div>
-                    <div>
-                        <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Cuartos Oscuros</label>
-                        <input type="number" id="asesor_mat_cuartos" name="mat_final_cuartos" min="0"
-                            value="{{ old('mat_final_cuartos', $entrada->detalleTecnico?->mat_final_cuartos) }}"
-                            style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
-                    </div>
-                    <div>
-                        <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Urnas</label>
-                        <input type="number" id="asesor_mat_urnas" name="mat_final_urnas" min="0"
-                            value="{{ old('mat_final_urnas', $entrada->detalleTecnico?->mat_final_urnas) }}"
-                            style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
-                    </div>
-                    <div>
-    <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Tintas</label>
-    <input type="number" id="asesor_mat_tintas" name="mat_final_tintas" min="0"
-        value="{{ old('mat_final_tintas', $entrada->detalleTecnico?->mat_final_tintas) }}"
-        style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
-</div>
-                </div>
+<div style="margin-bottom:14px;">
+    <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 10px;">Materiales Estimados</p>
+    <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:16px;">
+        <p style="font-size:11px; font-weight:600; color:#1e40af; margin:0 0 12px; text-transform:uppercase;">Calculado automáticamente — podés editar los valores</p>
+        <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:12px;">
+            <div>
+                <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Papeletas</label>
+                <input type="number" id="asesor_mat_papeletas" name="mat_final_papeletas" min="0"
+                    value="{{ old('mat_final_papeletas', $entrada->detalleTecnico?->mat_final_papeletas ?? $entrada->detalleTecnico?->cantidad_papeletas) }}"
+                    style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center; margin-bottom:4px;">
+                <select name="mat_final_papeletas_formato" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 6px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
+                    <option value="">Formato...</option>
+                    <option value="impreso" {{ old('mat_final_papeletas_formato', $entrada->detalleTecnico?->mat_final_papeletas_formato) == 'impreso' ? 'selected' : '' }}>Impreso</option>
+                    <option value="digital" {{ old('mat_final_papeletas_formato', $entrada->detalleTecnico?->mat_final_papeletas_formato) == 'digital' ? 'selected' : '' }}>Digital</option>
+                </select>
+            </div>
+            <div>
+                <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Actas</label>
+                <input type="number" id="asesor_mat_actas" name="mat_final_actas" min="0"
+                    value="{{ old('mat_final_actas', $entrada->detalleTecnico?->mat_final_actas) }}"
+                    style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center; margin-bottom:4px;">
+                <select name="mat_final_actas_formato" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 6px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
+                    <option value="">Formato...</option>
+                    <option value="impreso" {{ old('mat_final_actas_formato', $entrada->detalleTecnico?->mat_final_actas_formato) == 'impreso' ? 'selected' : '' }}>Impreso</option>
+                    <option value="digital" {{ old('mat_final_actas_formato', $entrada->detalleTecnico?->mat_final_actas_formato) == 'digital' ? 'selected' : '' }}>Digital</option>
+                </select>
+            </div>
+            <div>
+                <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Padrones</label>
+                <input type="number" id="asesor_mat_padrones" name="mat_final_padrones" min="0"
+                    value="{{ old('mat_final_padrones', $entrada->detalleTecnico?->mat_final_padrones) }}"
+                    style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center; margin-bottom:4px;">
+                <select name="mat_final_padrones_formato" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 6px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
+                    <option value="">Formato...</option>
+                    <option value="impreso" {{ old('mat_final_padrones_formato', $entrada->detalleTecnico?->mat_final_padrones_formato) == 'impreso' ? 'selected' : '' }}>Impreso</option>
+                    <option value="digital" {{ old('mat_final_padrones_formato', $entrada->detalleTecnico?->mat_final_padrones_formato) == 'digital' ? 'selected' : '' }}>Digital</option>
+                </select>
+            </div>
+            <div>
+                <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Cuartos</label>
+                <input type="number" id="asesor_mat_cuartos" name="mat_final_cuartos" min="0"
+                    value="{{ old('mat_final_cuartos', $entrada->detalleTecnico?->mat_final_cuartos) }}"
+                    style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
+            </div>
+            <div>
+                <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Urnas</label>
+                <input type="number" id="asesor_mat_urnas" name="mat_final_urnas" min="0"
+                    value="{{ old('mat_final_urnas', $entrada->detalleTecnico?->mat_final_urnas) }}"
+                    style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
+            </div>
+            <div>
+                <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Tintas</label>
+                <input type="number" id="asesor_mat_tintas" name="mat_final_tintas" min="0"
+                    value="{{ old('mat_final_tintas', $entrada->detalleTecnico?->mat_final_tintas) }}"
+                    style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
             </div>
         </div>
-
-
+    </div>
+</div>
+<div style="margin-top:14px;">
+    <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+        <svg width="15" height="15" fill="none" stroke="#374151" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+            <polyline points="10 9 9 9 8 9"/>
+        </svg>
+        <label style="font-size:11px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px;">Importante — Nota para Técnica</label>
+    </div>
+    <textarea name="nota_asesor" rows="3"
+        placeholder="Escribí acá cualquier detalle importante que técnica deba saber..."
+        style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; resize:vertical;">{{ old('nota_asesor', $entrada->detalleTecnico?->nota_asesor) }}</textarea>
+</div>
         <div style="display:flex; justify-content:flex-end; gap:8px;">
             @if($entrada->detalleTecnico)
             <button type="button" onclick="cancelarEdicionTec()"
@@ -1040,6 +1101,9 @@ function calcularMaterialesAsesor() {
     if (fPadrones) fPadrones.value = padrones;
     if (fCuartos)  fCuartos.value  = cuartos;
     if (fUrnas)    fUrnas.value    = urnas;
+
+    const fPapeletas = document.getElementById('asesor_mat_papeletas');
+if (fPapeletas) fPapeletas.value = papeletas;
 
     const fTintas = document.getElementById('asesor_mat_tintas');
     if (fTintas) fTintas.value = tintas;

@@ -47,6 +47,11 @@ if ($request->has('mat_final_padrones')) $detalle->mat_final_padrones = (int)$re
 if ($request->has('mat_final_cuartos'))  $detalle->mat_final_cuartos  = (int)$request->mat_final_cuartos;
 if ($request->has('mat_final_urnas'))    $detalle->mat_final_urnas    = (int)$request->mat_final_urnas;
 if ($request->has('mat_final_tintas'))   $detalle->mat_final_tintas   = (int)$request->mat_final_tintas;
+if ($request->has('mat_final_papeletas'))         $detalle->mat_final_papeletas         = (int)$request->mat_final_papeletas;
+if ($request->has('mat_final_papeletas_formato'))  $detalle->mat_final_papeletas_formato  = $request->mat_final_papeletas_formato;
+if ($request->has('mat_final_actas_formato'))      $detalle->mat_final_actas_formato      = $request->mat_final_actas_formato;
+if ($request->has('mat_final_padrones_formato'))   $detalle->mat_final_padrones_formato   = $request->mat_final_padrones_formato;
+if ($request->has('nota_asesor')) $detalle->nota_asesor = $request->nota_asesor;
  $detalle->asesor_updated_at = now();
     $detalle->save();
 

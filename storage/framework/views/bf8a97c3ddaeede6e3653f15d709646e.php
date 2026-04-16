@@ -175,7 +175,7 @@
                 </span>
             </div>
 
-            <?php if($conNota->asunto_log): ?>
+            <?php if($conNota->asunto_log && !$conNota->asunto_tec): ?>
             <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-top:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
                 <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:8px;">
                     Detalle Logístico
