@@ -413,6 +413,13 @@ $padronCINO  = $detalle->padron_con_cedula ? '[  ]' : '[X]';
     $detalle->tec_realizado_at = now();
     $detalle->save();
 
+    // Si tiene asunto_log + asunto_tec juntos, cambiar log_estado también
+    $entrada = EntradaConNota::findOrFail($entrada_id);
+    if ($entrada->asunto_log && $entrada->asunto_tec) {
+        $entrada->log_estado = 'realizado';
+        $entrada->save();
+    }
+
     return redirect()->back()->with('success', 'Trabajo técnico marcado como realizado.');
 }
 public function checkAsesorUpdate($entrada_id)
