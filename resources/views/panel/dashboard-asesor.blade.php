@@ -101,10 +101,11 @@
         <table style="width:100%; border-collapse:collapse;">
             <thead>
                 <tr style="background:rgba(100,150,200,0.2);">
-                    <th style="padding:5px 10px; text-align:left; color:#fff; font-weight:500; font-size:12px; width:120px;">Codigo</th>
-                    <th style="padding:5px 10px; text-align:left; color:#fff; font-weight:500; font-size:12px;">Organizacion</th>
-                    <th style="padding:5px 1px; text-align:left; color:#fff; font-weight:500; font-size:12px; width:100px;">Asunto</th>
-                    <th style="padding:5px 4px; text-align:left; color:#fff; font-weight:500; font-size:12px; width:120px;">Estado</th>
+                    <th style="padding:5px 10px; text-align:left; color:#374151; font-weight:500; font-size:12px; width:120px;">Codigo</th>
+                    <th style="padding:5px 10px; text-align:left; color:#374151; font-weight:500; font-size:12px;">Organizacion</th>
+                    <th style="padding:2px 10px; text-align:left; color:#374151; font-weight:500; font-size:12px; width:80px; white-space:nowrap;">Fecha Elección</th>
+                    <th style="padding:5px 1px; text-align:left; color:#374151; font-weight:500; font-size:12px; width:100px;">Asunto</th>
+                    <th style="padding:5px 4px; text-align:left; color:#374151; font-weight:500; font-size:12px; width:120px;">Estado</th>
                 </tr>
             </thead>
         </table>
@@ -124,6 +125,9 @@
             <tr style="border-bottom:1px solid #f3f4f6;" onmouseover="this.style.background='rgba(232,131,74,0.06)'" onmouseout="this.style.background='transparent'">
                 <td style="padding:5px 10px; color:#E8834A; font-weight:600; font-family:monospace; width:120px;">{{ $entrada->codigo_org }}</td>
                 <td style="padding:5px 10px; color:#111827;">{{ $entrada->nombre_organizacion }}</td>
+                <td style="padding:5px 10px; color:#6b7280; width:100px; font-size:11px;">
+    {{ $entrada->fecha_eleccion?->format('d/m/Y') ?? '—' }}
+</td>
                 <td style="padding:5px 1px; color:#111827; font-weight:600; width:100px;">{{ $entrada->asunto_texto }}</td>
                 <td style="padding:5px 2px; width:120px;">
                     @if($entrada->asunto_char)

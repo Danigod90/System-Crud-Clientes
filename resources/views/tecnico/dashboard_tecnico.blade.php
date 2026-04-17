@@ -90,22 +90,39 @@
     </div>
 
     {{-- HEADER TABLA --}}
-    <div style="background:rgba(255,255,255,0.95); border-radius:16px 16px 0 0; border:1px solid rgba(255,255,255,0.9); border-bottom:none;">
-        <div style="padding:6px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; font-weight:500; color:#111827; display:flex; justify-content:space-between; align-items:center;">
-            Organizaciones recientes
+<div style="background:rgba(255,255,255,0.95); border-radius:16px 16px 0 0; border:1px solid rgba(255,255,255,0.9); border-bottom:none;">
+    <div style="padding:6px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; font-weight:500; color:#111827; display:flex; justify-content:space-between; align-items:center;">
+        Organizaciones recientes
+        <div style="display:flex; align-items:center; gap:8px;">
+            <form method="GET" action="{{ route('tecnico.dashboard') }}" style="display:flex; align-items:center; gap:6px;">
+                <select name="asesor" onchange="this.form.submit()" style="border:1px solid #e5e7eb; border-radius:8px; padding:4px 10px; font-size:12px; color:#374151; outline:none; background:#fff;">
+                    <option value="">Todos los asesores</option>
+                    @foreach($asesores as $asesor)
+                        @php $nombreCompleto = $asesor->nombre . ' ' . $asesor->apellido; @endphp
+                        <option value="{{ $nombreCompleto }}" {{ request('asesor') == $nombreCompleto ? 'selected' : '' }}>
+                            {{ $nombreCompleto }}
+                        </option>
+                    @endforeach
+                </select>
+                @if(request('asesor'))
+                    <a href="{{ route('tecnico.dashboard') }}" style="font-size:12px; color:#6b7280; text-decoration:none;">✕</a>
+                @endif
+            </form>
             <a href="{{ route('tecnico.organizaciones') }}" style="font-size:12px; color:#1f0566; text-decoration:none;">Ver todas</a>
         </div>
-        <table style="width:100%; border-collapse:collapse;">
-            <thead>
-                <tr style="background:rgba(100,150,200,0.2);">
-                    <th style="padding:5px 10px; text-align:left; color:#fff; font-weight:500; font-size:12px; width:120px;">Codigo</th>
-                    <th style="padding:5px 10px; text-align:left; color:#fff; font-weight:500; font-size:12px;">Organizacion</th>
-                    <th style="padding:5px 1px; text-align:left; color:#fff; font-weight:500; font-size:12px; width:100px;">Asunto</th>
-                    <th style="padding:5px 4px; text-align:left; color:#fff; font-weight:500; font-size:12px; width:120px;">Estado</th>
-                </tr>
-            </thead>
-        </table>
     </div>
+    <table style="width:100%; border-collapse:collapse;">
+        <thead>
+            <tr style="background:rgba(100,150,200,0.2);">
+    <th style="padding:5px 10px; text-align:left; color:#374151; font-weight:500; font-size:12px; width:120px;">Codigo</th>
+    <th style="padding:5px 10px; text-align:left; color:#374151; font-weight:500; font-size:12px;">Organizacion</th>
+    <th style="padding:5px 10px; text-align:left; color:#374151; font-weight:500; font-size:12px; width:120px;">Asesor</th>
+    <th style="padding:5px 1px; text-align:left; color:#374151; font-weight:500; font-size:12px; width:100px;">Asunto</th>
+    <th style="padding:5px 4px; text-align:left; color:#374151; font-weight:500; font-size:12px; width:120px;">Estado</th>
+</tr>
+        </thead>
+    </table>
+</div>
 
 </div>
 </div>
@@ -121,6 +138,7 @@
                     <a href="{{ route('tecnico.organizacion.edit', $entrada->id) }}" style="color:#E8834A; text-decoration:none;">{{ $entrada->codigo_org }}</a>
                 </td>
                 <td style="padding:5px 10px; color:#111827;">{{ $entrada->nombre_organizacion }}</td>
+                <td style="padding:5px 10px; color:#6b7280; width:120px; font-size:11px;">{{ $entrada->asesor_asignado ?? '-' }}</td>
                 <td style="padding:5px 1px; color:#111827; font-weight:600; width:100px;">{{ $entrada->asunto_texto }}</td>
                 <td style="padding:5px 2px; width:120px;">
                     @if($entrada->asunto_log)

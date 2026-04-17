@@ -99,22 +99,40 @@
     </div>
 
     
-    <div style="background:rgba(255,255,255,0.95); border-radius:16px 16px 0 0; border:1px solid rgba(255,255,255,0.9); border-bottom:none;">
-        <div style="padding:6px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; font-weight:500; color:#111827; display:flex; justify-content:space-between; align-items:center;">
-            Organizaciones recientes
+<div style="background:rgba(255,255,255,0.95); border-radius:16px 16px 0 0; border:1px solid rgba(255,255,255,0.9); border-bottom:none;">
+    <div style="padding:6px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; font-weight:500; color:#111827; display:flex; justify-content:space-between; align-items:center;">
+        Organizaciones recientes
+        <div style="display:flex; align-items:center; gap:8px;">
+            <form method="GET" action="<?php echo e(route('tecnico.dashboard')); ?>" style="display:flex; align-items:center; gap:6px;">
+                <select name="asesor" onchange="this.form.submit()" style="border:1px solid #e5e7eb; border-radius:8px; padding:4px 10px; font-size:12px; color:#374151; outline:none; background:#fff;">
+                    <option value="">Todos los asesores</option>
+                    <?php $__currentLoopData = $asesores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asesor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <?php $nombreCompleto = $asesor->nombre . ' ' . $asesor->apellido; ?>
+                        <option value="<?php echo e($nombreCompleto); ?>" <?php echo e(request('asesor') == $nombreCompleto ? 'selected' : ''); ?>>
+                            <?php echo e($nombreCompleto); ?>
+
+                        </option>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                </select>
+                <?php if(request('asesor')): ?>
+                    <a href="<?php echo e(route('tecnico.dashboard')); ?>" style="font-size:12px; color:#6b7280; text-decoration:none;">✕</a>
+                <?php endif; ?>
+            </form>
             <a href="<?php echo e(route('tecnico.organizaciones')); ?>" style="font-size:12px; color:#1f0566; text-decoration:none;">Ver todas</a>
         </div>
-        <table style="width:100%; border-collapse:collapse;">
-            <thead>
-                <tr style="background:rgba(100,150,200,0.2);">
-                    <th style="padding:5px 10px; text-align:left; color:#fff; font-weight:500; font-size:12px; width:120px;">Codigo</th>
-                    <th style="padding:5px 10px; text-align:left; color:#fff; font-weight:500; font-size:12px;">Organizacion</th>
-                    <th style="padding:5px 1px; text-align:left; color:#fff; font-weight:500; font-size:12px; width:100px;">Asunto</th>
-                    <th style="padding:5px 4px; text-align:left; color:#fff; font-weight:500; font-size:12px; width:120px;">Estado</th>
-                </tr>
-            </thead>
-        </table>
     </div>
+    <table style="width:100%; border-collapse:collapse;">
+        <thead>
+            <tr style="background:rgba(100,150,200,0.2);">
+    <th style="padding:5px 10px; text-align:left; color:#374151; font-weight:500; font-size:12px; width:120px;">Codigo</th>
+    <th style="padding:5px 10px; text-align:left; color:#374151; font-weight:500; font-size:12px;">Organizacion</th>
+    <th style="padding:5px 10px; text-align:left; color:#374151; font-weight:500; font-size:12px; width:120px;">Asesor</th>
+    <th style="padding:5px 1px; text-align:left; color:#374151; font-weight:500; font-size:12px; width:100px;">Asunto</th>
+    <th style="padding:5px 4px; text-align:left; color:#374151; font-weight:500; font-size:12px; width:120px;">Estado</th>
+</tr>
+        </thead>
+    </table>
+</div>
 
 </div>
 </div>
@@ -130,10 +148,11 @@
                     <a href="<?php echo e(route('tecnico.organizacion.edit', $entrada->id)); ?>" style="color:#E8834A; text-decoration:none;"><?php echo e($entrada->codigo_org); ?></a>
                 </td>
                 <td style="padding:5px 10px; color:#111827;"><?php echo e($entrada->nombre_organizacion); ?></td>
+                <td style="padding:5px 10px; color:#6b7280; width:120px; font-size:11px;"><?php echo e($entrada->asesor_asignado ?? '-'); ?></td>
                 <td style="padding:5px 1px; color:#111827; font-weight:600; width:100px;"><?php echo e($entrada->asunto_texto); ?></td>
                 <td style="padding:5px 2px; width:120px;">
                     <?php if($entrada->asunto_log): ?>
-                        <?php $logDot = ($entrada->log_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; ?>
+                        <?php $logDot = in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? '#16a34a' : '#eab308'; ?>
                         <span style="display:inline-flex; align-items:center; gap:3px; margin-right:6px;">
                             <span style="font-size:11px; color:#6b7280;">Log</span>
                             <span style="width:9px; height:9px; border-radius:50%; background:<?php echo e($logDot); ?>; display:inline-block;"></span>

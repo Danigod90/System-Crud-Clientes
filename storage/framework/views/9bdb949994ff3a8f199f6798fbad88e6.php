@@ -103,9 +103,26 @@
     
     <div style="background:rgba(255,255,255,0.95); border-radius:16px 16px 0 0; border:1px solid rgba(255,255,255,0.9); border-bottom:none;">
         <div style="padding:6px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; font-weight:500; color:#111827; display:flex; justify-content:space-between; align-items:center;">
-            Ultimas organizaciones ingresadas
-            <a href="<?php echo e(route('secretaria.con-nota.index')); ?>" style="font-size:12px; color:#185FA5; text-decoration:none;">Ver todas</a>
-        </div>
+    Ultimas organizaciones ingresadas
+    <div style="display:flex; align-items:center; gap:8px;">
+        <form method="GET" action="<?php echo e(route('panel.dashboard')); ?>" style="display:flex; align-items:center; gap:6px;">
+            <select name="asesor" onchange="this.form.submit()" style="border:1px solid #e5e7eb; border-radius:8px; padding:4px 10px; font-size:12px; color:#374151; outline:none; background:#fff;">
+                <option value="">Todos los asesores</option>
+                <?php $__currentLoopData = $asesores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asesor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <?php $nombreCompleto = $asesor->nombre . ' ' . $asesor->apellido; ?>
+                    <option value="<?php echo e($nombreCompleto); ?>" <?php echo e(request('asesor') == $nombreCompleto ? 'selected' : ''); ?>>
+                        <?php echo e($nombreCompleto); ?>
+
+                    </option>
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+            </select>
+            <?php if(request('asesor')): ?>
+                <a href="<?php echo e(route('panel.dashboard')); ?>" style="font-size:12px; color:#6b7280; text-decoration:none;">✕</a>
+            <?php endif; ?>
+        </form>
+        <a href="<?php echo e(route('secretaria.con-nota.index')); ?>" style="font-size:12px; color:#185FA5; text-decoration:none;">Ver todas</a>
+    </div>
+</div>
         <table style="width:100%; border-collapse:collapse;">
             <thead>
                 <tr style="background:rgba(43,78,200,0.25);">
@@ -143,14 +160,14 @@
                         </span>
                     <?php endif; ?>
                     <?php if($entrada->asunto_log): ?>
-                        <?php $logDot = ($entrada->log_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; ?>
+                        <?php $logDot = in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? '#16a34a' : '#eab308'; ?>
                         <span style="display:inline-flex; align-items:center; gap:3px; margin-right:6px;">
                             <span style="font-size:11px; color:#6b7280;">Log</span>
                             <span style="width:9px; height:9px; border-radius:50%; background:<?php echo e($logDot); ?>; display:inline-block;"></span>
                         </span>
                     <?php endif; ?>
                     <?php if($entrada->asunto_tec): ?>
-                        <?php $tecDot = ($entrada->tec_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; ?>
+                        <?php $tecDot = $entrada->detalleTecnico?->tec_realizado ? '#16a34a' : '#eab308'; ?>
                         <span style="display:inline-flex; align-items:center; gap:3px;">
                             <span style="font-size:11px; color:#6b7280;">Tec</span>
                             <span style="width:9px; height:9px; border-radius:50%; background:<?php echo e($tecDot); ?>; display:inline-block;"></span>

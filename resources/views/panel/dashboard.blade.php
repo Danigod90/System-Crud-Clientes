@@ -94,9 +94,25 @@
     {{-- HEADER TABLA FIJO --}}
     <div style="background:rgba(255,255,255,0.95); border-radius:16px 16px 0 0; border:1px solid rgba(255,255,255,0.9); border-bottom:none;">
         <div style="padding:6px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; font-weight:500; color:#111827; display:flex; justify-content:space-between; align-items:center;">
-            Ultimas organizaciones ingresadas
-            <a href="{{ route('secretaria.con-nota.index') }}" style="font-size:12px; color:#185FA5; text-decoration:none;">Ver todas</a>
-        </div>
+    Ultimas organizaciones ingresadas
+    <div style="display:flex; align-items:center; gap:8px;">
+        <form method="GET" action="{{ route('panel.dashboard') }}" style="display:flex; align-items:center; gap:6px;">
+            <select name="asesor" onchange="this.form.submit()" style="border:1px solid #e5e7eb; border-radius:8px; padding:4px 10px; font-size:12px; color:#374151; outline:none; background:#fff;">
+                <option value="">Todos los asesores</option>
+                @foreach($asesores as $asesor)
+                    @php $nombreCompleto = $asesor->nombre . ' ' . $asesor->apellido; @endphp
+                    <option value="{{ $nombreCompleto }}" {{ request('asesor') == $nombreCompleto ? 'selected' : '' }}>
+                        {{ $nombreCompleto }}
+                    </option>
+                @endforeach
+            </select>
+            @if(request('asesor'))
+                <a href="{{ route('panel.dashboard') }}" style="font-size:12px; color:#6b7280; text-decoration:none;">✕</a>
+            @endif
+        </form>
+        <a href="{{ route('secretaria.con-nota.index') }}" style="font-size:12px; color:#185FA5; text-decoration:none;">Ver todas</a>
+    </div>
+</div>
         <table style="width:100%; border-collapse:collapse;">
             <thead>
                 <tr style="background:rgba(43,78,200,0.25);">

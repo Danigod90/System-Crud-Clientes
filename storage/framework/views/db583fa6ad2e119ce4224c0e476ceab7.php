@@ -147,7 +147,7 @@
                                 </span>
                             <?php endif; ?>
                             <?php if($entrada->asunto_log): ?>
-                                <?php $logDot = ($entrada->log_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; ?>
+                                <?php $logDot = in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? '#16a34a' : '#eab308'; ?>
                                 <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
                                     <span style="font-size:11px; color:#6b7280;">Log</span>
                                     <span style="width:9px; height:9px; border-radius:50%; background:<?php echo e($logDot); ?>; display:inline-block;"></span>
