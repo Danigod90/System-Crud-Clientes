@@ -136,15 +136,28 @@
 @endphp
         <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px;">
             <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar</p>
-            <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px;">
+            <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:8px;">
                 <div style="text-align:center;">
-                    <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Actas</p>
-                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $actasRO }}</p>
+                    <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Papeletas</p>
+                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $entrada->detalleTecnico->mat_final_papeletas !== null ? $entrada->detalleTecnico->mat_final_papeletas : ($entrada->detalleTecnico->cantidad_papeletas ?? 0) }}</p>
+                    @if($entrada->detalleTecnico->mat_final_papeletas_formato)
+                    <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($entrada->detalleTecnico->mat_final_papeletas_formato) }}</p>
+                    @endif
                 </div>
                 <div style="text-align:center;">
-                    <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Padrones</p>
-                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $padronesRO }}</p>
-                </div>
+    <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Actas</p>
+    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $actasRO }}</p>
+    @if($entrada->detalleTecnico->mat_final_actas_formato)
+    <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($entrada->detalleTecnico->mat_final_actas_formato) }}</p>
+    @endif
+</div>
+<div style="text-align:center;">
+    <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Padrones</p>
+    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $padronesRO }}</p>
+    @if($entrada->detalleTecnico->mat_final_padrones_formato)
+    <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($entrada->detalleTecnico->mat_final_padrones_formato) }}</p>
+    @endif
+</div>
                 <div style="text-align:center;">
                     <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Cuartos Oscuros</p>
                     <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $cuartosRO }}</p>
@@ -160,6 +173,21 @@
                 </div>
             </div>
         @endif
+        {{-- NOTA DEL ASESOR --}}
+@if($entrada->detalleTecnico->nota_asesor)
+<div style="margin-top:10px; background:#fef9c3; border:1px solid #fde047; border-radius:8px; padding:10px 14px; display:flex; gap:8px;">
+    <svg width="15" height="15" fill="none" stroke="#854d0e" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0; margin-top:1px;">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+    </svg>
+    <div>
+        <p style="font-size:11px; font-weight:700; color:#854d0e; text-transform:uppercase; margin:0 0 4px;">Importante</p>
+        <p style="font-size:13px; color:#713f12; margin:0;">{{ $entrada->detalleTecnico->nota_asesor }}</p>
+    </div>
+</div>
+@endif
     </div>
 
     {{-- FORMULARIO EDITABLE ASESOR --}}
@@ -204,51 +232,13 @@
 
         {{-- PAPELETAS --}}
         @php
-            $cantPapTec = $entrada->detalleTecnico->cantidad_papeletas ?? 0;
-            $cantListasTec = $entrada->detalleTecnico->cantidad_listas ?? 1;
             $candidaturasTec = ['Presidente y Vicepresidentes','Presidente y Vicepresidente','Secretario General y Adjunto','Comisión Directiva','Miembros Titulares','Miembros Titulares y Suplentes','Vocales Titulares','Vocales Titulares y Suplentes','Tribunal Electoral Independiente','Junta Electoral','Colegio Electoral','Síndico','Comité Revisadora de Cuentas'];
             $sistemasTec = ['Lista Única','Lista Cerrada','Lista Desbloqueada','Lista Cerrada Bloqueada','Nominal'];
-            $ordinalTec = ['Primera','Segunda','Tercera','Cuarta','Quinta','Sexta','Séptima','Octava','Novena','Décima'];
         @endphp
 
         <div style="margin-bottom:14px;">
             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Papeletas</label>
-            @for($p = 1; $p <= min($cantPapTec, 10); $p++)
-            <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:14px; margin-bottom:10px;">
-                <p style="font-size:12px; font-weight:700; color:#374151; margin:0 0 10px;">{{ $ordinalTec[$p-1] }} Papeleta</p>
-                <div style="display:flex; gap:8px; align-items:flex-start;">
-                    <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
-                        <label style="font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase;">Lista</label>
-                        @for($l = 1; $l <= min($cantListasTec, 5); $l++)
-                        <input type="text" name="pap_{{ $p }}_lista_{{ $l }}_nombre"
-                            value="{{ $entrada->detalleTecnico->{"pap_{$p}_lista_{$l}_nombre"} }}"
-                            placeholder="{{ $ordinalTec[$l-1] }} Lista"
-                            style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 7px; font-size:12px; color:#111827; background:#fff; box-sizing:border-box;">
-                        @endfor
-                    </div>
-                    <div style="flex:1;">
-                        <label style="font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; display:block; margin-bottom:4px;">Candidatura</label>
-                        <div style="display:flex; align-items:center; height:calc(100% - 20px);">
-                            <input type="text" name="pap_{{ $p }}_lista_1_candidatura"
-                                value="{{ $entrada->detalleTecnico->{"pap_{$p}_lista_1_candidatura"} }}"
-                                list="candidaturas-tec-list"
-                                placeholder="Candidatura..."
-                                style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 7px; font-size:12px; color:#111827; background:#fff; box-sizing:border-box; margin-top:{{ $cantListasTec > 1 ? round(($cantListasTec-1) * 29 / 2) : 0 }}px;">
-                        </div>
-                    </div>
-                    <div style="flex:1;">
-                        <label style="font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; display:block; margin-bottom:4px;">Sistema de Elección</label>
-                        <div style="display:flex; align-items:center; height:calc(100% - 20px);">
-                            <input type="text" name="pap_{{ $p }}_sistema_eleccion"
-                                value="{{ $entrada->detalleTecnico->{"pap_{$p}_sistema_eleccion"} }}"
-                                list="sistemas-tec-list"
-                                placeholder="Sistema..."
-                                style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 7px; font-size:12px; color:#111827; background:#fff; box-sizing:border-box; margin-top:{{ $cantListasTec > 1 ? round(($cantListasTec-1) * 29 / 2) : 0 }}px;">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @endfor
+            <div id="papeletas-tec-container"></div>
             <datalist id="candidaturas-tec-list">
                 @foreach($candidaturasTec as $c)
                 <option value="{{ $c }}">
@@ -268,18 +258,39 @@
 @endphp
 <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px; margin-bottom:14px;">
     <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar — podés editar los valores</p>
-    <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px;">
+    <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:8px;">
+        <div style="text-align:center;">
+            <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Papeletas</p>
+            <input type="number" name="mat_final_papeletas" min="0"
+                value="{{ old('mat_final_papeletas', $entrada->detalleTecnico->mat_final_papeletas ?? $entrada->detalleTecnico->cantidad_papeletas) }}"
+                style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center; margin-bottom:4px;">
+            <select name="mat_final_papeletas_formato" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 4px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
+                <option value="">Formato...</option>
+                <option value="impreso" {{ old('mat_final_papeletas_formato', $entrada->detalleTecnico->mat_final_papeletas_formato) == 'impreso' ? 'selected' : '' }}>Impreso</option>
+                <option value="digital" {{ old('mat_final_papeletas_formato', $entrada->detalleTecnico->mat_final_papeletas_formato) == 'digital' ? 'selected' : '' }}>Digital</option>
+            </select>
+        </div>
         <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Actas</p>
             <input type="number" name="mat_final_actas" min="0"
                 value="{{ old('mat_final_actas', $entrada->detalleTecnico->mat_final_actas ?? ($mEstForm * 3)) }}"
-                style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
+                style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center; margin-bottom:4px;">
+            <select name="mat_final_actas_formato" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 4px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
+                <option value="">Formato...</option>
+                <option value="impreso" {{ old('mat_final_actas_formato', $entrada->detalleTecnico->mat_final_actas_formato) == 'impreso' ? 'selected' : '' }}>Impreso</option>
+                <option value="digital" {{ old('mat_final_actas_formato', $entrada->detalleTecnico->mat_final_actas_formato) == 'digital' ? 'selected' : '' }}>Digital</option>
+            </select>
         </div>
-        <div style="text-align:center;">
+      <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Padrones</p>
             <input type="number" name="mat_final_padrones" min="0"
                 value="{{ old('mat_final_padrones', $entrada->detalleTecnico->mat_final_padrones ?? ($mEstForm * 3)) }}"
-                style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
+                style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center; margin-bottom:4px;">
+            <select name="mat_final_padrones_formato" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 4px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
+                <option value="">Formato...</option>
+                <option value="impreso" {{ old('mat_final_padrones_formato', $entrada->detalleTecnico->mat_final_padrones_formato) == 'impreso' ? 'selected' : '' }}>Impreso</option>
+                <option value="digital" {{ old('mat_final_padrones_formato', $entrada->detalleTecnico->mat_final_padrones_formato) == 'digital' ? 'selected' : '' }}>Digital</option>
+            </select>
         </div>
         <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Cuartos Oscuros</p>
@@ -301,6 +312,7 @@
         </div>
     </div>
 </div>
+
         <div style="display:flex; justify-content:flex-end; gap:8px;">
             <button type="button" onclick="cancelarEdicionAsesor()"
                     style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
@@ -381,8 +393,21 @@
                 <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">{{ $label }}</label>
                 <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $defaultsRO[$field] ?? '—' }}</p>
                 @if($formatoField)
-                <p style="font-size:11px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($entrada->detalleTecnico?->$formatoField ?? '') }}</p>
-                @endif
+@php
+    $fmtVal = $entrada->detalleTecnico?->$formatoField;
+    if (!$fmtVal) {
+        $fmtVal = match($formatoField) {
+            'mat_actas_electorales_formato' => $entrada->detalleTecnico?->mat_final_actas_formato,
+            'mat_padron_formato'            => $entrada->detalleTecnico?->mat_final_padrones_formato,
+            'mat_matriz_boletin_formato'    => $entrada->detalleTecnico?->mat_final_papeletas_formato,
+            default                         => null,
+        };
+    }
+@endphp
+@if($fmtVal)
+<p style="font-size:11px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($fmtVal) }}</p>
+@endif
+@endif
             </div>
             @endforeach
         </div>
@@ -608,11 +633,114 @@
 
     </div>
 </div>
+@php
+$savedDataTecPHP = [];
+for ($p = 1; $p <= 10; $p++) {
+    $savedDataTecPHP[$p] = [
+        'sistema'     => $entrada->detalleTecnico?->{"pap_{$p}_sistema_eleccion"} ?? '',
+        'candidatura' => $entrada->detalleTecnico?->{"pap_{$p}_lista_1_candidatura"} ?? '',
+        'listas'      => [],
+    ];
+    for ($l = 1; $l <= 5; $l++) {
+        $savedDataTecPHP[$p]['listas'][$l] = $entrada->detalleTecnico?->{"pap_{$p}_lista_{$l}_nombre"} ?? '';
+    }
+}
+@endphp
 <script>
+const savedDataTec = @json($savedDataTecPHP);
+
+const ordinalPapTec = ['Primera','Segunda','Tercera','Cuarta','Quinta','Sexta','Séptima','Octava','Novena','Décima'];
+const ordinalLisTec = ['Primera','Segunda','Tercera','Cuarta','Quinta'];
+
+function generarPapeletasTec() {
+    const cantPap = parseInt(document.querySelector('#asesor-form [name="cantidad_papeletas"]')?.value) || 0;
+    const cantLis = parseInt(document.querySelector('#asesor-form [name="cantidad_listas"]')?.value) || 0;
+    const container = document.getElementById('papeletas-tec-container');
+    if (!container) return;
+
+    const valoresActuales = {};
+    container.querySelectorAll('input').forEach(input => {
+        if (input.name) valoresActuales[input.name] = input.value;
+    });
+
+    container.innerHTML = '';
+    const marginTop = cantLis > 1 ? Math.round((cantLis - 1) * 29 / 2) : 0;
+
+    for (let p = 1; p <= Math.min(cantPap, 10); p++) {
+        const saved = savedDataTec[p] || {};
+        let listasHTML = '';
+        for (let l = 1; l <= Math.min(cantLis, 5); l++) {
+            const key = `pap_${p}_lista_${l}_nombre`;
+            const val = valoresActuales[key] !== undefined ? valoresActuales[key] : (saved.listas?.[l] || '');
+            listasHTML += `<input type="text" name="${key}" value="${val}" placeholder="${ordinalLisTec[l-1]} Lista"
+                style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 7px; font-size:12px; color:#111827; background:#fff; box-sizing:border-box; margin-bottom:4px;">`;
+        }
+        const candKey = `pap_${p}_lista_1_candidatura`;
+        const sisKey  = `pap_${p}_sistema_eleccion`;
+        const candVal = valoresActuales[candKey] !== undefined ? valoresActuales[candKey] : (saved.candidatura || '');
+        const sisVal  = valoresActuales[sisKey]  !== undefined ? valoresActuales[sisKey]  : (saved.sistema || '');
+
+        container.innerHTML += `
+        <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:14px; margin-bottom:10px;">
+            <p style="font-size:12px; font-weight:700; color:#374151; margin:0 0 10px;">${ordinalPapTec[p-1]} Papeleta</p>
+            <div style="display:flex; gap:8px; align-items:flex-start;">
+                <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
+                    <label style="font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase;">Lista</label>
+                    ${listasHTML}
+                </div>
+                <div style="flex:1;">
+                    <label style="font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; display:block; margin-bottom:4px;">Candidatura</label>
+                    <input type="text" name="${candKey}" value="${candVal}" list="candidaturas-tec-list" placeholder="Candidatura..."
+                        style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 7px; font-size:12px; color:#111827; background:#fff; box-sizing:border-box; margin-top:${marginTop}px;">
+                </div>
+                <div style="flex:1;">
+                    <label style="font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; display:block; margin-bottom:4px;">Sistema de Elección</label>
+                    <input type="text" name="${sisKey}" value="${sisVal}" list="sistemas-tec-list" placeholder="Sistema..."
+                        style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 7px; font-size:12px; color:#111827; background:#fff; box-sizing:border-box; margin-top:${marginTop}px;">
+                </div>
+            </div>
+        </div>`;
+    }
+}
+
+
+function calcularMaterialesTec() {
+    const mesas     = parseInt(document.querySelector('#asesor-form [name="cantidad_mesas"]')?.value) || 0;
+    const papeletas = parseInt(document.querySelector('#asesor-form [name="cantidad_papeletas"]')?.value) || 0;
+
+    const fPapeletas = document.querySelector('#asesor-form [name="mat_final_papeletas"]');
+    const fActas     = document.querySelector('#asesor-form [name="mat_final_actas"]');
+    const fPadrones  = document.querySelector('#asesor-form [name="mat_final_padrones"]');
+    const fCuartos   = document.querySelector('#asesor-form [name="mat_final_cuartos"]');
+    const fUrnas     = document.querySelector('#asesor-form [name="mat_final_urnas"]');
+    const fTintas    = document.querySelector('#asesor-form [name="mat_final_tintas"]');
+
+    if (fPapeletas) fPapeletas.value = papeletas;
+    if (fActas)     fActas.value     = mesas * 3;
+    if (fPadrones)  fPadrones.value  = mesas * 3;
+    if (fCuartos)   fCuartos.value   = mesas;
+    if (fUrnas)     fUrnas.value     = mesas * papeletas;
+    if (fTintas)    fTintas.value    = mesas;
+}
+
 function activarEdicionAsesor() {
     document.getElementById('asesor-readonly').style.display = 'none';
     document.getElementById('asesor-form').style.display = 'block';
     document.getElementById('btn-editar-asesor').style.display = 'none';
+    generarPapeletasTec();
+    calcularMaterialesTec();
+    document.querySelector('#asesor-form [name="cantidad_papeletas"]')?.addEventListener('input', () => { generarPapeletasTec(); calcularMaterialesTec(); });
+    document.querySelector('#asesor-form [name="cantidad_listas"]')?.addEventListener('input', generarPapeletasTec);
+    document.querySelector('#asesor-form [name="cantidad_mesas"]')?.addEventListener('input', calcularMaterialesTec);
+    // Sincronización inversa — cambiás papeletas en materiales y se actualiza arriba
+document.querySelector('#asesor-form [name="mat_final_papeletas"]')?.addEventListener('input', function() {
+    const val = parseInt(this.value) || 0;
+    const inputCantPap = document.querySelector('#asesor-form [name="cantidad_papeletas"]');
+    if (inputCantPap) {
+        inputCantPap.value = val;
+        generarPapeletasTec();
+    }
+});
 }
 
 function cancelarEdicionAsesor() {
@@ -635,20 +763,24 @@ function cancelarEdicionTec() {
 </script>
 
 <div id="banner-actualizacion" style="display:none; position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:9999; background:#fef3c7; border:1px solid #f59e0b; border-radius:10px; padding:12px 20px; font-size:13px; font-weight:500; color:#92400e; box-shadow:0 4px 12px rgba(0,0,0,0.15); align-items:center; gap:10px;">
-    ⚠️ El asesor actualizó los datos —
+    ⚠️ Hay cambios nuevos disponibles —
     <a href="javascript:location.reload()" style="color:#92400e; font-weight:700; text-decoration:underline;">recargá la página</a>
 </div>
 
 <script>
 const entradaId = {{ $entrada->id }};
-const timestampInicial = "{{ $entrada->detalleTecnico?->asesor_updated_at ?? '' }}";
+const timestampAsesor  = "{{ $entrada->detalleTecnico?->asesor_updated_at ?? '' }}";
+const timestampTecnico = "{{ $entrada->detalleTecnico?->tecnico_updated_at ?? '' }}";
 
-if (timestampInicial) {
+if (timestampAsesor || timestampTecnico) {
     setInterval(async function() {
         try {
             const r = await fetch('/tecnico/detalle/' + entradaId + '/check-update');
             const d = await r.json();
-            if (d.asesor_updated_at && d.asesor_updated_at !== timestampInicial) {
+            if (
+                (d.asesor_updated_at  && d.asesor_updated_at  !== timestampAsesor) ||
+                (d.tecnico_updated_at && d.tecnico_updated_at !== timestampTecnico)
+            ) {
                 document.getElementById('banner-actualizacion').style.display = 'flex';
             }
         } catch(e) {}

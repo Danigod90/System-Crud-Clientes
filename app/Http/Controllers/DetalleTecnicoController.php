@@ -47,12 +47,16 @@ if ($request->has('mat_final_padrones')) $detalle->mat_final_padrones = (int)$re
 if ($request->has('mat_final_cuartos'))  $detalle->mat_final_cuartos  = (int)$request->mat_final_cuartos;
 if ($request->has('mat_final_urnas'))    $detalle->mat_final_urnas    = (int)$request->mat_final_urnas;
 if ($request->has('mat_final_tintas'))   $detalle->mat_final_tintas   = (int)$request->mat_final_tintas;
-if ($request->has('mat_final_papeletas'))         $detalle->mat_final_papeletas         = (int)$request->mat_final_papeletas;
+if ($request->has('mat_final_papeletas')) {
+    $detalle->mat_final_papeletas = (int)$request->mat_final_papeletas;
+    $detalle->mat_matriz_boletin  = (int)$request->mat_final_papeletas;
+}
 if ($request->has('mat_final_papeletas_formato'))  $detalle->mat_final_papeletas_formato  = $request->mat_final_papeletas_formato;
 if ($request->has('mat_final_actas_formato'))      $detalle->mat_final_actas_formato      = $request->mat_final_actas_formato;
 if ($request->has('mat_final_padrones_formato'))   $detalle->mat_final_padrones_formato   = $request->mat_final_padrones_formato;
 if ($request->has('nota_asesor')) $detalle->nota_asesor = $request->nota_asesor;
  $detalle->asesor_updated_at = now();
+ $detalle->tecnico_updated_at = now();
     $detalle->save();
 
     return redirect()->back()->with('success', 'Datos técnicos guardados correctamente.');
@@ -78,8 +82,8 @@ if ($request->has('nota_asesor')) $detalle->nota_asesor = $request->nota_asesor;
     }
 
     public function saveTecnico(Request $request, $entrada_id)
-    {
-        $detalle = DetalleTecnico::firstOrNew(['entrada_id' => $entrada_id]);
+{
+    $detalle = DetalleTecnico::firstOrNew(['entrada_id' => $entrada_id]);
         $detalle->entrada_id = $entrada_id;
 
        // Papeletas — solo actualiza si vienen en el request
@@ -111,6 +115,10 @@ for ($p = 1; $p <= 10; $p++) {
         $detalle->mat_padron_formato            = $request->mat_padron_formato;
         $detalle->mat_matriz_boletin = $request->mat_matriz_boletin ?? $detalle->mat_matriz_boletin ?? $detalle->cantidad_papeletas;
         $detalle->mat_matriz_boletin_formato    = $request->mat_matriz_boletin_formato;
+        // Sincronizar formatos con campos del asesor
+        if ($request->mat_actas_electorales_formato) $detalle->mat_final_actas_formato    = $request->mat_actas_electorales_formato;
+        if ($request->mat_padron_formato)            $detalle->mat_final_padrones_formato  = $request->mat_padron_formato;
+        if ($request->mat_matriz_boletin_formato)    $detalle->mat_final_papeletas_formato = $request->mat_matriz_boletin_formato;
         $detalle->mat_actas_proclamacion        = $request->mat_actas_proclamacion;
         $detalle->mat_certificados              = $request->mat_certificados;
         $detalle->mat_cuenta_votos              = $request->mat_cuenta_votos;
@@ -411,7 +419,8 @@ public function checkAsesorUpdate($entrada_id)
 {
     $detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();
     return response()->json([
-        'asesor_updated_at' => $detalle->asesor_updated_at
+        'asesor_updated_at'   => $detalle->asesor_updated_at,
+        'tecnico_updated_at'  => $detalle->tecnico_updated_at,
     ]);
 }
 }

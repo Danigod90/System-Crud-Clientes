@@ -1133,6 +1133,16 @@ document.getElementById('asesor_input_papeletas')?.addEventListener('input', () 
 });
 document.getElementById('asesor_input_mesas')?.addEventListener('input', calcularMaterialesAsesor);
 
+// Sincronización inversa — cambiás papeletas en materiales y se actualiza arriba
+document.getElementById('asesor_mat_papeletas')?.addEventListener('input', function() {
+    const val = parseInt(this.value) || 0;
+    const inputCantPap = document.getElementById('asesor_input_papeletas');
+    if (inputCantPap) {
+        inputCantPap.value = val;
+        generarPapeletas();
+    }
+});
+
 calcularMaterialesAsesor();
 </script>
  <?php echo $__env->renderComponent(); ?>

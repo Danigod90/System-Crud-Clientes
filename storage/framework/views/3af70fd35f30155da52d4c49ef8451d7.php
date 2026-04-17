@@ -143,7 +143,7 @@
                                 </span>
                             <?php endif; ?>
                             <?php if($entrada->asunto_tec): ?>
-                                <?php $tecDot = $entrada->detalleTecnico?->enviado_tecnica ? '#16a34a' : '#eab308'; ?>
+                                <?php $tecDot = $entrada->detalleTecnico?->tec_realizado ? '#16a34a' : '#eab308'; ?>
                                 <span style="display:inline-flex; align-items:center; gap:3px;">
                                     <span style="font-size:11px; color:#6b7280;">Tec</span>
                                     <span style="width:9px; height:9px; border-radius:50%; background:<?php echo e($tecDot); ?>; display:inline-block;"></span>
