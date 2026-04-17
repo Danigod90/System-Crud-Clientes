@@ -124,7 +124,7 @@
                 <td style="padding:5px 1px; color:#111827; font-weight:600; width:100px;">{{ $entrada->asunto_texto }}</td>
                 <td style="padding:5px 2px; width:120px;">
                     @if($entrada->asunto_log)
-                        @php $logDot = ($entrada->log_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; @endphp
+                        @php $logDot = in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? '#16a34a' : '#eab308'; @endphp
                         <span style="display:inline-flex; align-items:center; gap:3px; margin-right:6px;">
                             <span style="font-size:11px; color:#6b7280;">Log</span>
                             <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>

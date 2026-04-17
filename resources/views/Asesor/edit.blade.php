@@ -85,10 +85,10 @@
             <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
                 <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0; display:flex; align-items:center; gap:8px;">
                     Detalle Logístico
-                    @php $logDot = ($entrada->log_estado ?? 'pendiente') === 'entregada' ? '#16a34a' : '#eab308'; @endphp
+                    @php $logDot = in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? '#16a34a' : '#eab308'; @endphp
                     <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
                         <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>
-                        {{ ($entrada->log_estado ?? 'pendiente') === 'entregada' ? 'Entregada' : 'Pendiente' }}
+                        {{ in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? 'Entregada' : 'Pendiente' }}
                     </span>
                 </h3>
                 @if($entrada->asunto_log && !$entrada->asunto_tec && $entrada->log_estado !== 'entregada')
