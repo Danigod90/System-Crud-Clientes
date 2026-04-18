@@ -1,6 +1,6 @@
 <?php if (isset($component)) { $__componentOriginald3474b09374f7a1c6aabd4f89d6847dc = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginald3474b09374f7a1c6aabd4f89d6847dc = $attributes; } ?>
-<?php $component = App\View\Components\PanelLayout::resolve(['title' => 'Panel General','elecciones' => $elecciones] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component = App\View\Components\PanelLayout::resolve(['title' => 'Panel General','elecciones' => $elecciones,'charlasPendientes' => $charlasPendientes] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
 <?php $component->withName('panel-layout'); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
@@ -8,7 +8,16 @@
 <?php $attributes = $attributes->except(\App\View\Components\PanelLayout::ignoredParameterNames()); ?>
 <?php endif; ?>
 <?php $component->withAttributes([]); ?>
-
+<style>
+.card-stat {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: default;
+}
+.card-stat:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 16px 32px rgba(0,0,0,0.2) !important;
+}
+</style>
 
 <div style="position:sticky; top:0; z-index:10; margin:-18px -18px 0 -18px; padding:18px 18px 0 18px; background:linear-gradient(135deg, #e8eaf6 0%, #d4d8f0 25%, #e8d5f0 50%, #d4e8f0 75%, #e8eaf6 100%); box-shadow:0 8px 20px rgba(200,200,220,0.5);">
 <div style="max-width:1000px; margin:0 auto;">
@@ -17,7 +26,7 @@
     <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px;">
 
         
-        <div style="background:linear-gradient(135deg,#7C6FC4,#D088C0); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(124,111,196,0.35);">
+        <div class="card-stat"style="background:linear-gradient(135deg,#7C6FC4,#D088C0); border-radius:14px; padding:18px 20px; position:relative; overflow:visible; box-shadow:0 4px 12px rgba(124,111,196,0.35);">
             <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
                 <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
                     <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>
@@ -29,7 +38,7 @@
         </div>
 
         
-        <div style="background:linear-gradient(135deg,#4ABFB0,#60A8E0); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(74,191,176,0.35);">
+        <div class="card-stat" style="background:linear-gradient(135deg,#4ABFB0,#60A8E0); border-radius:14px; padding:18px 20px; position:relative; overflow:visible; box-shadow:0 4px 12px rgba(74,191,176,0.35);">
             <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
                 <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
@@ -42,7 +51,7 @@
         </div>
 
         
-        <div style="background:linear-gradient(135deg,#E87CA0,#F0B080); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(232,124,160,0.35);">
+        <div class="card-stat" style="background:linear-gradient(135deg,#E87CA0,#F0B080); border-radius:14px; padding:18px 20px; position:relative; overflow:visible; box-shadow:0 4px 12px rgba(232,124,160,0.35);">
             <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
                 <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"/>
@@ -55,7 +64,7 @@
         </div>
 
         
-        <div style="background:linear-gradient(135deg,#5BC8E8,#A090E0); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(91,200,232,0.35);">
+        <div class="card-stat" style="background:linear-gradient(135deg,#5BC8E8,#A090E0); border-radius:14px; padding:18px 20px; position:relative; overflow:visible; box-shadow:0 4px 12px rgba(91,200,232,0.35);">
             <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
                 <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
                     <rect x="3" y="4" width="18" height="18" rx="2"/>
@@ -71,7 +80,7 @@
         </div>
 
         
-        <div style="background:linear-gradient(135deg,#9090D0,#D090C0); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(144,144,208,0.35);">
+        <div class="card-stat" style="background:linear-gradient(135deg,#9090D0,#D090C0); border-radius:14px; padding:18px 20px; position:relative; overflow:visible; box-shadow:0 4px 12px rgba(144,144,208,0.35);">
             <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
                 <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
                     <rect x="3" y="4" width="18" height="18" rx="2"/>
@@ -87,7 +96,7 @@
         </div>
 
         
-        <div style="background:linear-gradient(135deg,#F09060,#F0A0B0); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(240,144,96,0.35);">
+        <div class="card-stat" style="background:linear-gradient(135deg,#F09060,#F0A0B0); border-radius:14px; padding:18px 20px; position:relative; overflow:visible; box-shadow:0 4px 12px rgba(240,144,96,0.35);">
             <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
                 <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
                     <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
@@ -106,7 +115,9 @@
     Ultimas organizaciones ingresadas
     <div style="display:flex; align-items:center; gap:8px;">
         <form method="GET" action="<?php echo e(route('panel.dashboard')); ?>" style="display:flex; align-items:center; gap:6px;">
-            <select name="asesor" onchange="this.form.submit()" style="border:1px solid #e5e7eb; border-radius:8px; padding:4px 10px; font-size:12px; color:#374151; outline:none; background:#fff;">
+           <select name="asesor" onchange="this.form.submit()" style="border:1px solid #e5e7eb; border-radius:8px; padding:4px 10px; font-size:12px; color:#374151; outline:none; background:#fff; cursor:pointer; transition: box-shadow 0.2s ease;"
+    onmouseover="this.style.boxShadow='0 4px 10px rgba(0,0,0,0.12)'"
+    onmouseout="this.style.boxShadow='none'">
                 <option value="">Todos los asesores</option>
                 <?php $__currentLoopData = $asesores; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $asesor): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <?php $nombreCompleto = $asesor->nombre . ' ' . $asesor->apellido; ?>

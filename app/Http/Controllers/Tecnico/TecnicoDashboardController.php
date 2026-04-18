@@ -33,7 +33,11 @@ class TecnicoDashboardController extends Controller
     $stats = [
         'total_tec'    => EntradaConNota::where('asunto_tec', true)->count(),
         'enviados'     => DetalleTecnico::where('enviado_tecnica', true)->count(),
-        'pendientes'   => DetalleTecnico::where('enviado_tecnica', false)->count(),
+        'pendientes' => EntradaConNota::where('asunto_tec', true)
+    ->where(fn($q) => $q
+        ->whereHas('detalleTecnico', fn($q) => $q->where('tec_realizado', false))
+        ->orWhereDoesntHave('detalleTecnico')
+    )->count(),
         'impresos'     => DetalleTecnico::where('impreso', true)->count(),
         'sin_fecha'    => EntradaConNota::where('asunto_tec', true)->whereNull('fecha_eleccion')->count(),
         'por_imprimir' => DetalleTecnico::where('enviado_tecnica', true)->where('impreso', false)->count(),

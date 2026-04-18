@@ -1,6 +1,15 @@
 <x-panel-layout title="Panel General" :elecciones="$elecciones" :charlasPendientes="$charlasPendientes">
 <div style="display:none">CHARLAS_COUNT:{{ $charlasPendientes->count() }}</div>
-
+<style>
+.card-stat {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: default;
+}
+.card-stat:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 16px 32px rgba(0,0,0,0.2) !important;
+}
+</style>
 
 {{-- CARDS + HEADER TABLA FIJOS --}}
 <div style="position:relative; top:0; z-index:10; margin:-18px -18px 0 -18px; padding:18px 18px 0 18px; background:linear-gradient(135deg, #e8f0f5 0%, #dde8f0 25%, #e5edf5 50%, #dde8f0 75%, #e8f0f5 100%); box-shadow:0 8px 20px rgba(180,180,190,0.3);">
@@ -10,7 +19,7 @@
     <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px;">
 
         {{-- 1. Organizaciones activas --}}
-        <div style="background:linear-gradient(135deg,#E8834A,#F5A623); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(232,131,74,0.35);">
+        <div class="card-stat"style="background:linear-gradient(135deg,#E8834A,#F5A623); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(232,131,74,0.35);">
             <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
                 <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
                     <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>
@@ -22,7 +31,7 @@
         </div>
 
         {{-- 2. Charlas realizadas --}}
-        <div style="background:linear-gradient(135deg,#4A7C59,#6BAF7A); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(74,124,89,0.35);">
+        <div class="card-stat" style="background:linear-gradient(135deg,#4A7C59,#6BAF7A); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(74,124,89,0.35);">
             <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
                 <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
                     <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
@@ -35,7 +44,7 @@
         </div>
 
         {{-- 3. Charlas pendientes --}}
-        <div style="background:linear-gradient(135deg,#5B9EC9,#7BBDE0);; border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(196,112,74,0.35);">
+        <div class="card-stat" style="background:linear-gradient(135deg,#5B9EC9,#7BBDE0);; border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(196,112,74,0.35);">
             <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
                 <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"/>
@@ -48,7 +57,7 @@
         </div>
 
         {{-- 4. Borrador privado --}}
-        <div style="background:linear-gradient(135deg,#7A8A95,#9BAAB5); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(46,107,138,0.35);">
+        <div class="card-stat" style="background:linear-gradient(135deg,#7A8A95,#9BAAB5); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(46,107,138,0.35);">
             <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
                 <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -64,7 +73,7 @@
         </div>
 
         {{-- 5. Sin fecha de eleccion --}}
-        <div style="background:linear-gradient(135deg,#8A6B2E,#B59040); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(138,107,46,0.35);">
+        <div class="card-stat" style="background:linear-gradient(135deg,#8A6B2E,#B59040); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(138,107,46,0.35);">
             <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
                 <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
                     <rect x="3" y="4" width="18" height="18" rx="2"/>
@@ -80,7 +89,7 @@
         </div>
 
         {{-- 6. Trabajo tecnico pendiente --}}
-        <div style="background:linear-gradient(135deg,#C8A020,#E0BC40); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(122,74,46,0.35);">
+        <div class="card-stat" style="background:linear-gradient(135deg,#C8A020,#E0BC40); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(122,74,46,0.35);">
             <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
                 <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
                     <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>

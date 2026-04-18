@@ -1,2 +1,0 @@
-<img src="<?php echo e(asset('images/logo.png')); ?>" alt="Logo Justicia Electoral" <?php echo e($attributes->merge(['style' => 'width:120px; height:auto;'])); ?>>
-<?php /**PATH /var/www/html/resources/views/components/application-logo.blade.php ENDPATH**/ ?>

@@ -43,7 +43,12 @@ class DashboardController extends Controller
             'charlas_pendientes'  => Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', $nombreAsesor))->where('estado', 'pendiente')->count(),
             'elecciones_proximas' => $elecciones->count(),
             'sin_fecha'           => EntradaConNota::where('asesor_asignado', $nombreAsesor)->whereNull('fecha_eleccion')->count(),
-            'tec_pendientes'      => EntradaConNota::where('asesor_asignado', $nombreAsesor)->where('asunto_tec', true)->count(),
+            'tec_pendientes' => EntradaConNota::where('asesor_asignado', $nombreAsesor)
+    ->where('asunto_tec', true)
+    ->where(fn($q) => $q
+        ->whereHas('detalleTecnico', fn($q) => $q->where('tec_realizado', false))
+        ->orWhereDoesntHave('detalleTecnico')
+    )->count(),
             'borradores'          => 0,
         ];
         session(['charlasPendientes' => $charlasPendientes]);
@@ -73,9 +78,18 @@ class DashboardController extends Controller
         'charlas_pendientes'  => Charla::where('estado', 'pendiente')->count(),
         'elecciones_proximas' => $elecciones->count(),
         'sin_fecha'           => EntradaConNota::whereNull('fecha_eleccion')->count(),
-        'tec_pendientes'      => EntradaConNota::where('asunto_tec', true)->count(),
+        'tec_pendientes' => EntradaConNota::where('asunto_tec', true)
+    ->whereHas('detalleTecnico', fn($q) => $q->where('tec_realizado', false))
+    ->orWhere(fn($q) => $q->where('asunto_tec', true)->whereDoesntHave('detalleTecnico'))
+    ->count(),
     ];
+$charlasPendientes = \App\Models\Charla::where('estado', 'pendiente')
+        ->whereNotNull('fecha_hora')
+        ->where('fecha_hora', '>=', now())
+        ->orderBy('fecha_hora')
+        ->take(5)
+        ->get();
 
-    return view('panel.dashboard', compact('entradas', 'elecciones', 'stats', 'asesores'));
+    return view('panel.dashboard', compact('entradas', 'elecciones', 'stats', 'asesores', 'charlasPendientes'));
 }
 }
