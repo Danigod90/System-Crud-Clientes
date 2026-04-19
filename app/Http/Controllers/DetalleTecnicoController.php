@@ -102,42 +102,42 @@ for ($p = 1; $p <= 10; $p++) {
 }
 
 
-       // Materiales finales calculados
-        $detalle->mat_final_actas    = $request->mat_final_actas;
-        $detalle->mat_final_padrones = $request->mat_final_padrones;
-        $detalle->mat_final_cuartos  = $request->mat_final_cuartos;
-        $detalle->mat_final_urnas    = $request->mat_final_urnas;
-        $mesas = $detalle->cantidad_mesas ?? 0;
-        $detalle->mat_mesas                     = $request->mat_mesas ?? $detalle->mat_mesas ?? $mesas;
-        $detalle->mat_actas_electorales         = $request->mat_actas_electorales ?? $detalle->mat_actas_electorales ?? ($mesas * 3);
-        $detalle->mat_actas_electorales_formato = $request->mat_actas_electorales_formato;
-        $detalle->mat_padron                    = $request->mat_padron ?? $detalle->mat_padron ?? ($mesas * 3);
-        $detalle->mat_padron_formato            = $request->mat_padron_formato;
-        $detalle->mat_matriz_boletin = $request->mat_matriz_boletin ?? $detalle->mat_matriz_boletin ?? $detalle->cantidad_papeletas;
-        $detalle->mat_matriz_boletin_formato    = $request->mat_matriz_boletin_formato;
-        // Sincronizar formatos con campos del asesor
-        if ($request->mat_actas_electorales_formato) $detalle->mat_final_actas_formato    = $request->mat_actas_electorales_formato;
-        if ($request->mat_padron_formato)            $detalle->mat_final_padrones_formato  = $request->mat_padron_formato;
-        if ($request->mat_matriz_boletin_formato)    $detalle->mat_final_papeletas_formato = $request->mat_matriz_boletin_formato;
-        $detalle->mat_actas_proclamacion        = $request->mat_actas_proclamacion;
-        $detalle->mat_certificados              = $request->mat_certificados;
-        $detalle->mat_cuenta_votos              = $request->mat_cuenta_votos;
+      // Materiales finales calculados
+$detalle->mat_final_actas    = $request->mat_final_actas;
+$detalle->mat_final_padrones = $request->mat_final_padrones;
+$detalle->mat_final_cuartos  = $request->mat_final_cuartos;
+$detalle->mat_final_urnas    = $request->mat_final_urnas;
+$mesas = $detalle->cantidad_mesas ?? 0;
+$detalle->mat_mesas                     = $request->mat_mesas ?? $detalle->cantidad_mesas ?? $mesas;
+$detalle->mat_actas_electorales         = $request->mat_actas_electorales ?? $detalle->mat_final_actas ?? ($mesas * 3);
+$detalle->mat_actas_electorales_formato = $request->mat_actas_electorales_formato ?? $detalle->mat_final_actas_formato;
+$detalle->mat_padron                    = $request->mat_padron ?? $detalle->mat_final_padrones ?? ($mesas * 3);
+$detalle->mat_padron_formato            = $request->mat_padron_formato ?? $detalle->mat_final_padrones_formato;
+$detalle->mat_matriz_boletin            = $request->mat_matriz_boletin ?? $detalle->mat_final_papeletas ?? $detalle->cantidad_papeletas;
+$detalle->mat_matriz_boletin_formato    = $request->mat_matriz_boletin_formato ?? $detalle->mat_final_papeletas_formato;
+// Sincronizar formatos con campos del asesor
+if ($request->mat_actas_electorales_formato) $detalle->mat_final_actas_formato    = $request->mat_actas_electorales_formato;
+if ($request->mat_padron_formato)            $detalle->mat_final_padrones_formato  = $request->mat_padron_formato;
+if ($request->mat_matriz_boletin_formato)    $detalle->mat_final_papeletas_formato = $request->mat_matriz_boletin_formato;
+$detalle->mat_actas_proclamacion        = $request->mat_actas_proclamacion;
+$detalle->mat_certificados              = $request->mat_certificados;
+$detalle->mat_cuenta_votos              = $request->mat_cuenta_votos;
 
-        // Padrón
-        $detalle->padron_definitivo         = $request->has('padron_definitivo') ? 1 : 0;
-        $detalle->padron_con_cedula         = $request->has('padron_con_cedula') ? 1 : 0;
-        $detalle->cantidad_electores        = $request->cantidad_electores;
-        $detalle->cantidad_electores_sin_ci = $request->cantidad_electores_sin_ci;
+// Padrón
+$detalle->padron_definitivo         = $request->has('padron_definitivo') ? 1 : 0;
+$detalle->padron_con_cedula         = $request->has('padron_con_cedula') ? 1 : 0;
+$detalle->cantidad_electores        = $request->cantidad_electores;
+$detalle->cantidad_electores_sin_ci = $request->cantidad_electores_sin_ci;
 
-        // Responsables
-        $detalle->resp_actas_electorales = $request->resp_actas_electorales;
-        $detalle->resp_papeletas         = $request->resp_papeletas;
-        $detalle->resp_padron_electoral  = $request->resp_padron_electoral;
+// Responsables
+$detalle->resp_actas_electorales = $request->resp_actas_electorales;
+$detalle->resp_papeletas         = $request->resp_papeletas;
+$detalle->resp_padron_electoral  = $request->resp_padron_electoral;
 
-        $detalle->save();
+$detalle->save();
 
-        return redirect()->back()->with('success', 'Datos técnicos guardados correctamente.');
-    }
+return redirect()->back()->with('success', 'Datos técnicos guardados correctamente.');
+}
 
    public function imprimirLogistica($entrada_id)
 {
