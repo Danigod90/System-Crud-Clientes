@@ -87,6 +87,7 @@
                             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Asunto</label>
                             <select name="asunto" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff;">
     <option value="">Todos</option>
+    <option value="obs" <?php echo e(request('asunto') == 'obs' ? 'selected' : ''); ?>>Obs — Observadores</option>
     <option value="char" <?php echo e(request('asunto') == 'char' ? 'selected' : ''); ?>>Char — Charla</option>
     <option value="log" <?php echo e(request('asunto') == 'log' ? 'selected' : ''); ?>>Log — Logística</option>
     <option value="tec" <?php echo e(request('asunto') == 'tec' ? 'selected' : ''); ?>>Tec — Técnica</option>

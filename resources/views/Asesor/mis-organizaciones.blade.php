@@ -31,7 +31,7 @@
                         <span style="font-size:13px; font-weight:500; color:#374151;">Filtros</span>
                     </div>
 
-                    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:14px;">
+                    <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:14px;">
                         <div>
                             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Organización</label>
                             <div style="position:relative;">
@@ -48,6 +48,7 @@
                             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Asunto</label>
                             <select name="asunto" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff;">
     <option value="">Todos</option>
+    <option value="obs" {{ request('asunto') == 'obs' ? 'selected' : '' }}>Obs — Observadores</option>
     <option value="char" {{ request('asunto') == 'char' ? 'selected' : '' }}>Char — Charla</option>
     <option value="log" {{ request('asunto') == 'log' ? 'selected' : '' }}>Log — Logística</option>
     <option value="tec" {{ request('asunto') == 'tec' ? 'selected' : '' }}>Tec — Técnica</option>
@@ -57,6 +58,11 @@
     <option value="char_cancelada" {{ request('asunto') == 'char_cancelada' ? 'selected' : '' }}>Char — Cancelada</option>
 </select>
                         </div>
+                        <div>
+    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha elección</label>
+    <input type="month" name="mes_eleccion" value="{{ request('mes_eleccion') }}"
+        style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+</div>
                         <div>
                             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha ingreso</label>
                             <input type="month" name="mes_ingreso" value="{{ request('mes_ingreso') }}"

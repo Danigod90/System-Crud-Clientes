@@ -32,9 +32,13 @@ class MisOrganizacionesController extends Controller
         }
     }
     if (request('mes_ingreso')) {
-        $query->whereYear('created_at', substr(request('mes_ingreso'), 0, 4))
-              ->whereMonth('created_at', substr(request('mes_ingreso'), 5, 2));
-    }
+    $query->whereYear('created_at', substr(request('mes_ingreso'), 0, 4))
+          ->whereMonth('created_at', substr(request('mes_ingreso'), 5, 2));
+}
+if (request('mes_eleccion')) {
+    $query->whereYear('fecha_eleccion', substr(request('mes_eleccion'), 0, 4))
+          ->whereMonth('fecha_eleccion', substr(request('mes_eleccion'), 5, 2));
+}
     if (request('estado_charla')) {
         $query->whereHas('charla', fn($q) => $q->where('estado', request('estado_charla')));
     }

@@ -1,4 +1,4 @@
-<x-panel-layout title="Ver Entrada — {{ $conNota->codigo_org }}">
+<x-panel-layout title="Ver Entrada — {{ $conNota->codigo_org }}" :charlasPendientes="$charlasPendientes">
 
 <div class="px-2 py-2">
     <div style="max-width:760px; margin:0 auto;">
@@ -255,28 +255,41 @@
     @endphp
     <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px;">
         <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar</p>
-        <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:8px;">
-            <div style="text-align:center;">
-                <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Actas</p>
-                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estActas }}</p>
-            </div>
-            <div style="text-align:center;">
-                <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Padrones</p>
-                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estPadrones }}</p>
-            </div>
-            <div style="text-align:center;">
-                <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Cuartos Oscuros</p>
-                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estCuartos }}</p>
-            </div>
-            <div style="text-align:center;">
-                <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Urnas</p>
-                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estUrnas }}</p>
-            </div>
-            <div style="text-align:center;">
-                <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Tintas</p>
-                <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estTintas }}</p>
-            </div>
-        </div>
+        <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:8px;">
+    <div style="text-align:center;">
+        <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Papeletas</p>
+        <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $mTec->mat_final_papeletas ?? $mTec->cantidad_papeletas ?? 0 }}</p>
+        @if($mTec->mat_final_papeletas_formato)
+        <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($mTec->mat_final_papeletas_formato) }}</p>
+        @endif
+    </div>
+    <div style="text-align:center;">
+        <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Actas</p>
+        <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estActas }}</p>
+        @if($mTec->mat_final_actas_formato)
+        <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($mTec->mat_final_actas_formato) }}</p>
+        @endif
+    </div>
+    <div style="text-align:center;">
+        <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Padrones</p>
+        <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estPadrones }}</p>
+        @if($mTec->mat_final_padrones_formato)
+        <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($mTec->mat_final_padrones_formato) }}</p>
+        @endif
+    </div>
+    <div style="text-align:center;">
+        <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Cuartos Oscuros</p>
+        <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estCuartos }}</p>
+    </div>
+    <div style="text-align:center;">
+        <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Urnas</p>
+        <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estUrnas }}</p>
+    </div>
+    <div style="text-align:center;">
+        <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Tintas</p>
+        <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estTintas }}</p>
+    </div>
+</div>
     </div>
 </div>
 @endif
@@ -291,22 +304,25 @@
 
                 <p style="font-size:11px; font-weight:700; color:#166534; text-transform:uppercase; margin:0 0 10px;">Materiales Entregados</p>
                 <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:16px;">
-                    @foreach([
-                        ['mat_mesas', 'Mesa/s', false],
-                        ['mat_actas_electorales', 'Actas Electorales', 'mat_actas_electorales_formato'],
-                        ['mat_padron', 'Padrón Electoral', 'mat_padron_formato'],
-                        ['mat_matriz_boletin', 'Matriz de Boletín', 'mat_matriz_boletin_formato'],
-                        ['mat_actas_proclamacion', 'Actas de Proclamación', false],
-                        ['mat_certificados', 'Certificados de Resultados', false],
-                        ['mat_cuenta_votos', 'Cuenta Votos', false],
-                    ] as [$field, $label, $formatoField])
-                    <div style="background:#fff; border:1px solid #d1fae5; border-radius:8px; padding:10px;">
-                        <label style="display:block; font-size:11px; font-weight:600; color:#16a34a; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">{{ $label }}</label>
-                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $mTec->$field ?? '—' }}</p>
-                        @if($formatoField && $mTec->$formatoField)
-                        <p style="font-size:11px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($mTec->$formatoField) }}</p>
-                        @endif
-                    </div>
+                   @foreach([
+    ['mat_mesas', 'Mesa/s', false, 'cantidad_mesas', null],
+    ['mat_actas_electorales', 'Actas Electorales', 'mat_actas_electorales_formato', 'mat_final_actas', 'mat_final_actas_formato'],
+    ['mat_padron', 'Padrón Electoral', 'mat_padron_formato', 'mat_final_padrones', 'mat_final_padrones_formato'],
+    ['mat_matriz_boletin', 'Matriz de Boletín', 'mat_matriz_boletin_formato', 'mat_final_papeletas', 'mat_final_papeletas_formato'],
+    ['mat_actas_proclamacion', 'Actas de Proclamación', false, null, null],
+    ['mat_certificados', 'Certificados de Resultados', false, null, null],
+    ['mat_cuenta_votos', 'Cuenta Votos', false, null, null],
+] as [$field, $label, $formatoField, $campoAsesor, $formatoAsesor])
+<div style="background:#fff; border:1px solid #d1fae5; border-radius:8px; padding:10px;">
+    <label style="display:block; font-size:11px; font-weight:600; color:#16a34a; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">{{ $label }}</label>
+    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ ($campoAsesor ? $mTec->$campoAsesor : null) ?? $mTec->$field ?? '—' }}</p>
+    @if($formatoField)
+    @php $fmt = ($formatoAsesor ? $mTec->$formatoAsesor : null) ?? ($formatoField ? $mTec->$formatoField : null); @endphp
+    @if($fmt)
+    <p style="font-size:11px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($fmt) }}</p>
+    @endif
+    @endif
+</div>
                     @endforeach
                 </div>
 

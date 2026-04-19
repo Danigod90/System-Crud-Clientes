@@ -26,15 +26,18 @@ class EntradaConNotaController extends Controller
         $estado = str_replace('char_', '', $asunto);
         $q->where('asunto_char', true)
           ->whereHas('charla', fn($q) => $q->where('estado', $estado));
-    } else {
-        match($asunto) {
-            'char' => $q->where('asunto_char', true),
-            'log'  => $q->where('asunto_log', true),
-            'tec'  => $q->where('asunto_tec', true),
-            default => null,
-        };
+    } elseif ($asunto === 'char') {
+        $q->where('asunto_char', true);
+    } elseif ($asunto === 'log') {
+        $q->where('asunto_log', true);
+    } elseif ($asunto === 'tec') {
+        $q->where('asunto_tec', true);
+    } elseif ($asunto === 'obs') {
+        $q->where('asunto_obs', true);
     }
 })
+
+
             ->when($request->mes_ingreso, fn($q) =>
                 $q->whereYear('created_at', substr($request->mes_ingreso, 0, 4))
                   ->whereMonth('created_at', substr($request->mes_ingreso, 5, 2))
@@ -102,9 +105,17 @@ return redirect()->route('secretaria.con-nota.show', $entrada)
     }
 
     public function show(EntradaConNota $conNota)
-    {
-        return view('secretaria.con_nota.show', compact('conNota'));
-    }
+{
+    $charlasPendientes = \App\Models\Charla::with('entrada')
+        ->where('estado', 'pendiente')
+        ->whereNotNull('fecha_hora')
+        ->where('fecha_hora', '>=', now())
+        ->orderBy('fecha_hora')
+        ->take(5)
+        ->get();
+
+    return view('secretaria.con_nota.show', compact('conNota', 'charlasPendientes'));
+}
 
     public function edit(EntradaConNota $conNota)
     {
