@@ -17,7 +17,23 @@ class DashboardController extends Controller
     if ($rol === 'Tecnico') {
         return redirect()->route('tecnico.dashboard');
     }
-
+if ($rol === 'Secretaria Sin Nota') {
+    $stats = [
+        'entradas_mes'    => \App\Models\EntradaSinNota::whereMonth('created_at', now()->month)->count(),
+        'log_pendientes'  => \App\Models\EntradaConNota::where('asunto_log', true)->where('log_estado', 'pendiente')->count(),
+        'log_entregados'  => \App\Models\EntradaConNota::where('asunto_log', true)->where('log_estado', 'entregada')->count(),
+        'log_devueltos'   => \App\Models\EntradaConNota::where('asunto_log', true)->where('log_estado', 'realizado')->count(),
+    ];
+    $elecciones = \App\Models\EntradaConNota::whereNotNull('fecha_eleccion')
+        ->where('fecha_eleccion', '>=', now())
+        ->where('fecha_eleccion', '<=', now()->addDays(30))
+        ->where('mostrar_en_ticker', true)
+        ->orderBy('fecha_eleccion')
+        ->take(5)
+        ->get();
+    $charlasPendientes = collect();
+    return view('panel.dashboard-sin-nota', compact('stats', 'elecciones', 'charlasPendientes'));
+}
     if ($rol === 'Asesor') {
         $asesor = \App\Models\Asesor::where('user_id', $user->id)->first();
         $nombreAsesor = $asesor ? $asesor->nombre . ' ' . $asesor->apellido : $user->name;

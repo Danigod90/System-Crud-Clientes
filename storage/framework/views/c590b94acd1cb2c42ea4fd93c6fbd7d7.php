@@ -1,1 +1,0 @@
-<?php /**PATH /var/www/html/resources/views/layouts/navigation.blade.php ENDPATH**/ ?>
