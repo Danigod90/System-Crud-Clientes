@@ -57,7 +57,7 @@ Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin|A
 
 Route::middleware(['auth'])->get('/panel/dashboard', [\App\Http\Controllers\Panel\DashboardController::class, 'index'])->name('panel.dashboard');
 
-Route::middleware(['auth', 'role:Asesor|Secretaria Con Nota|Admin'])->prefix('asesor')->name('asesor.')->group(function () {
+Route::middleware(['auth'])->prefix('asesor')->name('asesor.')->group(function () {
     Route::get('mis-organizaciones', [\App\Http\Controllers\Asesor\MisOrganizacionesController::class, 'index'])->name('mis-organizaciones');
     Route::get('organizacion/{entrada}/edit', [\App\Http\Controllers\Asesor\MisOrganizacionesController::class, 'edit'])->name('organizacion.edit');
     Route::post('charla/{entrada}', [\App\Http\Controllers\Asesor\CharlaController::class, 'store'])->name('charla.store');
@@ -69,6 +69,14 @@ Route::middleware(['auth', 'role:Asesor|Secretaria Con Nota|Admin'])->prefix('as
     Route::get('detalle-tecnico/{entrada_id}', [\App\Http\Controllers\DetalleTecnicoController::class, 'createAsesor'])->name('detalle_tecnico.asesor');
     Route::post('detalle-tecnico/{entrada_id}', [\App\Http\Controllers\DetalleTecnicoController::class, 'saveAsesor'])->name('detalle_tecnico.saveAsesor');
     Route::post('detalle-tecnico/{entrada_id}/enviar', [\App\Http\Controllers\DetalleTecnicoController::class, 'enviarTecnica'])->name('detalle_tecnico.enviarTecnica');
+    // ── BORRADOR PRIVADO ──
+    Route::get('borrador/lista', [\App\Http\Controllers\Asesor\BorradorPrivadoController::class, 'index'])->name('borrador.index');
+    Route::get('borrador/crear', [\App\Http\Controllers\Asesor\BorradorPrivadoController::class, 'create'])->name('borrador.create');
+    Route::post('borrador/crear', [\App\Http\Controllers\Asesor\BorradorPrivadoController::class, 'store'])->name('borrador.store');
+    Route::get('borrador/{id}', [\App\Http\Controllers\Asesor\BorradorPrivadoController::class, 'show'])->name('borrador.show');
+    Route::post('borrador/{id}/tarea', [\App\Http\Controllers\Asesor\BorradorPrivadoController::class, 'storeTarea'])->name('borrador.storeTarea');
+    Route::post('borrador/{id}/enviar', [\App\Http\Controllers\Asesor\BorradorPrivadoController::class, 'enviarAMesaDeEntrada'])->name('borrador.enviar');
+    Route::delete('borrador/{id}', [\App\Http\Controllers\Asesor\BorradorPrivadoController::class, 'destroy'])->name('borrador.destroy');
 });
 
 // ── PANEL TÉCNICO ──
@@ -82,6 +90,11 @@ Route::middleware(['auth', 'role:Tecnico|Admin'])->prefix('tecnico')->name('tecn
     Route::get('detalle/{entrada_id}/check-update', [\App\Http\Controllers\DetalleTecnicoController::class, 'checkAsesorUpdate'])->name('detalle_tecnico.checkUpdate');
     Route::post('detalle/{entrada_id}/asesor', [\App\Http\Controllers\DetalleTecnicoController::class, 'saveAsesor'])->name('detalle_tecnico.saveAsesor');
 });
+
+Route::get('/test-borrador', function () {
+    return 'funciona';
+});
+
 require __DIR__.'/auth.php';
 
 

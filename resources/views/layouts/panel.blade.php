@@ -110,13 +110,13 @@
             <span style="width:7px; height:7px; border-radius:50%; background:#a78bfa; flex-shrink:0;"></span>
             Charlas
         </a>
-        <a href="#"
-            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:rgba(255,255,255,0.55); text-decoration:none; border:1px solid transparent; transition:all 0.2s;"
-            onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-            onmouseout="this.style.background='transparent'">
-            <span style="width:7px; height:7px; border-radius:50%; background:#f472b6; flex-shrink:0;"></span>
-            Borrador privado
-        </a>
+        <a href="{{ route('asesor.borrador.index') }}"
+    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('asesor.borrador.*') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('asesor.borrador.*') ? 'rgba(244,114,182,0.2)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('asesor.borrador.*') ? '1px solid rgba(244,114,182,0.3)' : '1px solid transparent' }}; transition:all 0.2s;"
+    onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+    onmouseout="this.style.background='{{ request()->routeIs('asesor.borrador.*') ? 'rgba(244,114,182,0.2)' : 'transparent' }}'">
+    <span style="width:7px; height:7px; border-radius:50%; background:#f472b6; flex-shrink:0;"></span>
+    Borrador privado
+</a>
         @endif
 
         {{-- NAV UTILIDADES --}}
