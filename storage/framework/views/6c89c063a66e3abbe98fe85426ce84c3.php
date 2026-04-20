@@ -1,23 +1,33 @@
-<x-panel-layout title="Gestión de Log">
+<?php if (isset($component)) { $__componentOriginald3474b09374f7a1c6aabd4f89d6847dc = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginald3474b09374f7a1c6aabd4f89d6847dc = $attributes; } ?>
+<?php $component = App\View\Components\PanelLayout::resolve(['title' => 'Gestión de Log'] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('panel-layout'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\App\View\Components\PanelLayout::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes([]); ?>
 <div class="px-2 py-2">
     <div style="max-width:1000px; margin:0 auto;">
 
-        @if(session('success'))
+        <?php if(session('success')): ?>
         <div style="background:#d1fae5; color:#065f46; padding:10px 14px; border-radius:8px; margin-bottom:14px; font-size:13px;">
-            {{ session('success') }}
-        </div>
-        @endif
+            <?php echo e(session('success')); ?>
 
-        {{-- HEADER --}}
+        </div>
+        <?php endif; ?>
+
+        
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
             <div>
                 <h2 style="font-size:16px; font-weight:700; color:#1e293b; margin:0;">Gestión de Log</h2>
                 <p style="font-size:12px; color:#94a3b8; margin:2px 0 0;">Control de materiales prestados y devueltos</p>
             </div>
-            <a href="{{ route('panel.dashboard') }}"
+            <a href="<?php echo e(route('panel.dashboard')); ?>"
                style="font-size:12px; color:#94a3b8; text-decoration:none;">← Volver al panel</a>
         </div>
-{{-- FILTRO --}}
+
 <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:12px 16px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.04); display:flex; align-items:center; gap:10px;">
     <svg width="14" height="14" fill="none" stroke="#9ca3af" stroke-width="2" viewBox="0 0 24 24">
         <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -26,10 +36,10 @@
            oninput="filtrarTablas(this.value)"
            style="border:none; outline:none; font-size:13px; color:#374151; width:100%;">
 </div>
-        {{-- PENDIENTES --}}
+        
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.04); margin-bottom:14px;">
             <div style="padding:12px 16px; border-bottom:1px solid #f3f4f6; background:#fffbeb;">
-                <span style="font-size:13px; font-weight:600; color:#92400e;">⏳ Pendientes de entrega ({{ $pendientes->count() }})</span>
+                <span style="font-size:13px; font-weight:600; color:#92400e;">⏳ Pendientes de entrega (<?php echo e($pendientes->count()); ?>)</span>
             </div>
             <table style="width:100%; border-collapse:collapse; font-size:12px;">
                 <thead>
@@ -44,17 +54,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($pendientes as $entrada)
-                    <tr style="border-bottom:1px solid #f3f4f6;" data-org="{{ $entrada->nombre_organizacion }}">
-                        <td style="padding:10px 16px; color:#185FA5; font-weight:600; font-family:monospace;">{{ $entrada->codigo_org }}</td>
-                        <td style="padding:10px 16px; color:#1e293b; font-weight:500;">{{ $entrada->nombre_organizacion }}</td>
-                        <td style="padding:6px 16px; color:#374151;">{{ $entrada->asesor_asignado ?? '—' }}</td>
-                        <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $entrada->log_urnas }}</td>
-                        <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $entrada->log_cuartos }}</td>
-                        <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $entrada->log_tintas }}</td>
+                    <?php $__empty_1 = true; $__currentLoopData = $pendientes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $entrada): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <tr style="border-bottom:1px solid #f3f4f6;" data-org="<?php echo e($entrada->nombre_organizacion); ?>">
+                        <td style="padding:10px 16px; color:#185FA5; font-weight:600; font-family:monospace;"><?php echo e($entrada->codigo_org); ?></td>
+                        <td style="padding:10px 16px; color:#1e293b; font-weight:500;"><?php echo e($entrada->nombre_organizacion); ?></td>
+                        <td style="padding:6px 16px; color:#374151;"><?php echo e($entrada->asesor_asignado ?? '—'); ?></td>
+                        <td style="padding:10px 16px; text-align:center; color:#374151;"><?php echo e($entrada->log_urnas); ?></td>
+                        <td style="padding:10px 16px; text-align:center; color:#374151;"><?php echo e($entrada->log_cuartos); ?></td>
+                        <td style="padding:10px 16px; text-align:center; color:#374151;"><?php echo e($entrada->log_tintas); ?></td>
                         <td style="padding:10px 16px;">
-    @if($entrada->asunto_log && !$entrada->asunto_tec)
-    <button onclick="abrirModalImprimir({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}')"
+    <?php if($entrada->asunto_log && !$entrada->asunto_tec): ?>
+    <button onclick="abrirModalImprimir(<?php echo e($entrada->id); ?>, '<?php echo e(addslashes($entrada->nombre_organizacion)); ?>')"
             style="display:inline-flex; align-items:center; gap:5px; background:#f0f9ff; border:1px solid #bae6fd; color:#0369a1; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">
         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <polyline points="6 9 6 2 18 2 18 9"/>
@@ -63,27 +73,27 @@
         </svg>
         Imprimir Log
     </button>
-@else
+<?php else: ?>
     <span style="font-size:11px; color:#94a3b8;">Sin imprimir Log</span>
-@endif
+<?php endif; ?>
 </td>
 </td>
                     </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
                         <td colspan="6" style="padding:30px; text-align:center; color:#94a3b8; font-size:13px;">
                             ✅ No hay log pendientes.
                         </td>
                     </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
 
-        {{-- ENTREGADOS (prestados, esperando devolución) --}}
+        
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.04); margin-bottom:14px;">
             <div style="padding:12px 16px; border-bottom:1px solid #f3f4f6; background:#eff6ff;">
-                <span style="font-size:13px; font-weight:600; color:#1d4ed8;">📦 Entregados — esperando devolución ({{ $entregados->count() }})</span>
+                <span style="font-size:13px; font-weight:600; color:#1d4ed8;">📦 Entregados — esperando devolución (<?php echo e($entregados->count()); ?>)</span>
             </div>
             <table style="width:100%; border-collapse:collapse; font-size:12px;">
                 <thead>
@@ -97,40 +107,40 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($entregados as $entrada)
-<tr style="border-bottom:1px solid #f3f4f6;" data-org="{{ $entrada->nombre_organizacion }}">
-    <td style="padding:10px 16px; color:#185FA5; font-weight:600; font-family:monospace;">{{ $entrada->codigo_org }}</td>
-    <td style="padding:10px 16px; color:#1e293b; font-weight:500;">{{ $entrada->nombre_organizacion }}</td>
-    @php
+                    <?php $__empty_1 = true; $__currentLoopData = $entregados; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $entrada): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+<tr style="border-bottom:1px solid #f3f4f6;" data-org="<?php echo e($entrada->nombre_organizacion); ?>">
+    <td style="padding:10px 16px; color:#185FA5; font-weight:600; font-family:monospace;"><?php echo e($entrada->codigo_org); ?></td>
+    <td style="padding:10px 16px; color:#1e293b; font-weight:500;"><?php echo e($entrada->nombre_organizacion); ?></td>
+    <?php
         $urnas   = $entrada->asunto_tec ? ($entrada->detalleTecnico->mat_final_urnas  ?? ($entrada->detalleTecnico->cantidad_mesas * $entrada->detalleTecnico->cantidad_papeletas ?? 0)) : $entrada->log_urnas;
         $cuartos = $entrada->asunto_tec ? ($entrada->detalleTecnico->mat_final_cuartos ?? $entrada->detalleTecnico->cantidad_mesas ?? 0) : $entrada->log_cuartos;
         $tintas  = $entrada->asunto_tec ? ($entrada->detalleTecnico->mat_final_tintas  ?? $entrada->detalleTecnico->cantidad_mesas ?? 0) : $entrada->log_tintas;
-    @endphp
-    <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $urnas }}</td>
-    <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $cuartos }}</td>
-    <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $tintas }}</td>
+    ?>
+    <td style="padding:10px 16px; text-align:center; color:#374151;"><?php echo e($urnas); ?></td>
+    <td style="padding:10px 16px; text-align:center; color:#374151;"><?php echo e($cuartos); ?></td>
+    <td style="padding:10px 16px; text-align:center; color:#374151;"><?php echo e($tintas); ?></td>
                         <td style="padding:10px 16px;">
-                           <button onclick="abrirModal({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}', {{ $urnas }}, {{ $cuartos }}, {{ $tintas }})"
+                           <button onclick="abrirModal(<?php echo e($entrada->id); ?>, '<?php echo e(addslashes($entrada->nombre_organizacion)); ?>', <?php echo e($urnas); ?>, <?php echo e($cuartos); ?>, <?php echo e($tintas); ?>)"
         style="background:#2563eb; color:white; border:none; padding:4px 8px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500; white-space:nowrap;">
     Registrar devolución
 </button>
                         </td>
                     </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
                         <td colspan="6" style="padding:30px; text-align:center; color:#94a3b8; font-size:13px;">
                             Sin materiales entregados pendientes de devolución.
                         </td>
                     </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
 
-        {{-- DEVUELTOS --}}
+        
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.04);">
             <div style="padding:12px 16px; border-bottom:1px solid #f3f4f6; background:#f0fdf4;">
-                <span style="font-size:13px; font-weight:600; color:#15803d;">✅ Devueltos ({{ $devueltos->count() }})</span>
+                <span style="font-size:13px; font-weight:600; color:#15803d;">✅ Devueltos (<?php echo e($devueltos->count()); ?>)</span>
             </div>
             <table style="width:100%; border-collapse:collapse; font-size:12px;">
                 <thead>
@@ -145,23 +155,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($devueltos as $entrada)
-                    <tr style="border-bottom:1px solid #f3f4f6;" data-org="{{ $entrada->nombre_organizacion }}">
-                        <td style="padding:10px 16px; color:#185FA5; font-weight:600; font-family:monospace;">{{ $entrada->codigo_org }}</td>
-                        <td style="padding:10px 16px; color:#1e293b; font-weight:500;">{{ $entrada->nombre_organizacion }}</td>
-                        <td style="padding:10px 16px; color:#374151;">{{ $entrada->logDevolucion?->devuelto_por ?? '—' }}</td>
-                        <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $entrada->logDevolucion?->urnas_devueltas ?? '—' }}</td>
-                        <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $entrada->logDevolucion?->cuartos_devueltos ?? '—' }}</td>
-                        <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $entrada->logDevolucion?->tintas_devueltas ?? '—' }}</td>
-                        <td style="padding:10px 16px; color:#94a3b8;">{{ $entrada->logDevolucion?->created_at?->format('d/m/Y') ?? '—' }}</td>
+                    <?php $__empty_1 = true; $__currentLoopData = $devueltos; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $entrada): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                    <tr style="border-bottom:1px solid #f3f4f6;" data-org="<?php echo e($entrada->nombre_organizacion); ?>">
+                        <td style="padding:10px 16px; color:#185FA5; font-weight:600; font-family:monospace;"><?php echo e($entrada->codigo_org); ?></td>
+                        <td style="padding:10px 16px; color:#1e293b; font-weight:500;"><?php echo e($entrada->nombre_organizacion); ?></td>
+                        <td style="padding:10px 16px; color:#374151;"><?php echo e($entrada->logDevolucion?->devuelto_por ?? '—'); ?></td>
+                        <td style="padding:10px 16px; text-align:center; color:#374151;"><?php echo e($entrada->logDevolucion?->urnas_devueltas ?? '—'); ?></td>
+                        <td style="padding:10px 16px; text-align:center; color:#374151;"><?php echo e($entrada->logDevolucion?->cuartos_devueltos ?? '—'); ?></td>
+                        <td style="padding:10px 16px; text-align:center; color:#374151;"><?php echo e($entrada->logDevolucion?->tintas_devueltas ?? '—'); ?></td>
+                        <td style="padding:10px 16px; color:#94a3b8;"><?php echo e($entrada->logDevolucion?->created_at?->format('d/m/Y') ?? '—'); ?></td>
                     </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                     <tr>
                         <td colspan="7" style="padding:30px; text-align:center; color:#94a3b8; font-size:13px;">
                             Sin devoluciones registradas todavía.
                         </td>
                     </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
@@ -169,14 +179,14 @@
     </div>
 </div>
 
-{{-- MODAL DEVOLUCIÓN --}}
+
 <div id="modal-devolucion" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:50; align-items:center; justify-content:center;">
     <div style="background:white; border-radius:12px; padding:28px; max-width:480px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
         <h3 style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:4px;">Registrar devolución</h3>
         <p id="modal-org" style="font-size:12px; color:#94a3b8; margin-bottom:18px;"></p>
 
         <form id="form-devolucion" method="POST">
-            @csrf
+            <?php echo csrf_field(); ?>
             <div style="margin-bottom:12px;">
                 <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Nombre de quien devuelve *</label>
                 <input type="text" name="devuelto_por" required
@@ -242,7 +252,7 @@ function abrirModalImprimir(id, org) {
 }
 </script>
 
-{{-- MODAL CONFIRMAR IMPRESION --}}
+
 <div id="modal-imprimir" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:50; align-items:center; justify-content:center;">
     <div style="background:white; border-radius:12px; padding:28px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); text-align:center;">
         <div style="font-size:36px; margin-bottom:12px;">🖨️</div>
@@ -262,4 +272,14 @@ function abrirModalImprimir(id, org) {
         </div>
     </div>
 </div>
-</x-panel-layout>
+ <?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginald3474b09374f7a1c6aabd4f89d6847dc)): ?>
+<?php $attributes = $__attributesOriginald3474b09374f7a1c6aabd4f89d6847dc; ?>
+<?php unset($__attributesOriginald3474b09374f7a1c6aabd4f89d6847dc); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginald3474b09374f7a1c6aabd4f89d6847dc)): ?>
+<?php $component = $__componentOriginald3474b09374f7a1c6aabd4f89d6847dc; ?>
+<?php unset($__componentOriginald3474b09374f7a1c6aabd4f89d6847dc); ?>
+<?php endif; ?>
+<?php /**PATH /var/www/html/resources/views/secretaria/sin_nota/log.blade.php ENDPATH**/ ?>

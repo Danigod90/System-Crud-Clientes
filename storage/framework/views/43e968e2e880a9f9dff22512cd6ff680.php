@@ -5,82 +5,99 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            font-size: 12px;
-            color: #333;
+            font-size: 11px;
+            color: #1e293b;
+            margin: 0;
+            padding: 20px;
         }
         .header {
             text-align: center;
             margin-bottom: 20px;
-            border-bottom: 2px solid #333;
-            padding-bottom: 10px;
+            padding-bottom: 14px;
+            border-bottom: 2px solid #1e3a5f;
         }
         .header img {
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
+            margin-bottom: 6px;
         }
         .header h1 {
-            font-size: 16px;
-            margin: 5px 0;
+            font-size: 15px;
+            margin: 4px 0;
             text-transform: uppercase;
+            color: #1e3a5f;
+            letter-spacing: 0.5px;
         }
         .header h2 {
-            font-size: 13px;
-            margin: 3px 0;
+            font-size: 12px;
+            margin: 2px 0;
             font-weight: normal;
+            color: #475569;
         }
         .header h3 {
-            font-size: 12px;
-            margin: 3px 0;
-            font-weight: normal;
-            color: #555;
+            font-size: 11px;
+            margin: 6px 0 0;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .periodo {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
             font-size: 11px;
-            color: #555;
+            color: #64748b;
+            background: #f8fafc;
+            padding: 6px 12px;
+            border-radius: 4px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 4px;
         }
         th {
-            background-color: #2d6a9f;
+            background-color: #1e3a5f;
             color: white;
-            padding: 6px 8px;
+            padding: 7px 8px;
             text-align: left;
-            font-size: 11px;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
         }
         td {
             padding: 5px 8px;
-            border-bottom: 1px solid #ddd;
-            font-size: 11px;
-        }
-        tr:nth-child(even) {
-            background-color: #f5f5f5;
-        }
-        .footer {
-            margin-top: 20px;
-            text-align: right;
+            border-bottom: 1px solid #e2e8f0;
             font-size: 10px;
-            color: #888;
+            color: #374151;
+        }
+        tr:nth-child(even) td {
+            background-color: #f8fafc;
         }
         .total {
-            margin-top: 10px;
+            margin-top: 12px;
             text-align: right;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 11px;
+            color: #1e3a5f;
+        }
+        .footer {
+            margin-top: 16px;
+            text-align: right;
+            font-size: 9px;
+            color: #94a3b8;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 8px;
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <img src="<?php echo e(public_path('images/logo_tsje.png')); ?>" alt="Logo">
+        <img src="<?php echo e(public_path('images/logo.png')); ?>" alt="Logo">
         <h1>Dirección de Organizaciones Intermedias</h1>
         <h2>Justicia Electoral — República del Paraguay</h2>
-        <h3>Reporte de Entradas Sin Nota</h3>
+        <h3>Reporte de Servicios Realizados</h3>
     </div>
 
     <div class="periodo">
@@ -97,7 +114,7 @@
                 <th>Nombre</th>
                 <th>Apellido</th>
                 <th>Teléfono</th>
-                <th>Tipo de Charla</th>
+                <th>Tipo de Servicio</th>
                 <th>Asesor</th>
                 <th>Fecha</th>
             </tr>
@@ -108,14 +125,14 @@
                     <td><?php echo e($entrada->numero_entrada); ?></td>
                     <td><?php echo e($entrada->nombre); ?></td>
                     <td><?php echo e($entrada->apellido); ?></td>
-                    <td><?php echo e($entrada->telefono ?? '-'); ?></td>
+                    <td><?php echo e($entrada->telefono ?? '—'); ?></td>
                     <td><?php echo e($entrada->tipo_charla); ?></td>
-                    <td><?php echo e($entrada->asesor ? $entrada->asesor->nombre . ' ' . $entrada->asesor->apellido : '-'); ?></td>
-                    <td><?php echo e($entrada->created_at ? $entrada->created_at->format('d/m/Y') : '-'); ?></td>
+                    <td><?php echo e($entrada->asesor ? $entrada->asesor->nombre . ' ' . $entrada->asesor->apellido : '—'); ?></td>
+                    <td><?php echo e($entrada->created_at ? $entrada->created_at->format('d/m/Y') : '—'); ?></td>
                 </tr>
             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <tr>
-                    <td colspan="7" style="text-align:center; padding: 20px;">
+                    <td colspan="7" style="text-align:center; padding:20px; color:#94a3b8;">
                         No hay entradas para el período seleccionado.
                     </td>
                 </tr>
@@ -124,7 +141,7 @@
     </table>
 
     <div class="total">
-        Total de entradas: <?php echo e($entradas->count()); ?>
+        Total de servicios: <?php echo e($entradas->count()); ?>
 
     </div>
 
