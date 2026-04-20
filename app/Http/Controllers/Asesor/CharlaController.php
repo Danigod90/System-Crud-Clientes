@@ -38,7 +38,7 @@ class CharlaController extends Controller
         }
         $charla->update($nuevosDatos);
     } else {
-        // Nueva charla — máximo 2
+       // Nueva charla — máximo 2
         $totalCharlas = $entrada->charlas()->count();
         if ($totalCharlas >= 2) {
             return redirect()->back()->with('error', 'Solo se pueden agregar hasta 2 charlas por organización.');
@@ -49,5 +49,16 @@ class CharlaController extends Controller
     }
 
     return redirect()->back()->with('success', 'Charla guardada correctamente.');
+}
+
+public function updateEstado(Request $request, Charla $charla)
+{
+    $request->validate([
+        'estado' => 'required|in:pendiente,realizada,cancelada,suspendida',
+    ]);
+
+    $charla->update(['estado' => $request->estado]);
+
+    return redirect()->back()->with('success', 'Estado actualizado correctamente.');
 }
 }
