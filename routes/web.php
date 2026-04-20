@@ -40,10 +40,17 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
 });
 
 Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin|Asesor'])->prefix('secretaria')->name('secretaria.')->group(function () {
+
+    // ← Rutas específicas ANTES del resource
     Route::get('sin-nota/pdf', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'exportPdf'])->name('sin-nota.pdf');
+    Route::get('sin-nota/log', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'log'])->name('sin-nota.log');
+    Route::post('sin-nota/log/{id}/devolucion', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'storeDevolucion'])->name('sin-nota.devolucion');
+
     Route::resource('sin-nota', \App\Http\Controllers\Secretaria\EntradaSinNotaController::class)
          ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
          ->parameters(['sin-nota' => 'sinNota']);
+    Route::get('sin-nota/log', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'log'])->name('sin-nota.log');
+    Route::post('sin-nota/log/{id}/devolucion', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'storeDevolucion'])->name('sin-nota.devolucion');
 
     Route::resource('con-nota', \App\Http\Controllers\Secretaria\EntradaConNotaController::class)
         ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])

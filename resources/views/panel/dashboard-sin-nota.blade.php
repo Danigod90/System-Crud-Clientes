@@ -61,7 +61,7 @@
     <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,0.04); margin-bottom:14px;">
         <div style="padding:12px 16px; border-bottom:1px solid #f3f4f6; display:flex; justify-content:space-between; align-items:center;">
             <span style="font-size:13px; font-weight:600; color:#374151;">Log pendientes de devolución</span>
-            <a href="{{ route('secretaria.con-nota.index') }}" style="font-size:12px; color:#2563eb; text-decoration:none;">Ver todos →</a>
+            <a href="{{ route('secretaria.sin-nota.log') }}" style="font-size:12px; color:#2563eb; text-decoration:none;">Ver todos →</a>
         </div>
         <table style="width:100%; border-collapse:collapse; font-size:12px;">
             <thead>
@@ -77,8 +77,8 @@
             <tbody>
                 @php
                     $logPendientes = \App\Models\EntradaConNota::where('asunto_log', true)
-                        ->where('log_estado', 'pendiente')
-                        ->latest()->take(5)->get();
+    ->where('log_estado', 'entregada')
+    ->latest()->take(5)->get();
                 @endphp
                 @forelse($logPendientes as $entrada)
                 <tr style="border-bottom:1px solid #f3f4f6;">
@@ -88,7 +88,7 @@
                     <td style="padding:10px 16px; color:#374151;">{{ $entrada->log_cuartos }}</td>
                     <td style="padding:10px 16px; color:#374151;">{{ $entrada->log_tintas }}</td>
                     <td style="padding:10px 16px;">
-                        <a href="{{ route('secretaria.con-nota.show', $entrada->id) }}"
+                        <a href="{{ route('secretaria.sin-nota.log') }}"
                            style="font-size:12px; color:#2563eb; text-decoration:none; font-weight:500;">Ver →</a>
                     </td>
                 </tr>

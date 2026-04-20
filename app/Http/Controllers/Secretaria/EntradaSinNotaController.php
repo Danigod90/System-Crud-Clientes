@@ -137,4 +137,54 @@ class EntradaSinNotaController extends Controller
 
     return $pdf->stream('reporte-entradas-sin-nota.pdf');
 }
+public function log(Request $request)
+{
+    $pendientes = \App\Models\EntradaConNota::where('asunto_log', true)
+        ->where('log_estado', 'pendiente')
+        ->with('logDevolucion')
+        ->latest()
+        ->get();
+
+    $entregados = \App\Models\EntradaConNota::where('asunto_log', true)
+        ->where('log_estado', 'entregada')
+        ->with('logDevolucion')
+        ->latest()
+        ->get();
+
+    $devueltos = \App\Models\EntradaConNota::where('asunto_log', true)
+        ->where('log_estado', 'realizado')
+        ->with('logDevolucion')
+        ->latest()
+        ->get();
+
+    return view('secretaria.sin_nota.log', compact('pendientes', 'entregados', 'devueltos'));
+}
+
+public function storeDevolucion(Request $request, $id)
+{
+    $request->validate([
+        'devuelto_por'     => 'required|string|max:255',
+        'urnas_devueltas'  => 'required|integer|min:0',
+        'cuartos_devueltos'=> 'required|integer|min:0',
+        'tintas_devueltas' => 'required|integer|min:0',
+        'observaciones'    => 'nullable|string',
+    ]);
+
+    $entrada = \App\Models\EntradaConNota::findOrFail($id);
+
+    \App\Models\LogDevolucion::create([
+        'entrada_id'        => $entrada->id,
+        'devuelto_por'      => $request->devuelto_por,
+        'urnas_devueltas'   => $request->urnas_devueltas,
+        'cuartos_devueltos' => $request->cuartos_devueltos,
+        'tintas_devueltas'  => $request->tintas_devueltas,
+        'observaciones'     => $request->observaciones,
+        'user_id'           => auth()->id(),
+    ]);
+
+    $entrada->update(['log_estado' => 'realizado']);
+
+    return redirect()->route('secretaria.sin-nota.log')
+        ->with('success', 'Devolución registrada correctamente.');
+}
 }

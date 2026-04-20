@@ -28,6 +28,7 @@ class EntradaConNota extends Model
         'log_estado',
         'mostrar_en_ticker',
         'asunto_obs',
+        'log_impreso_at',
     ];
 
     protected $casts = [
@@ -37,6 +38,7 @@ class EntradaConNota extends Model
         'asunto_tec'     => 'boolean',
         'mostrar_en_ticker'  => 'boolean',
         'asunto_obs' => 'boolean',
+        'log_impreso_at' => 'datetime',
     ];
 
     public function user()
@@ -87,4 +89,8 @@ public function detalleTecnico()
         if ($this->asunto_obs) $partes[] = 'Obs';
         return implode(' · ', $partes) ?: '—';
     }
+    public function logDevolucion()
+{
+    return $this->hasOne(LogDevolucion::class, 'entrada_id');
+}
 }

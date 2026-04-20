@@ -201,9 +201,14 @@ class NotaPdfController extends Controller
     $dompdf->setPaper('letter', 'portrait');
     $dompdf->render();
 
-    return new Response($dompdf->output(), 200, [
-        'Content-Type'        => 'application/pdf',
-        'Content-Disposition' => 'inline; filename="recibo-log-' . $codigo . '.pdf"',
-    ]);
+   $conNota->update([
+    'log_impreso_at' => now(),
+    'log_estado'     => 'entregada',
+]);
+
+return new Response($dompdf->output(), 200, [
+    'Content-Type'        => 'application/pdf',
+    'Content-Disposition' => 'inline; filename="recibo-log-' . $codigo . '.pdf"',
+]);
 }
 }
