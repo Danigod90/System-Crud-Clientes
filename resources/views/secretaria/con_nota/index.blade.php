@@ -166,12 +166,18 @@
                         </td>
                         <td class="border border-gray-200 px-2 py-2" style="width:120px; white-space:nowrap;">
                             @if($entrada->asunto_char)
-                                @php $charDot = match($entrada->charla?->estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
-                                <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
-                                    <span style="font-size:11px; color:#6b7280;">Char</span>
-                                    <span style="width:9px; height:9px; border-radius:50%; background:{{ $charDot }}; display:inline-block;"></span>
-                                </span>
-                            @endif
+    <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
+        <span style="font-size:11px; color:#6b7280;">Char</span>
+        @foreach($entrada->charlas as $i => $ch)
+            @php $charDot = match($ch->estado) { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
+            <span style="width:9px; height:9px; border-radius:50%; background:{{ $charDot }}; display:inline-block;"></span>
+            <sup style="font-size:8px; color:#6b7280;">{{ $i+1 }}</sup>
+        @endforeach
+        @if($entrada->charlas->isEmpty())
+            <span style="width:9px; height:9px; border-radius:50%; background:#eab308; display:inline-block;"></span>
+        @endif
+    </span>
+@endif
                             @if($entrada->asunto_log)
                                 @php $logDot = in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? '#16a34a' : '#eab308'; @endphp
                                 <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">

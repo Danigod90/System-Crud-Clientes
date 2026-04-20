@@ -214,7 +214,7 @@
         {{-- FIN TOPBAR --}}
 
         {{-- SLOT PRINCIPAL --}}
-       <div style="flex:1; padding:10px 8px 60px 8px; overflow-y:auto; overflow-x:hidden; background:transparent;">
+       <div style="flex:1; padding:10px 8px 60px 8px; overflow-y:auto; overflow-x:hidden; background:linear-gradient(135deg, #e8eaf6 0%, #d4d8f0 25%, #e8d5f0 50%, #d4e8f0 75%, #e8eaf6 100%);">
     {{ $slot }}
 </div>
 

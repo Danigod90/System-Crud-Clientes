@@ -10,7 +10,7 @@
 }
 </style>
 {{-- CARDS + HEADER TABLA FIJOS --}}
-<div style="position:sticky; top:0; z-index:10; margin:-18px -18px 0 -18px; padding:18px 18px 0 18px; background:linear-gradient(135deg, #e8eaf6 0%, #d4d8f0 25%, #e8d5f0 50%, #d4e8f0 75%, #e8eaf6 100%); box-shadow:0 8px 20px rgba(200,200,220,0.5);">
+<div style="margin:-18px -18px 0 -18px; padding:18px 18px 0 18px; background:linear-gradient(135deg, #e8eaf6 0%, #d4d8f0 25%, #e8d5f0 50%, #d4e8f0 75%, #e8eaf6 100%); box-shadow:0 8px 20px rgba(200,200,220,0.5);">
 <div style="max-width:1000px; margin:0 auto;">
 
     {{-- CARDS --}}
@@ -102,49 +102,47 @@
 
     </div>
 
-    {{-- HEADER TABLA FIJO --}}
-    <div style="background:rgba(255,255,255,0.95); border-radius:16px 16px 0 0; border:1px solid rgba(255,255,255,0.9); border-bottom:none;">
-        <div style="padding:6px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; font-weight:500; color:#111827; display:flex; justify-content:space-between; align-items:center;">
-    Ultimas organizaciones ingresadas
-    <div style="display:flex; align-items:center; gap:8px;">
-        <form method="GET" action="{{ route('panel.dashboard') }}" style="display:flex; align-items:center; gap:6px;">
-           <select name="asesor" onchange="this.form.submit()" style="border:1px solid #e5e7eb; border-radius:8px; padding:4px 10px; font-size:12px; color:#374151; outline:none; background:#fff; cursor:pointer; transition: box-shadow 0.2s ease;"
-    onmouseover="this.style.boxShadow='0 4px 10px rgba(0,0,0,0.12)'"
-    onmouseout="this.style.boxShadow='none'">
-                <option value="">Todos los asesores</option>
-                @foreach($asesores as $asesor)
-                    @php $nombreCompleto = $asesor->nombre . ' ' . $asesor->apellido; @endphp
-                    <option value="{{ $nombreCompleto }}" {{ request('asesor') == $nombreCompleto ? 'selected' : '' }}>
-                        {{ $nombreCompleto }}
-                    </option>
-                @endforeach
-            </select>
-            @if(request('asesor'))
-                <a href="{{ route('panel.dashboard') }}" style="font-size:12px; color:#6b7280; text-decoration:none;">✕</a>
-            @endif
-        </form>
-        <a href="{{ route('secretaria.con-nota.index') }}" style="font-size:12px; color:#185FA5; text-decoration:none;">Ver todas</a>
+{{-- HEADER TABLA FIJO --}}
+<div style="background:rgba(255,255,255,0.95); border-radius:10px 10px 0 0; border:1px solid rgba(255,255,255,0.9); border-bottom:none;">
+    <div style="padding:4px 12px; border-bottom:1px solid #e5e7eb; display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:11px; font-weight:500; color:#111827;">Ultimas organizaciones ingresadas</span>
+        <div style="display:flex; align-items:center; gap:6px;">
+            <form method="GET" action="{{ route('panel.dashboard') }}" style="display:flex; align-items:center; gap:4px;">
+               <select name="asesor" onchange="this.form.submit()" style="border:1px solid #e5e7eb; border-radius:6px; padding:2px 6px; font-size:10px; color:#374151; outline:none; background:#fff; cursor:pointer;">
+                    <option value="">Todos</option>
+                    @foreach($asesores as $asesor)
+                        @php $nombreCompleto = $asesor->nombre . ' ' . $asesor->apellido; @endphp
+                        <option value="{{ $nombreCompleto }}" {{ request('asesor') == $nombreCompleto ? 'selected' : '' }}>
+                            {{ $nombreCompleto }}
+                        </option>
+                    @endforeach
+                </select>
+                @if(request('asesor'))
+                    <a href="{{ route('panel.dashboard') }}" style="font-size:10px; color:#6b7280; text-decoration:none;">✕</a>
+                @endif
+            </form>
+            <a href="{{ route('secretaria.con-nota.index') }}" style="font-size:10px; color:#185FA5; text-decoration:none;">Ver todas</a>
+        </div>
     </div>
+    <table style="width:100%; border-collapse:collapse;">
+        <thead>
+            <tr style="background:rgba(43,78,200,0.25);">
+                <th style="padding:3px 8px; text-align:left; color:#fff; font-weight:500; font-size:11px; width:120px;">Codigo</th>
+                <th style="padding:3px 8px; text-align:left; color:#fff; font-weight:500; font-size:11px;">Organizacion</th>
+                <th style="padding:3px 8px; text-align:left; color:#fff; font-weight:500; font-size:11px; width:120px;">Asesor</th>
+                <th style="padding:3px 1px; text-align:left; color:#fff; font-weight:500; font-size:11px; width:100px;">Asunto</th>
+                <th style="padding:3px 4px; text-align:left; color:#fff; font-weight:500; font-size:11px; width:120px;">Estado</th>
+            </tr>
+        </thead>
+    </table>
 </div>
-        <table style="width:100%; border-collapse:collapse;">
-            <thead>
-                <tr style="background:rgba(43,78,200,0.25);">
-                    <th style="padding:5px 10px; text-align:left; color:#fff; font-weight:500; font-size:12px; width:120px;">Codigo</th>
-                    <th style="padding:5px 10px; text-align:left; color:#fff; font-weight:500; font-size:12px;">Organizacion</th>
-                    <th style="padding:5px 10px; text-align:left; color:#fff; font-weight:500; font-size:12px; width:120px;">Asesor</th>
-                    <th style="padding:5px 1px; text-align:left; color:#fff; font-weight:500; font-size:12px; width:100px;">Asunto</th>
-                    <th style="padding:5px 4px; text-align:left; color:#fff; font-weight:500; font-size:12px; width:120px;">Estado</th>
-                </tr>
-            </thead>
-        </table>
-    </div>
 
 </div>
 </div>
 {{-- FIN STICKY --}}
 
 {{-- BODY SCROLLEABLE --}}
-<div style="max-width:1000px; margin:0 auto;">
+<div style="max-width:1000px; margin:0 auto; max-height:calc(100vh - 110px); overflow-y:auto;">
 <div style="background:rgba(255,255,255,0.75); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.9); border-top:none; border-radius:0 0 16px 16px; box-shadow:0 20px 60px rgba(100,100,180,0.15), 0 8px 20px rgba(100,100,180,0.1); margin-bottom:18px;">
     <table style="width:100%; border-collapse:collapse; font-size:11px;">
         <tbody>
@@ -156,12 +154,18 @@
                 <td style="padding:5px 1px; color:#111827; font-weight:600; width:100px;">{{ $entrada->asunto_texto }}</td>
                 <td style="padding:5px 2px; width:120px;">
                     @if($entrada->asunto_char)
-                        @php $charDot = match($entrada->charla?->estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
-                        <span style="display:inline-flex; align-items:center; gap:3px; margin-right:6px;">
-                            <span style="font-size:11px; color:#6b7280;">Char</span>
-                            <span style="width:9px; height:9px; border-radius:50%; background:{{ $charDot }}; display:inline-block;"></span>
-                        </span>
-                    @endif
+    <span style="display:inline-flex; align-items:center; gap:3px; margin-right:6px;">
+        <span style="font-size:11px; color:#6b7280;">Char</span>
+        @foreach($entrada->charlas as $i => $ch)
+            @php $charDot = match($ch->estado) { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
+            <span style="width:9px; height:9px; border-radius:50%; background:{{ $charDot }}; display:inline-block;"></span>
+            <sup style="font-size:8px; color:#6b7280;">{{ $i+1 }}</sup>
+        @endforeach
+        @if($entrada->charlas->isEmpty())
+            <span style="width:9px; height:9px; border-radius:50%; background:#eab308; display:inline-block;"></span>
+        @endif
+    </span>
+@endif
                     @if($entrada->asunto_log)
                         @php $logDot = in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? '#16a34a' : '#eab308'; @endphp
                         <span style="display:inline-flex; align-items:center; gap:3px; margin-right:6px;">

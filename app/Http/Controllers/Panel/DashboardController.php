@@ -79,11 +79,11 @@ if ($rol === 'Secretaria Sin Nota') {
     $asesorFiltro = $request->get('asesor');
     $asesores = \App\Models\Asesor::orderBy('nombre')->get();
 
-    $entradas = EntradaConNota::with('charla')
-        ->when($asesorFiltro, fn($q) => $q->where('asesor_asignado', $asesorFiltro))
-        ->latest()
-        ->take(10)
-        ->get();
+    $entradas = EntradaConNota::with(['charla', 'charlas', 'detalleTecnico', 'observador'])
+    ->when($asesorFiltro, fn($q) => $q->where('asesor_asignado', $asesorFiltro))
+    ->latest()
+    ->take(20)
+    ->get();
 
     $elecciones = EntradaConNota::whereNotNull('fecha_eleccion')
         ->where('fecha_eleccion', '>=', now())
