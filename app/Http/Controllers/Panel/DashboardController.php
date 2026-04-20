@@ -37,7 +37,7 @@ if ($rol === 'Secretaria Sin Nota') {
     if ($rol === 'Asesor') {
         $asesor = \App\Models\Asesor::where('user_id', $user->id)->first();
         $nombreAsesor = $asesor ? $asesor->nombre . ' ' . $asesor->apellido : $user->name;
-        $entradas = EntradaConNota::with('charla')->where('asesor_asignado', $nombreAsesor)->latest()->take(10)->get();
+        $entradas = EntradaConNota::with(['charla', 'charlas', 'detalleTecnico'])->where('asesor_asignado', $nombreAsesor)->latest()->take(10)->get();
         $elecciones = EntradaConNota::where('asesor_asignado', $nombreAsesor)
             ->whereNotNull('fecha_eleccion')
             ->where('fecha_eleccion', '>=', now())

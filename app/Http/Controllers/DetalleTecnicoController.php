@@ -401,6 +401,13 @@ $padronCINO  = $detalle->padron_con_cedula ? '[  ]' : '[X]';
     $dompdf->setPaper('letter', 'portrait');
     $dompdf->render();
 
+// Actualizar log_estado y log_impreso_at si tiene asunto_log
+    if ($entrada->asunto_log) {
+        $entrada->update([
+            'log_impreso_at' => now(),
+            'log_estado'     => 'entregada',
+        ]);
+    }
     return new \Illuminate\Http\Response($dompdf->output(), 200, [
         'Content-Type'        => 'application/pdf',
         'Content-Disposition' => 'inline; filename="recibo-tec-' . $codigo . '.pdf"',

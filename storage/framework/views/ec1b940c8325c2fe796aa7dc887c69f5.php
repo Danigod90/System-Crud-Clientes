@@ -152,12 +152,18 @@
                 <td style="padding:5px 1px; color:#111827; font-weight:600; width:100px;"><?php echo e($entrada->asunto_texto); ?></td>
                 <td style="padding:5px 2px; width:120px;">
                     <?php if($entrada->asunto_char): ?>
-                        <?php $charDot = match($entrada->charla?->estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; ?>
-                        <span style="display:inline-flex; align-items:center; gap:3px; margin-right:6px;">
-                            <span style="font-size:11px; color:#6b7280;">Char</span>
-                            <span style="width:9px; height:9px; border-radius:50%; background:<?php echo e($charDot); ?>; display:inline-block;"></span>
-                        </span>
-                    <?php endif; ?>
+    <span style="display:inline-flex; align-items:center; gap:3px; margin-right:6px;">
+        <span style="font-size:11px; color:#6b7280;">Char</span>
+        <?php $__currentLoopData = $entrada->charlas; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $ch): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <?php $charDot = match($ch->estado) { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; ?>
+            <span style="width:9px; height:9px; border-radius:50%; background:<?php echo e($charDot); ?>; display:inline-block;"></span>
+            <sup style="font-size:8px; color:#6b7280;"><?php echo e($i+1); ?></sup>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+        <?php if($entrada->charlas->isEmpty()): ?>
+            <span style="width:9px; height:9px; border-radius:50%; background:#eab308; display:inline-block;"></span>
+        <?php endif; ?>
+    </span>
+<?php endif; ?>
                     <?php if($entrada->asunto_log): ?>
                         <?php $logDot = in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? '#16a34a' : '#eab308'; ?>
                         <span style="display:inline-flex; align-items:center; gap:3px; margin-right:6px;">

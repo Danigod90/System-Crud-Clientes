@@ -51,7 +51,21 @@
                         <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $entrada->log_cuartos }}</td>
                         <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $entrada->log_tintas }}</td>
                         <td style="padding:10px 16px;">
-    <span style="font-size:11px; color:#94a3b8;">Sin entregar aún</span>
+   <td style="padding:10px 16px;">
+    @if($entrada->asunto_log && !$entrada->asunto_tec)
+    <button onclick="abrirModalImprimir({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}')"
+            style="display:inline-flex; align-items:center; gap:5px; background:#f0f9ff; border:1px solid #bae6fd; color:#0369a1; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"/>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        Imprimir Log
+    </button>
+@else
+    <span style="font-size:11px; color:#94a3b8;">Sin imprimir Log</span>
+@endif
+</td>
 </td>
                     </tr>
                     @empty
@@ -83,14 +97,19 @@
                 </thead>
                 <tbody>
                     @forelse($entregados as $entrada)
-                    <tr style="border-bottom:1px solid #f3f4f6;" data-org="{{ $entrada->nombre_organizacion }}">
-                        <td style="padding:10px 16px; color:#185FA5; font-weight:600; font-family:monospace;">{{ $entrada->codigo_org }}</td>
-                        <td style="padding:10px 16px; color:#1e293b; font-weight:500;">{{ $entrada->nombre_organizacion }}</td>
-                        <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $entrada->log_urnas }}</td>
-                        <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $entrada->log_cuartos }}</td>
-                        <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $entrada->log_tintas }}</td>
+<tr style="border-bottom:1px solid #f3f4f6;" data-org="{{ $entrada->nombre_organizacion }}">
+    <td style="padding:10px 16px; color:#185FA5; font-weight:600; font-family:monospace;">{{ $entrada->codigo_org }}</td>
+    <td style="padding:10px 16px; color:#1e293b; font-weight:500;">{{ $entrada->nombre_organizacion }}</td>
+    @php
+        $urnas   = $entrada->asunto_tec ? ($entrada->detalleTecnico->mat_final_urnas  ?? ($entrada->detalleTecnico->cantidad_mesas * $entrada->detalleTecnico->cantidad_papeletas ?? 0)) : $entrada->log_urnas;
+        $cuartos = $entrada->asunto_tec ? ($entrada->detalleTecnico->mat_final_cuartos ?? $entrada->detalleTecnico->cantidad_mesas ?? 0) : $entrada->log_cuartos;
+        $tintas  = $entrada->asunto_tec ? ($entrada->detalleTecnico->mat_final_tintas  ?? $entrada->detalleTecnico->cantidad_mesas ?? 0) : $entrada->log_tintas;
+    @endphp
+    <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $urnas }}</td>
+    <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $cuartos }}</td>
+    <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $tintas }}</td>
                         <td style="padding:10px 16px;">
-                            <button onclick="abrirModal({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}', {{ $entrada->log_urnas }}, {{ $entrada->log_cuartos }}, {{ $entrada->log_tintas }})"
+                            <button onclick="abrirModal({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}', {{ $urnas }}, {{ $cuartos }}, {{ $tintas }})"
                                     style="background:#2563eb; color:white; border:none; padding:5px 12px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">
                                 Registrar devolución
                             </button>
@@ -214,6 +233,32 @@ function filtrarTablas(valor) {
         tr.style.display = tr.dataset.org.toLowerCase().includes(valor) ? '' : 'none';
     });
 }
+
+function abrirModalImprimir(id, org) {
+    document.getElementById('modal-imprimir-org').textContent = org;
+    document.getElementById('btn-confirmar-imprimir').href = '/secretaria/con-nota/' + id + '/recibo-logistica';
+    document.getElementById('modal-imprimir').style.display = 'flex';
+}
 </script>
 
+{{-- MODAL CONFIRMAR IMPRESION --}}
+<div id="modal-imprimir" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:50; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:12px; padding:28px; max-width:420px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); text-align:center;">
+        <div style="font-size:36px; margin-bottom:12px;">🖨️</div>
+        <h3 style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:6px;">Confirmar entrega de materiales</h3>
+        <p id="modal-imprimir-org" style="font-size:13px; color:#64748b; margin-bottom:20px;"></p>
+        <p style="font-size:12px; color:#94a3b8; margin-bottom:20px;">Al confirmar se imprimirá el recibo y los materiales quedarán registrados como entregados.</p>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button onclick="document.getElementById('modal-imprimir').style.display='none'"
+                    style="padding:8px 18px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:13px; cursor:pointer;">
+                Cancelar
+            </button>
+            <a id="btn-confirmar-imprimir" href="#" target="_blank"
+               onclick="document.getElementById('modal-imprimir').style.display='none'"
+               style="padding:8px 18px; border-radius:8px; border:none; background:#0369a1; color:white; font-size:13px; cursor:pointer; font-weight:500; text-decoration:none;">
+                Confirmar e imprimir
+            </a>
+        </div>
+    </div>
+</div>
 </x-panel-layout>

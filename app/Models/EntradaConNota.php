@@ -52,7 +52,12 @@ class EntradaConNota extends Model
     }
 public function charla()
 {
-    return $this->hasOne(Charla::class, 'entrada_con_nota_id');
+    return $this->hasOne(Charla::class, 'entrada_con_nota_id')->oldest();
+}
+
+public function charlas()
+{
+    return $this->hasMany(Charla::class, 'entrada_con_nota_id')->oldest();
 }
   public function observador()
 {

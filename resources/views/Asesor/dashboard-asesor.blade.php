@@ -19,7 +19,7 @@
     <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px;">
 
         {{-- 1. Organizaciones activas --}}
-        <div class="card-stat"style="background:linear-gradient(135deg,#E8834A,#F5A623); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(232,131,74,0.35);">
+        <div class="card-stat" style="background:linear-gradient(135deg,#E8834A,#F5A623); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(232,131,74,0.35);">
             <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
                 <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
                     <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>
@@ -30,23 +30,23 @@
             <span style="display:inline-flex; background:rgba(255,255,255,0.22); border-radius:20px; padding:3px 10px; font-size:10px; color:#fff; margin-top:10px;">asignadas</span>
         </div>
 
-       {{-- 2. Observadores pendientes --}}
-<div class="card-stat" style="background:linear-gradient(135deg,#4A7C59,#6BAF7A); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(74,124,89,0.35);">
-    <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
-        <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
-    </div>
-    <div style="font-size:11px; color:rgba(255,255,255,0.85); margin-bottom:6px; font-weight:500;">Observadores pendientes</div>
-    <div style="font-size:36px; font-weight:700; color:#fff; line-height:1;">{{ $stats['obs_pendientes'] }}</div>
-    <span style="display:inline-flex; background:rgba(255,255,255,0.22); border-radius:20px; padding:3px 10px; font-size:10px; color:#fff; margin-top:10px;">sin realizar</span>
-</div>
+        {{-- 2. Observadores pendientes --}}
+        <div class="card-stat" style="background:linear-gradient(135deg,#4A7C59,#6BAF7A); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(74,124,89,0.35);">
+            <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
+                <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+            </div>
+            <div style="font-size:11px; color:rgba(255,255,255,0.85); margin-bottom:6px; font-weight:500;">Observadores pendientes</div>
+            <div style="font-size:36px; font-weight:700; color:#fff; line-height:1;">{{ $stats['obs_pendientes'] }}</div>
+            <span style="display:inline-flex; background:rgba(255,255,255,0.22); border-radius:20px; padding:3px 10px; font-size:10px; color:#fff; margin-top:10px;">sin realizar</span>
+        </div>
 
         {{-- 3. Charlas pendientes --}}
-        <div class="card-stat" style="background:linear-gradient(135deg,#5B9EC9,#7BBDE0);; border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(196,112,74,0.35);">
+        <div class="card-stat" style="background:linear-gradient(135deg,#5B9EC9,#7BBDE0); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(196,112,74,0.35);">
             <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
                 <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="10"/>
@@ -108,7 +108,8 @@
     <div style="background:rgba(255,255,255,0.95); border-radius:16px 16px 0 0; border:1px solid rgba(255,255,255,0.9); border-bottom:none;">
         <div style="padding:6px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; font-weight:500; color:#111827; display:flex; justify-content:space-between; align-items:center;">
             Mis organizaciones
-<a href="{{ route('asesor.mis-organizaciones') }}" style="font-size:12px; color:#1f0566; text-decoration:none;">Ver todas</a>        </div>
+            <a href="{{ route('asesor.mis-organizaciones') }}" style="font-size:12px; color:#1f0566; text-decoration:none;">Ver todas</a>
+        </div>
         <table style="width:100%; border-collapse:collapse;">
             <thead>
                 <tr style="background:rgba(100,150,200,0.2);">
@@ -128,8 +129,7 @@
 
 {{-- BODY SCROLLEABLE --}}
 <div style="max-width:1000px; margin:0 auto;">
-{{-- Total entradas: {{ count($entradas) }} --}}
-<div style="background:rgba(255,255,255,0.75); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.9); border-top:none; border-radius:0 0 16px 16px; box-shadow:0 20px 60px rgba(240, 240, 241, 0.15), 0 8px 20px rgba(234, 234, 241, 0.1); margin-bottom:40px;">
+<div style="background:rgba(255,255,255,0.75); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.9); border-top:none; border-radius:0 0 16px 16px; box-shadow:0 20px 60px rgba(240,240,241,0.15), 0 8px 20px rgba(234,234,241,0.1); margin-bottom:40px;">
     <table style="width:100%; border-collapse:collapse; font-size:11px;">
         <tbody>
             @forelse($entradas as $entrada)
@@ -137,23 +137,23 @@
                 <td style="padding:5px 10px; color:#E8834A; font-weight:600; font-family:monospace; width:120px;">{{ $entrada->codigo_org }}</td>
                 <td style="padding:5px 10px; color:#111827;">{{ $entrada->nombre_organizacion }}</td>
                 <td style="padding:5px 10px; color:#6b7280; width:100px; font-size:11px;">
-    {{ $entrada->fecha_eleccion?->format('d/m/Y') ?? '—' }}
-</td>
+                    {{ $entrada->fecha_eleccion?->format('d/m/Y') ?? '—' }}
+                </td>
                 <td style="padding:5px 1px; color:#111827; font-weight:600; width:100px;">{{ $entrada->asunto_texto }}</td>
                 <td style="padding:5px 2px; width:120px;">
                     @if($entrada->asunto_char)
-    <span style="display:inline-flex; align-items:center; gap:3px; margin-right:6px;">
-        <span style="font-size:11px; color:#6b7280;">Char</span>
-        @foreach($entrada->charlas as $i => $ch)
-            @php $charDot = match($ch->estado) { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
-            <span style="width:9px; height:9px; border-radius:50%; background:{{ $charDot }}; display:inline-block;"></span>
-            <sup style="font-size:8px; color:#6b7280;">{{ $i+1 }}</sup>
-        @endforeach
-        @if($entrada->charlas->isEmpty())
-            <span style="width:9px; height:9px; border-radius:50%; background:#eab308; display:inline-block;"></span>
-        @endif
-    </span>
-@endif
+                        <span style="display:inline-flex; align-items:center; gap:3px; margin-right:6px;">
+                            <span style="font-size:11px; color:#6b7280;">Char</span>
+                            @foreach($entrada->charlas as $i => $ch)
+                                @php $charDot = match($ch->estado) { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
+                                <span style="width:9px; height:9px; border-radius:50%; background:{{ $charDot }}; display:inline-block;"></span>
+                                <sup style="font-size:8px; color:#6b7280;">{{ $i+1 }}</sup>
+                            @endforeach
+                            @if($entrada->charlas->isEmpty())
+                                <span style="width:9px; height:9px; border-radius:50%; background:#eab308; display:inline-block;"></span>
+                            @endif
+                        </span>
+                    @endif
                     @if($entrada->asunto_log)
                         @php $logDot = in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? '#16a34a' : '#eab308'; @endphp
                         <span style="display:inline-flex; align-items:center; gap:3px; margin-right:6px;">
@@ -172,7 +172,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="4" style="padding:20px 16px; text-align:center; color:#9ca3af; font-size:12px;">
+                <td colspan="5" style="padding:20px 16px; text-align:center; color:#9ca3af; font-size:12px;">
                     No tenés organizaciones asignadas aún.
                 </td>
             </tr>

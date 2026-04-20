@@ -141,19 +141,19 @@ public function log(Request $request)
 {
     $pendientes = \App\Models\EntradaConNota::where('asunto_log', true)
         ->where('log_estado', 'pendiente')
-        ->with('logDevolucion')
+        ->with(['logDevolucion', 'detalleTecnico'])
         ->latest()
         ->get();
 
     $entregados = \App\Models\EntradaConNota::where('asunto_log', true)
         ->where('log_estado', 'entregada')
-        ->with('logDevolucion')
+        ->with(['logDevolucion', 'detalleTecnico'])
         ->latest()
         ->get();
 
     $devueltos = \App\Models\EntradaConNota::where('asunto_log', true)
         ->where('log_estado', 'realizado')
-        ->with('logDevolucion')
+        ->with(['logDevolucion', 'detalleTecnico'])
         ->latest()
         ->get();
 

@@ -29,6 +29,7 @@ class TecnicoOrganizacionesController extends Controller
         } elseif ($request->estado === 'impreso') {
             $query->whereHas('detalleTecnico', fn($q) => $q->where('impreso', true));
         }
+
     }
 
     if ($request->filled('mes_ingreso')) {
@@ -39,4 +40,13 @@ class TecnicoOrganizacionesController extends Controller
     $asesores = \App\Models\Asesor::orderBy('nombre')->get();
 
     return view('tecnico.organizaciones_tecnico', compact('entradas', 'asesores'));
-}}
+}
+
+public function edit($entrada_id)
+{
+    $entrada = EntradaConNota::with(['detalleTecnico'])->findOrFail($entrada_id);
+    return view('tecnico.edit_tecnico', compact('entrada'));
+}
+
+}
+

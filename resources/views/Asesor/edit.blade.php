@@ -131,187 +131,222 @@
         @endif
 
         {{-- SECCIÓN CHARLA --}}
-        @if($entrada->asunto_char)
-        <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
-            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
-                <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0; display:flex; align-items:center; gap:8px;">
-                    Detalle de Charla
-                    @if($entrada->charla)
-                        @php
-                            $dotColor = match($entrada->charla->estado) {
-                                'realizada'  => '#16a34a',
-                                'cancelada'  => '#dc2626',
-                                'suspendida' => '#f97316',
-                                'vencida'    => '#dc2626',
-                                default      => '#eab308',
-                            };
-                        @endphp
-                        <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
-                            <span style="width:9px; height:9px; border-radius:50%; background:{{ $dotColor }}; display:inline-block;"></span>
-                            {{ ucfirst($entrada->charla->estado) }}
-                        </span>
-                    @endif
-                </h3>
-                <div style="display:flex; gap:8px; align-items:center;">
+@if($entrada->asunto_char)
+<div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
+        <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0; display:flex; align-items:center; gap:8px;">
+            Detalle de Charla
+            {{-- GLOBITOS --}}
+            @foreach($entrada->charlas as $i => $ch)
+                @php
+                    $dotColor = match($ch->estado) {
+                        'realizada'  => '#16a34a',
+                        'cancelada'  => '#dc2626',
+                        'suspendida' => '#f97316',
+                        'vencida'    => '#dc2626',
+                        default      => '#eab308',
+                    };
+                @endphp
+                <span style="display:inline-flex; align-items:center; gap:3px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
+                    <span style="width:9px; height:9px; border-radius:50%; background:{{ $dotColor }}; display:inline-block;"></span>
+                    <sup style="font-size:9px;">{{ $i+1 }}</sup>
+                </span>
+            @endforeach
+        </h3>
+        <div style="display:flex; gap:8px; align-items:center;">
+            @if($entrada->charlas->count() < 2)
+            <button onclick="mostrarFormNuevaCharla()"
+                    style="display:inline-flex; align-items:center; gap:5px; background:#2563eb; color:white; padding:6px 12px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
+                + Agregar charla
+            </button>
+            @endif
+        </div>
+    </div>
 
-                    <button id="btn-editar-charla" onclick="activarEdicion()"
-                            style="display:{{ $entrada->charla ? 'inline-flex' : 'none' }}; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
-                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                        </svg>
-                        Editar
-                    </button>
-                </div>
+    {{-- CHARLAS EXISTENTES --}}
+    @foreach($entrada->charlas as $i => $ch)
+    @php
+        $dotColor = match($ch->estado) {
+            'realizada'  => '#16a34a',
+            'cancelada'  => '#dc2626',
+            'suspendida' => '#f97316',
+            'vencida'    => '#dc2626',
+            default      => '#eab308',
+        };
+        $tipoLabel = match($ch->char_tipo ?? '') {
+            'proceso_electoral' => 'Proceso Electoral',
+            'mmrv'              => 'MMRV',
+            'ambos'             => 'Proceso + MMRV',
+            default             => '—',
+        };
+    @endphp
+    <div style="border:1px solid #f3f4f6; border-radius:10px; padding:14px; margin-bottom:12px; background:#fafafa;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <span style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:600; color:#374151;">
+                <span style="width:9px; height:9px; border-radius:50%; background:{{ $dotColor }}; display:inline-block;"></span>
+                Charla {{ $i+1 }} — {{ $tipoLabel }}
+                <span style="font-size:11px; color:#6b7280; font-weight:400;">{{ ucfirst($ch->estado) }}</span>
+            </span>
+            <button onclick="toggleEditarCharla({{ $ch->id }})"
+                    style="display:inline-flex; align-items:center; gap:5px; background:#f3f4f6; color:#374151; padding:5px 10px; border-radius:6px; font-size:11px; border:none; cursor:pointer;">
+                ✏️ Editar
+            </button>
+        </div>
+
+        {{-- READONLY --}}
+        <div id="readonly-{{ $ch->id }}" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div>
+                <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:3px; text-transform:uppercase; letter-spacing:0.5px;">Modalidad</label>
+                <p style="font-size:13px; font-weight:600; color:#111827; margin:0;">
+                    {{ $ch->modalidad == 'virtual' ? 'Virtual' : ($ch->modalidad == 'presencial_oficina' ? 'Presencial — Oficina' : 'Presencial — Externa') }}
+                </p>
             </div>
-
-            {{-- VISTA SOLO LECTURA --}}
-            <div id="charla-readonly" style="display:{{ $entrada->charla ? 'grid' : 'none' }}; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
-                <div>
-                    <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Modalidad</label>
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">
-                        {{ $entrada->charla?->modalidad == 'virtual' ? 'Virtual' : ($entrada->charla?->modalidad == 'presencial_oficina' ? 'Presencial — Oficina' : 'Presencial — Externa') }}
-                    </p>
-                </div>
-                @if($entrada->charla?->char_tipo)
-                <div>
-                    <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Tipo de charla</label>
-                    @php
-                        $tipoLabel = match($entrada->charla->char_tipo) {
-                            'proceso_electoral' => 'Charla sobre Proceso Electoral',
-                            'mmrv'              => 'Charla para MMRV',
-                            'ambos'             => 'Charla sobre Proceso - Charla MMRV',
-                            default             => '—',
-                        };
-                    @endphp
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $tipoLabel }}</p>
-                </div>
-                @endif
-                <div>
-                    <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora</label>
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">
-                        {{ $entrada->charla?->fecha_hora?->format('d/m/Y H:i') ?? '—' }}
-                    </p>
-                </div>
-                @if($entrada->charla?->direccion)
-                <div style="grid-column:span 2;">
-                    <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Dirección</label>
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $entrada->charla->direccion }}</p>
-                </div>
-                @endif
-                @if($entrada->charla?->descripcion)
-                <div style="grid-column:span 2;">
-                    <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Descripción</label>
-                    <p style="font-size:14px; color:#111827; margin:0;">{{ $entrada->charla->descripcion }}</p>
-                </div>
-                @endif
+            <div>
+                <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:3px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora</label>
+                <p style="font-size:13px; font-weight:600; color:#111827; margin:0;">{{ $ch->fecha_hora?->format('d/m/Y H:i') ?? '—' }}</p>
             </div>
-
-            {{-- FORMULARIO EDITABLE --}}
-            <form id="charla-form" method="POST" action="{{ route('asesor.charla.store', $entrada) }}"
-                  style="display:{{ $entrada->charla ? 'none' : 'block' }};">
-                @csrf
-                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
-                    <div>
-                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Modalidad *</label>
-                        <select name="modalidad" id="modalidad-select"
-                                style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
-                            <option value="">Seleccionar...</option>
-                            <option value="virtual" {{ $entrada->charla?->modalidad == 'virtual' ? 'selected' : '' }}>Virtual</option>
-                            <option value="presencial_oficina" {{ $entrada->charla?->modalidad == 'presencial_oficina' ? 'selected' : '' }}>Presencial — Oficina</option>
-                            <option value="presencial_externa" {{ $entrada->charla?->modalidad == 'presencial_externa' ? 'selected' : '' }}>Presencial — Externa</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Tipo de charla</label>
-                        <select name="char_tipo"
-                                style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
-                            <option value="">-- Seleccionar --</option>
-                            <option value="proceso_electoral" {{ $entrada->charla?->char_tipo == 'proceso_electoral' ? 'selected' : '' }}>Charla sobre Proceso Electoral</option>
-                            <option value="mmrv" {{ $entrada->charla?->char_tipo == 'mmrv' ? 'selected' : '' }}>Charla para MMRV</option>
-<option value="ambos" {{ $entrada->charla?->char_tipo == 'ambos' ? 'selected' : '' }}>Charla sobre Proceso - Charla MMRV</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora <span style="color:#9ca3af; font-weight:400;">(opcional)</span></label>
-                        <div style="position:relative;">
-                            <input type="text" id="fecha_hora_display"
-                                   placeholder="Seleccionar fecha y hora..."
-                                   value="{{ $entrada->charla?->fecha_hora?->format('d/m/Y H:i') }}"
-                                   style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 32px 7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; cursor:pointer;">
-                            <button type="button" onclick="limpiarFecha()"
-                                    style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#9ca3af; font-size:14px; padding:0; line-height:1;">✕</button>
-                        </div>
-                        <input type="hidden" name="fecha_hora" id="fecha_hora_input"
-                               value="{{ $entrada->charla?->fecha_hora?->format('Y-m-d H:i:s') }}">
-                    </div>
-                </div>
-                <div id="seccion-direccion" style="display:{{ $entrada->charla?->modalidad == 'presencial_externa' ? 'block' : 'none' }}; margin-bottom:12px;">
-                    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Dirección *</label>
-                    <input type="text" name="direccion"
-                           value="{{ $entrada->charla?->direccion }}"
-                           placeholder="Dirección del local donde se realizará la charla..."
-                           style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
-                </div>
-                <div style="margin-bottom:12px;">
-                    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Descripción <span style="color:#9ca3af; font-weight:400;">(opcional)</span></label>
-                    <textarea name="descripcion" rows="3"
-                              placeholder="Ej: Charla a confirmar, pendiente de respuesta del representante..."
-                              style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; resize:vertical;">{{ $entrada->charla?->descripcion }}</textarea>
-                </div>
-                <div style="display:flex; justify-content:flex-end; gap:8px;">
-                    @if($entrada->charla)
-                    <button type="button" onclick="cancelarEdicion()"
-                            style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
-                        Cancelar
-                    </button>
-                    @endif
-                    <button type="submit"
-                            style="display:inline-flex; align-items:center; gap:6px; background:#2563eb; color:white; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
-                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                        Guardar charla
-                    </button>
-                </div>
-            </form>
-
-            @if($entrada->charla)
-            <div style="border-top:1px solid #f3f4f6; margin-top:16px; padding-top:16px;">
-                <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;">Cambiar estado</p>
-                <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                    <form method="POST" action="{{ route('asesor.charla.estado', $entrada->charla) }}">
-                        @csrf @method('PATCH')
-                        <input type="hidden" name="estado" value="realizada">
-                        <button type="submit" onclick="return confirm('¿Marcar la charla como realizada?')"
-                                style="display:inline-flex; align-items:center; gap:6px; background:#16a34a; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
-                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                            Realizada
-                        </button>
-                    </form>
-                    <form method="POST" action="{{ route('asesor.charla.estado', $entrada->charla) }}">
-                        @csrf @method('PATCH')
-                        <input type="hidden" name="estado" value="suspendida">
-                        <button type="submit" onclick="return confirm('¿Marcar la charla como suspendida?')"
-                                style="display:inline-flex; align-items:center; gap:6px; background:#f97316; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
-                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/></svg>
-                            Suspendida
-                        </button>
-                    </form>
-                    <form method="POST" action="{{ route('asesor.charla.estado', $entrada->charla) }}">
-                        @csrf @method('PATCH')
-                        <input type="hidden" name="estado" value="cancelada">
-                        <button type="submit" onclick="return confirm('¿Confirmar cancelación de la charla?')"
-                                style="display:inline-flex; align-items:center; gap:6px; background:#dc2626; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
-                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                            Cancelada
-                        </button>
-                    </form>
-                </div>
+            @if($ch->direccion)
+            <div style="grid-column:span 2;">
+                <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:3px; text-transform:uppercase; letter-spacing:0.5px;">Dirección</label>
+                <p style="font-size:13px; color:#111827; margin:0;">{{ $ch->direccion }}</p>
+            </div>
+            @endif
+            @if($ch->descripcion)
+            <div style="grid-column:span 2;">
+                <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:3px; text-transform:uppercase; letter-spacing:0.5px;">Descripción</label>
+                <p style="font-size:13px; color:#111827; margin:0;">{{ $ch->descripcion }}</p>
             </div>
             @endif
         </div>
-        @endif
+
+        {{-- FORM EDITAR --}}
+        <div id="edit-{{ $ch->id }}" style="display:none; margin-top:12px; border-top:1px solid #e5e7eb; padding-top:12px;">
+            <form method="POST" action="{{ route('asesor.charla.store', $entrada) }}">
+                @csrf
+                <input type="hidden" name="charla_id" value="{{ $ch->id }}">
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Modalidad *</label>
+                        <select name="modalidad" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
+                            <option value="virtual" {{ $ch->modalidad == 'virtual' ? 'selected' : '' }}>Virtual</option>
+                            <option value="presencial_oficina" {{ $ch->modalidad == 'presencial_oficina' ? 'selected' : '' }}>Presencial — Oficina</option>
+                            <option value="presencial_externa" {{ $ch->modalidad == 'presencial_externa' ? 'selected' : '' }}>Presencial — Externa</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Tipo de charla</label>
+                        <select name="char_tipo" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
+                            <option value="">-- Seleccionar --</option>
+                            <option value="proceso_electoral" {{ $ch->char_tipo == 'proceso_electoral' ? 'selected' : '' }}>Proceso Electoral</option>
+                            <option value="mmrv" {{ $ch->char_tipo == 'mmrv' ? 'selected' : '' }}>MMRV</option>
+                            <option value="ambos" {{ $ch->char_tipo == 'ambos' ? 'selected' : '' }}>Proceso + MMRV</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora</label>
+                        <input type="datetime-local" name="fecha_hora"
+                               value="{{ $ch->fecha_hora?->format('Y-m-d\TH:i') }}"
+                               style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Descripción</label>
+                        <input type="text" name="descripcion" value="{{ $ch->descripcion }}"
+                               style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:flex-end; gap:8px;">
+                    <button type="button" onclick="toggleEditarCharla({{ $ch->id }})"
+                            style="padding:6px 14px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:12px; cursor:pointer;">
+                        Cancelar
+                    </button>
+                    <button type="submit"
+                            style="padding:6px 14px; border-radius:8px; border:none; background:#2563eb; color:white; font-size:12px; cursor:pointer; font-weight:500;">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        {{-- CAMBIAR ESTADO --}}
+        <div style="border-top:1px solid #f3f4f6; margin-top:12px; padding-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            <form method="POST" action="{{ route('asesor.charla.estado', $ch) }}">
+                @csrf @method('PATCH')
+                <input type="hidden" name="estado" value="realizada">
+                <button type="submit" onclick="return confirm('¿Marcar como realizada?')"
+                        style="display:inline-flex; align-items:center; gap:5px; background:#16a34a; color:white; padding:6px 12px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
+                    ✓ Realizada
+                </button>
+            </form>
+            <form method="POST" action="{{ route('asesor.charla.estado', $ch) }}">
+                @csrf @method('PATCH')
+                <input type="hidden" name="estado" value="suspendida">
+                <button type="submit" onclick="return confirm('¿Marcar como suspendida?')"
+                        style="display:inline-flex; align-items:center; gap:5px; background:#f97316; color:white; padding:6px 12px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
+                    Suspendida
+                </button>
+            </form>
+            <form method="POST" action="{{ route('asesor.charla.estado', $ch) }}">
+                @csrf @method('PATCH')
+                <input type="hidden" name="estado" value="cancelada">
+                <button type="submit" onclick="return confirm('¿Confirmar cancelación?')"
+                        style="display:inline-flex; align-items:center; gap:5px; background:#dc2626; color:white; padding:6px 12px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
+                    Cancelada
+                </button>
+            </form>
+        </div>
+    </div>
+    @endforeach
+
+    {{-- FORM NUEVA CHARLA --}}
+    <div id="form-nueva-charla" style="display:none; border:1px dashed #2563eb; border-radius:10px; padding:14px; margin-top:8px; background:#f0f7ff;">
+        <p style="font-size:12px; font-weight:600; color:#2563eb; margin:0 0 12px;">Nueva charla</p>
+        <form method="POST" action="{{ route('asesor.charla.store', $entrada) }}">
+            @csrf
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                <div>
+                    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Modalidad *</label>
+                    <select name="modalidad" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
+                        <option value="">Seleccionar...</option>
+                        <option value="virtual">Virtual</option>
+                        <option value="presencial_oficina">Presencial — Oficina</option>
+                        <option value="presencial_externa">Presencial — Externa</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Tipo de charla</label>
+                    <select name="char_tipo" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
+                        <option value="">-- Seleccionar --</option>
+                        <option value="proceso_electoral">Proceso Electoral</option>
+                        <option value="mmrv">MMRV</option>
+                        <option value="ambos">Proceso + MMRV</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora</label>
+                    <input type="datetime-local" name="fecha_hora"
+                           style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Descripción</label>
+                    <input type="text" name="descripcion" placeholder="Opcional..."
+                           style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                </div>
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+                <button type="button" onclick="document.getElementById('form-nueva-charla').style.display='none'"
+                        style="padding:6px 14px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:12px; cursor:pointer;">
+                    Cancelar
+                </button>
+                <button type="submit"
+                        style="padding:6px 14px; border-radius:8px; border:none; background:#2563eb; color:white; font-size:12px; cursor:pointer; font-weight:500;">
+                    Guardar charla
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+@endif
 
         {{-- SECCIÓN OBSERVADORES --}}
         @if($entrada->asunto_obs)
@@ -1137,6 +1172,18 @@ document.getElementById('asesor_mat_papeletas')?.addEventListener('input', funct
         generarPapeletas();
     }
 });
+
+function mostrarFormNuevaCharla() {
+    document.getElementById('form-nueva-charla').style.display = 'block';
+}
+
+function toggleEditarCharla(id) {
+    const edit = document.getElementById('edit-' + id);
+    const readonly = document.getElementById('readonly-' + id);
+    const visible = edit.style.display === 'block';
+    edit.style.display = visible ? 'none' : 'block';
+    readonly.style.display = visible ? 'grid' : 'none';
+}
 
 calcularMaterialesAsesor();
 </script>
