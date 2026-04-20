@@ -69,8 +69,9 @@ Route::middleware(['auth'])->prefix('asesor')->name('asesor.')->group(function (
     Route::get('organizacion/{entrada}/edit', [\App\Http\Controllers\Asesor\MisOrganizacionesController::class, 'edit'])->name('organizacion.edit');
     Route::post('charla/{entrada}', [\App\Http\Controllers\Asesor\CharlaController::class, 'store'])->name('charla.store');
     Route::patch('charla/{charla}/estado', [\App\Http\Controllers\Asesor\CharlaController::class, 'updateEstado'])->name('charla.estado');
+    Route::delete('charla/{charla}', [\App\Http\Controllers\Asesor\CharlaController::class, 'destroy'])->name('charla.destroy');
     Route::post('observador/{entrada}', [\App\Http\Controllers\Asesor\ObservadorController::class, 'store'])->name('observador.store');
-   Route::patch('observador/{observador}/estado', [\App\Http\Controllers\Asesor\ObservadorController::class, 'updateEstado'])->name('observador.estado');
+    Route::patch('observador/{observador}/estado', [\App\Http\Controllers\Asesor\ObservadorController::class, 'updateEstado'])->name('observador.estado');
 
     // ── DETALLE TÉCNICO — PANEL ASESOR ──
     Route::get('detalle-tecnico/{entrada_id}', [\App\Http\Controllers\DetalleTecnicoController::class, 'createAsesor'])->name('detalle_tecnico.asesor');

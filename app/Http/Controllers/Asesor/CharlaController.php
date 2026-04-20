@@ -61,4 +61,9 @@ public function updateEstado(Request $request, Charla $charla)
 
     return redirect()->back()->with('success', 'Estado actualizado correctamente.');
 }
+public function destroy(Charla $charla)
+{
+    $charla->delete();
+    return redirect()->back()->with('success', 'Charla eliminada correctamente.');
+}
 }
