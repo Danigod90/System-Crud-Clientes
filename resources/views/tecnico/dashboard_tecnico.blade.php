@@ -12,6 +12,45 @@
 <div style="position:relative; top:0; z-index:10; margin:-18px -18px 0 -18px; padding:18px 18px 0 18px; background:linear-gradient(135deg, #e8f0f5 0%, #dde8f0 25%, #e5edf5 50%, #dde8f0 75%, #e8f0f5 100%); box-shadow:0 8px 20px rgba(180,180,190,0.3);">
 <div style="max-width:1000px; margin:0 auto;">
 
+    {{-- WIDGET PRIORIDADES --}}
+    @if($prioridades->count() > 0)
+    <div style="background:rgba(255,255,255,0.95); border-radius:14px; border:1px solid rgba(220,38,38,0.2); padding:14px 16px; margin-bottom:14px; box-shadow:0 4px 12px rgba(220,38,38,0.1);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+            <span style="width:8px; height:8px; border-radius:50%; background:#dc2626; display:inline-block;"></span>
+            <span style="font-size:12px; font-weight:600; color:#dc2626; text-transform:uppercase; letter-spacing:0.5px;">Prioridad Área Técnica</span>
+            <span style="font-size:11px; color:#9ca3af; margin-left:auto;">{{ $prioridades->count() }}/5 activas</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat({{ min($prioridades->count(), 5) }},1fr); gap:10px;">
+            @foreach($prioridades as $i => $p)
+            @php
+                $ent = $p->entrada;
+                $pap = $ent->detalleTecnico?->mat_final_papeletas ?? $ent->detalleTecnico?->cantidad_papeletas ?? '—';
+                $act = $ent->detalleTecnico?->mat_final_actas ?? '—';
+                $pad = $ent->detalleTecnico?->mat_final_padrones ?? '—';
+            @endphp
+            <a href="{{ route('tecnico.organizacion.edit', $ent->id) }}" style="text-decoration:none;">
+            <div style="background:#fff8f8; border:1px solid rgba(220,38,38,0.15); border-radius:10px; padding:10px 12px; transition:box-shadow 0.2s;"
+                 onmouseover="this.style.boxShadow='0 4px 12px rgba(220,38,38,0.15)'"
+                 onmouseout="this.style.boxShadow='none'">
+                <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
+                    <span style="font-size:10px; font-weight:700; background:#dc2626; color:#fff; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">{{ $i+1 }}</span>
+                    <span style="font-size:10px; font-weight:600; color:#dc2626; font-family:monospace;">{{ $ent->codigo_org }}</span>
+                </div>
+                <p style="font-size:11px; font-weight:600; color:#111827; margin:0 0 4px; line-height:1.3; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">{{ $ent->nombre_organizacion }}</p>
+                <p style="font-size:10px; color:#6b7280; margin:0 0 6px;">{{ $ent->asesor_asignado ?? '—' }}</p>
+                <p style="font-size:10px; color:#6b7280; margin:0 0 6px;">📅 {{ $ent->fecha_eleccion?->format('d/m/Y') ?? 'Sin fecha' }}</p>
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                    <span style="font-size:10px; background:#eff6ff; color:#1d4ed8; padding:2px 6px; border-radius:4px;">Pap: {{ $pap }}</span>
+                    <span style="font-size:10px; background:#f0fdf4; color:#15803d; padding:2px 6px; border-radius:4px;">Act: {{ $act }}</span>
+                    <span style="font-size:10px; background:#fefce8; color:#854d0e; padding:2px 6px; border-radius:4px;">Pad: {{ $pad }}</span>
+                </div>
+            </div>
+            </a>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     {{-- CARDS --}}
     <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px;">
 

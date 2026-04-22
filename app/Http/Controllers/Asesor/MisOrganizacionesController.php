@@ -43,7 +43,6 @@ if (request('mes_eleccion')) {
         $query->whereHas('charla', fn($q) => $q->where('estado', request('estado_charla')));
     }
 
-    $entradas = $query->latest()->paginate(15);
 
     $charlasPendientes = \App\Models\Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', $nombreAsesor))
         ->where('estado', 'pendiente')
@@ -53,7 +52,15 @@ if (request('mes_eleccion')) {
         ->take(5)
         ->get();
 
-    return view('asesor.mis-organizaciones', compact('entradas', 'asesores', 'charlasPendientes'));
+    $prioridades = \App\Models\PrioridadAsesor::where('user_id', $user->id)->get();
+
+$prioridadIds = $prioridades->pluck('entrada_con_nota_id')->toArray();
+
+$entradas = $query->orderByRaw("FIELD(id, " . (count($prioridadIds) ? implode(',', $prioridadIds) : '0') . ") DESC")
+    ->latest()
+    ->paginate(15);
+
+return view('asesor.mis-organizaciones', compact('entradas', 'asesores', 'charlasPendientes', 'prioridades'));
 }
 
 public function edit(EntradaConNota $entrada)

@@ -72,6 +72,7 @@ Route::middleware(['auth'])->prefix('asesor')->name('asesor.')->group(function (
     Route::delete('charla/{charla}', [\App\Http\Controllers\Asesor\CharlaController::class, 'destroy'])->name('charla.destroy');
     Route::post('observador/{entrada}', [\App\Http\Controllers\Asesor\ObservadorController::class, 'store'])->name('observador.store');
     Route::patch('observador/{observador}/estado', [\App\Http\Controllers\Asesor\ObservadorController::class, 'updateEstado'])->name('observador.estado');
+    Route::post('prioridad/{entrada}', [\App\Http\Controllers\Asesor\PrioridadAsesorController::class, 'toggle'])->name('prioridad.toggle');
 
     // ── DETALLE TÉCNICO — PANEL ASESOR ──
     Route::get('detalle-tecnico/{entrada_id}', [\App\Http\Controllers\DetalleTecnicoController::class, 'createAsesor'])->name('detalle_tecnico.asesor');
@@ -97,6 +98,7 @@ Route::middleware(['auth', 'role:Tecnico|Admin'])->prefix('tecnico')->name('tecn
     Route::patch('detalle/{entrada_id}/realizado', [\App\Http\Controllers\DetalleTecnicoController::class, 'marcarRealizado'])->name('detalle_tecnico.realizado');
     Route::get('detalle/{entrada_id}/check-update', [\App\Http\Controllers\DetalleTecnicoController::class, 'checkAsesorUpdate'])->name('detalle_tecnico.checkUpdate');
     Route::post('detalle/{entrada_id}/asesor', [\App\Http\Controllers\DetalleTecnicoController::class, 'saveAsesor'])->name('detalle_tecnico.saveAsesor');
+    Route::post('prioridad/{entrada}', [\App\Http\Controllers\Tecnico\PrioridadTecnicaController::class, 'toggle'])->name('prioridad.toggle');
 });
 
 Route::get('/test-borrador', function () {

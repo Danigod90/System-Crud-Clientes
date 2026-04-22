@@ -148,20 +148,27 @@
                             @endif
                         </td>
                         <td class="border border-gray-200 px-2 py-2">
-                            <div style="display:flex; gap:4px; align-items:center; justify-content:center;">
-                                <a href="{{ route('tecnico.organizacion.edit', $entrada->id) }}"
-                                   style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; background:#fef9c3; border-radius:8px; color:#854d0e; text-decoration:none;"
-                                   title="Editar">
-                                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                        <rect x="2" y="7" width="20" height="14" rx="2"/>
-                                        <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
-                                        <line x1="2" y1="13" x2="22" y2="13"/>
-                                        <rect x="9" y="10" width="6" height="6" rx="1"/>
-                                    </svg>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
+    <div style="display:flex; gap:4px; align-items:center; justify-content:center;">
+        <a href="{{ route('tecnico.organizacion.edit', $entrada->id) }}"
+           style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; background:#fef9c3; border-radius:8px; color:#854d0e; text-decoration:none;"
+           title="Editar">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <rect x="2" y="7" width="20" height="14" rx="2"/>
+                <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+                <line x1="2" y1="13" x2="22" y2="13"/>
+                <rect x="9" y="10" width="6" height="6" rx="1"/>
+            </svg>
+        </a>
+        <button onclick="togglePin({{ $entrada->id }}, this)"
+                data-activo="{{ $prioridades->pluck('entrada_con_nota_id')->contains($entrada->id) ? '1' : '0' }}"
+                style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:8px; border:none; cursor:pointer; background:{{ $prioridades->pluck('entrada_con_nota_id')->contains($entrada->id) ? '#fce7f3' : '#f3f4f6' }};"
+                title="Marcar como prioridad">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="{{ $prioridades->pluck('entrada_con_nota_id')->contains($entrada->id) ? '#db2777' : 'none' }}" stroke="{{ $prioridades->pluck('entrada_con_nota_id')->contains($entrada->id) ? '#db2777' : '#6b7280' }}" stroke-width="2">
+                <path d="M12 2L9 9H2l6 4.5-2.5 7.5L12 17l6.5 4-2.5-7.5L22 9h-7z"/>
+            </svg>
+        </button>
+    </div>
+</td>                    </tr>
                     @empty
                     <tr>
                         <td colspan="8" class="border border-gray-200 px-4 py-6 text-center text-gray-500">
@@ -189,5 +196,25 @@ input.addEventListener('input', function() {
     }, 500);
 });
 </script>
-
+<script>
+function togglePin(entradaId, btn) {
+    fetch('/tecnico/prioridad/' + entradaId, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+        window.location.reload();
+    })
+    .catch(() => alert('Error al actualizar prioridad'));
+}
+</script>
 </x-panel-layout>

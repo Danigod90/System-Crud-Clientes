@@ -36,10 +36,16 @@ class TecnicoOrganizacionesController extends Controller
         $query->whereRaw("DATE_FORMAT(created_at, '%Y-%m') = ?", [$request->mes_ingreso]);
     }
 
-    $entradas = $query->latest()->paginate(20)->withQueryString();
+   $prioridadIds = \App\Models\PrioridadTecnica::orderBy('orden')->pluck('entrada_con_nota_id')->toArray();
+
+$entradas = $query->orderByRaw("FIELD(id, " . (count($prioridadIds) ? implode(',', $prioridadIds) : '0') . ") DESC")
+    ->latest()
+    ->paginate(20)
+    ->withQueryString();
     $asesores = \App\Models\Asesor::orderBy('nombre')->get();
 
-    return view('tecnico.organizaciones_tecnico', compact('entradas', 'asesores'));
+    $prioridades = \App\Models\PrioridadTecnica::all();
+return view('tecnico.organizaciones_tecnico', compact('entradas', 'asesores', 'prioridades'));
 }
 
 public function edit($entrada_id)

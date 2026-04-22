@@ -43,6 +43,10 @@ class TecnicoDashboardController extends Controller
         'por_imprimir' => DetalleTecnico::where('enviado_tecnica', true)->where('impreso', false)->count(),
     ];
 
-    return view('tecnico.dashboard_tecnico', compact('entradas', 'elecciones', 'stats', 'asesores'));
+    $prioridades = \App\Models\PrioridadTecnica::with(['entrada.detalleTecnico'])
+    ->orderBy('orden')
+    ->get();
+
+return view('tecnico.dashboard_tecnico', compact('entradas', 'elecciones', 'stats', 'asesores', 'prioridades'));
 }
 }
