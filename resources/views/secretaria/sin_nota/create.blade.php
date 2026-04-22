@@ -39,7 +39,11 @@
                     <input type="text" name="telefono" value="{{ old('telefono') }}" placeholder="Ej: 0981 123 456"
                            style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
                 </div>
-
+<div style="margin-bottom:12px;">
+    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha *</label>
+    <input type="date" name="fecha" value="{{ old('fecha', date('Y-m-d')) }}" required
+           style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+</div>
                 <div style="margin-bottom:12px;">
                     <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Tipo de Servicio *</label>
                     <select name="tipo_charla" required

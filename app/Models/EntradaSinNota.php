@@ -17,6 +17,7 @@ class EntradaSinNota extends Model
         'tipo_charla',
         'asesor_id',
         'user_id',
+        'fecha',
     ];
 
     public function user()

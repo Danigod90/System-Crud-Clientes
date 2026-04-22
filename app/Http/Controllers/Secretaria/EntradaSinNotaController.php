@@ -54,13 +54,14 @@ class EntradaSinNotaController extends Controller
         ]);
 
         EntradaSinNota::create([
-            'nombre'      => $request->nombre,
-            'apellido'    => $request->apellido,
-            'telefono'    => $request->telefono,
-            'tipo_charla' => $request->tipo_charla,
-            'asesor_id'   => $request->asesor_id,
-            'user_id'     => auth()->id(),
-        ]);
+    'nombre'      => $request->nombre,
+    'apellido'    => $request->apellido,
+    'telefono'    => $request->telefono,
+    'tipo_charla' => $request->tipo_charla,
+    'asesor_id'   => $request->asesor_id,
+    'user_id'     => auth()->id(),
+    'fecha'       => $request->fecha,
+]);
 
         return redirect()->route('secretaria.sin-nota.index')
             ->with('success', 'Entrada registrada correctamente.');
@@ -86,6 +87,7 @@ class EntradaSinNotaController extends Controller
             'telefono'    => 'nullable|string|max:20',
             'tipo_charla' => 'required|string|max:255',
             'asesor_id'   => 'nullable|exists:asesores,id',
+            'fecha'         => 'nullable|date',
         ]);
 
         $sinNota->update([

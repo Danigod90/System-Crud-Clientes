@@ -1,77 +1,70 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Detalle de Entrada Sin Nota
-        </h2>
-    </x-slot>
+<x-panel-layout title="Detalle de Entrada Sin Nota">
+<div class="px-2 py-2">
+    <div style="max-width:560px; margin:0 auto;">
 
-    <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+        @if(session('success'))
+        <div style="background:#d1fae5; color:#065f46; padding:10px 14px; border-radius:8px; margin-bottom:14px; font-size:13px;">
+            {{ session('success') }}
+        </div>
+        @endif
 
-                @if(session('success'))
-                    <div class="bg-green-100 text-green-800 px-4 py-2 rounded mb-4">
-                        {{ session('success') }}
-                    </div>
-                @endif
+        <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:24px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+            <div style="margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid #f3f4f6;">
+                <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 4px;">N° de Entrada</p>
+                <p style="font-size:22px; font-weight:700; color:#2563eb; margin:0;">{{ $sinNota->numero_entrada }}</p>
+            </div>
 
-                <div class="mb-6 border-b pb-4">
-                    <p class="text-gray-500 text-sm">N° de Entrada</p>
-                    <p class="text-2xl font-bold text-blue-600">{{ $sinNota->numero_entrada }}</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
+                <div>
+                    <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 3px;">Nombre</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $sinNota->nombre }}</p>
                 </div>
-
-                <div class="grid grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <p class="text-gray-500 text-sm">Nombre</p>
-                        <p class="font-semibold">{{ $sinNota->nombre }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Apellido</p>
-                        <p class="font-semibold">{{ $sinNota->apellido }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Teléfono</p>
-                        <p class="font-semibold">{{ $sinNota->telefono ?? '-' }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Tipo de Charla</p>
-                        <p class="font-semibold">{{ $sinNota->tipo_charla }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Asesor que atendió</p>
-                        <p class="font-semibold">{{ $sinNota->asesor ? $sinNota->asesor->nombre . ' ' . $sinNota->asesor->apellido : '-' }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Fecha de Registro</p>
-                        <p class="font-semibold">{{ $sinNota->created_at ? $sinNota->created_at->format('d/m/Y H:i') : '-' }}</p>
-                    </div>
-                    <div>
-                        <p class="text-gray-500 text-sm">Registrado por</p>
-                        <p class="font-semibold">{{ $sinNota->user ? $sinNota->user->name : '-' }}</p>
-                    </div>
+                <div>
+                    <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 3px;">Apellido</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $sinNota->apellido }}</p>
                 </div>
-
-                <div class="flex gap-3">
-                    <a href="{{ route('secretaria.sin-nota.edit', $sinNota) }}"
-                       class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
-                        Editar
-                    </a>
-                    <form method="POST" action="{{ route('secretaria.sin-nota.destroy', $sinNota) }}"
-                          onsubmit="return confirm('¿Estás seguro de eliminar esta entrada?')">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit"
-                                class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                            Eliminar
-                        </button>
-                    </form>
-                    <a href="{{ route('secretaria.sin-nota.index') }}"
-                       class="bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400">
-                        Volver al listado
-                    </a>
+                <div>
+                    <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 3px;">Teléfono</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $sinNota->telefono ?? '—' }}</p>
                 </div>
+                <div>
+                    <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 3px;">Tipo de Servicio</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $sinNota->tipo_charla }}</p>
+                </div>
+                <div>
+                    <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 3px;">Asesor que atendió</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $sinNota->asesor ? $sinNota->asesor->nombre . ' ' . $sinNota->asesor->apellido : '—' }}</p>
+                </div>
+                <div>
+                    <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 3px;">Fecha de Atención</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $sinNota->fecha ? \Carbon\Carbon::parse($sinNota->fecha)->format('d/m/Y') : '—' }}</p>
+                </div>
+                <div>
+                    <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 3px;">Registrado por</p>
+                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $sinNota->user ? $sinNota->user->name : '—' }}</p>
+                </div>
+            </div>
 
+            <div style="display:flex; gap:10px; padding-top:16px; border-top:1px solid #f3f4f6;">
+                <a href="{{ route('secretaria.sin-nota.edit', $sinNota) }}"
+                   style="padding:8px 18px; border-radius:8px; border:none; background:#f59e0b; color:white; font-size:13px; text-decoration:none; font-weight:500;">
+                    Editar
+                </a>
+                <form method="POST" action="{{ route('secretaria.sin-nota.destroy', $sinNota) }}"
+                      onsubmit="return confirm('¿Estás seguro de eliminar esta entrada?')">
+                    @csrf @method('DELETE')
+                    <button type="submit"
+                            style="padding:8px 18px; border-radius:8px; border:none; background:#dc2626; color:white; font-size:13px; cursor:pointer; font-weight:500;">
+                        Eliminar
+                    </button>
+                </form>
+                <a href="{{ route('secretaria.sin-nota.index') }}"
+                   style="padding:8px 18px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:13px; text-decoration:none; font-weight:500;">
+                    Volver al listado
+                </a>
             </div>
         </div>
+
     </div>
-</x-app-layout>
+</div>
+</x-panel-layout>
