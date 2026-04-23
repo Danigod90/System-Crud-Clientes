@@ -98,4 +98,8 @@ public function detalleTecnico()
 {
     return $this->hasOne(LogDevolucion::class, 'entrada_id');
 }
+public function documentos()
+{
+    return $this->hasMany(\App\Models\Documento::class, 'entrada_con_nota_id')->latest();
+}
 }

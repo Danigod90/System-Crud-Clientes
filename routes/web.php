@@ -61,7 +61,11 @@ Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin|A
     Route::patch('con-nota/{conNota}/entregar-log', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'entregarLog'])->name('con-nota.entregar-log');
     Route::patch('con-nota/{conNota}/ticker', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'toggleTicker'])->name('con-nota.toggle-ticker');
 });
-
+Route::middleware(['auth'])->prefix('documentos')->name('documentos.')->group(function () {
+    Route::post('{entrada}', [\App\Http\Controllers\DocumentoController::class, 'store'])->name('store');
+    Route::delete('{documento}', [\App\Http\Controllers\DocumentoController::class, 'destroy'])->name('destroy');
+    Route::get('{documento}', [\App\Http\Controllers\DocumentoController::class, 'show'])->name('show');
+});
 Route::middleware(['auth'])->get('/panel/dashboard', [\App\Http\Controllers\Panel\DashboardController::class, 'index'])->name('panel.dashboard');
 
 Route::middleware(['auth'])->prefix('asesor')->name('asesor.')->group(function () {

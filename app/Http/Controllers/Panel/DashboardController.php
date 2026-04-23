@@ -73,7 +73,8 @@ if ($rol === 'Secretaria Sin Nota') {
     'borradores' => 0,
 ];
         session(['charlasPendientes' => $charlasPendientes]);
-        return view('panel.dashboard-asesor', compact('entradas', 'elecciones', 'stats', 'charlasPendientes'));
+        $prioridades = \App\Models\PrioridadTecnica::with(['entrada.detalleTecnico'])->orderBy('orden')->get();
+return view('panel.dashboard-asesor', compact('entradas', 'elecciones', 'stats', 'charlasPendientes', 'prioridades'));
     }
 
     $asesorFiltro = $request->get('asesor');

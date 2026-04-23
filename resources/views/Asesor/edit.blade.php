@@ -78,6 +78,74 @@
                 </div>
             </div>
         </div>
+{{-- SECCIÓN DOCUMENTOS --}}
+        <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
+                <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0; display:flex; align-items:center; gap:8px;">
+                    Documentos
+                    <span style="font-size:11px; font-weight:400; color:#9ca3af; text-transform:none;">{{ $entrada->documentos->count() }} archivo(s)</span>
+                </h3>
+            </div>
+
+            {{-- LISTA DE DOCUMENTOS --}}
+            @forelse($entrada->documentos as $doc)
+            <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; margin-bottom:8px;">
+                <div style="flex-shrink:0;">
+                    @if(in_array($doc->extension, ['jpg','jpeg','png','gif']))
+                        <span style="font-size:18px;">🖼</span>
+                    @elseif($doc->extension == 'pdf')
+                        <span style="font-size:18px;">📄</span>
+                    @elseif(in_array($doc->extension, ['doc','docx']))
+                        <span style="font-size:18px;">📝</span>
+                    @else
+                        <span style="font-size:18px;">📎</span>
+                    @endif
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <p style="font-size:12px; font-weight:600; color:#111827; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $doc->nombre }}</p>
+                    <p style="font-size:10px; color:#9ca3af; margin:0;">{{ strtoupper($doc->extension) }} · {{ number_format($doc->tamanio / 1024, 1) }} KB · {{ $doc->user->name ?? '—' }} · {{ $doc->created_at->format('d/m/Y') }}</p>
+                </div>
+                <div style="display:flex; gap:6px; flex-shrink:0;">
+                    <a href="{{ route('documentos.show', $doc->id) }}" target="_blank"
+                       style="display:inline-flex; align-items:center; gap:4px; background:#eff6ff; color:#2563eb; padding:4px 10px; border-radius:6px; font-size:11px; text-decoration:none; font-weight:500;">
+                        Ver
+                    </a>
+                    <form method="POST" action="{{ route('documentos.destroy', $doc->id) }}">
+                        @csrf @method('DELETE')
+                        <button type="submit" onclick="return confirm('¿Eliminar documento?')"
+                                style="display:inline-flex; align-items:center; gap:4px; background:#fef2f2; color:#dc2626; padding:4px 10px; border-radius:6px; font-size:11px; border:none; cursor:pointer; font-weight:500;">
+                            Eliminar
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @empty
+            <p style="font-size:12px; color:#9ca3af; margin:0 0 12px;">No hay documentos cargados aún.</p>
+            @endforelse
+
+            {{-- FORM SUBIR --}}
+            <form method="POST" action="{{ route('documentos.store', $entrada->id) }}" enctype="multipart/form-data" style="margin-top:12px; border-top:1px solid #f3f4f6; padding-top:12px;">
+                @csrf
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Nombre del documento</label>
+                        <input type="text" name="nombre" placeholder="Ej: Resolución, Lista candidatos..."
+                               style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                    </div>
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Archivo (máx. 10MB)</label>
+                        <input type="file" name="archivo" required
+                               style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:6px 10px; font-size:12px; color:#374151; outline:none; box-sizing:border-box; background:#fff;">
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:flex-end;">
+                    <button type="submit"
+                            style="display:inline-flex; align-items:center; gap:6px; background:#2563eb; color:white; padding:7px 16px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
+                        Subir documento
+                    </button>
+                </div>
+            </form>
+        </div>
 
         {{-- SECCIÓN LOGÍSTICA (solo lectura) --}}
         @if($entrada->asunto_log && !$entrada->asunto_tec)
@@ -921,6 +989,7 @@ $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->de
 @endif
 
 @endif
+
 
         {{-- BOTONES --}}
         <div style="display:flex; justify-content:flex-end; gap:10px;">

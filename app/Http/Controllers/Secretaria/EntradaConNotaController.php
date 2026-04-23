@@ -106,7 +106,7 @@ return redirect()->route('secretaria.con-nota.show', $entrada)
 
     public function show(EntradaConNota $conNota)
 {
-    $conNota->load(['charlas', 'charla', 'detalleTecnico', 'observador']);
+    $conNota->load(['charlas', 'charla', 'detalleTecnico', 'observador', 'documentos.user']);
 
     $charlasPendientes = \App\Models\Charla::with('entrada')
         ->where('estado', 'pendiente')

@@ -47,6 +47,40 @@
             </div>
         </div>
 
+{{-- SECCIÓN DOCUMENTOS (solo lectura) --}}
+        <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
+                <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0; display:flex; align-items:center; gap:8px;">
+                    Documentos
+                    <span style="font-size:11px; font-weight:400; color:#9ca3af; text-transform:none;">{{ $entrada->documentos->count() }} archivo(s)</span>
+                </h3>
+            </div>
+            @forelse($entrada->documentos as $doc)
+            <div style="display:flex; align-items:center; gap:10px; padding:8px 10px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; margin-bottom:8px;">
+                <div style="flex-shrink:0;">
+                    @if(in_array($doc->extension, ['jpg','jpeg','png','gif']))
+                        <span style="font-size:18px;">🖼</span>
+                    @elseif($doc->extension == 'pdf')
+                        <span style="font-size:18px;">📄</span>
+                    @elseif(in_array($doc->extension, ['doc','docx']))
+                        <span style="font-size:18px;">📝</span>
+                    @else
+                        <span style="font-size:18px;">📎</span>
+                    @endif
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <p style="font-size:12px; font-weight:600; color:#111827; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $doc->nombre }}</p>
+                    <p style="font-size:10px; color:#9ca3af; margin:0;">{{ strtoupper($doc->extension) }} · {{ number_format($doc->tamanio / 1024, 1) }} KB · {{ $doc->user->name ?? '—' }} · {{ $doc->created_at->format('d/m/Y') }}</p>
+                </div>
+                <a href="{{ route('documentos.show', $doc->id) }}" target="_blank"
+                   style="display:inline-flex; align-items:center; gap:4px; background:#eff6ff; color:#2563eb; padding:4px 10px; border-radius:6px; font-size:11px; text-decoration:none; font-weight:500; flex-shrink:0;">
+                    Ver
+                </a>
+            </div>
+            @empty
+            <p style="font-size:12px; color:#9ca3af; margin:0;">No hay documentos cargados aún.</p>
+            @endforelse
+        </div>
 
         {{-- DATOS DEL ASESOR --}}
 @if($entrada->detalleTecnico)
@@ -621,6 +655,7 @@
                 @endif
             </div>
         </div>
+
 
         {{-- VOLVER --}}
         <div style="display:flex; justify-content:flex-end;">

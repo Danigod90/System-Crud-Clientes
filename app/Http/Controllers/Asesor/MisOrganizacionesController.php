@@ -77,7 +77,7 @@ public function edit(EntradaConNota $entrada)
         ->take(5)
         ->get();
 
-    $entrada->load('charla');
+    $entrada->load('charla', 'documentos.user');
     return view('asesor.edit', compact('entrada', 'charlasPendientes'));
 }
 }
