@@ -25,8 +25,9 @@
             @php
                 $ent = $p->entrada;
                 $pap = $ent->detalleTecnico?->mat_final_papeletas ?? $ent->detalleTecnico?->cantidad_papeletas ?? '—';
-                $act = $ent->detalleTecnico?->mat_final_actas ?? '—';
-                $pad = $ent->detalleTecnico?->mat_final_padrones ?? '—';
+$mesas = $ent->detalleTecnico?->cantidad_mesas ?? 0;
+$act = $ent->detalleTecnico?->mat_final_actas ?? ($mesas > 0 ? $mesas * 3 : '—');
+$pad = $ent->detalleTecnico?->mat_final_padrones ?? ($mesas > 0 ? $mesas * 3 : '—');
             @endphp
             <a href="{{ route('tecnico.organizacion.edit', $ent->id) }}" style="text-decoration:none;">
             <div style="background:#fff8f8; border:1px solid rgba(220,38,38,0.15); border-radius:10px; padding:10px 12px; transition:box-shadow 0.2s;"

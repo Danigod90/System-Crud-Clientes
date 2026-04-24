@@ -27,9 +27,10 @@
             @foreach($prioridades as $i => $p)
             @php
                 $ent = $p->entrada;
-                $pap = $ent->detalleTecnico?->mat_final_papeletas ?? $ent->detalleTecnico?->cantidad_papeletas ?? '—';
-                $act = $ent->detalleTecnico?->mat_final_actas ?? '—';
-                $pad = $ent->detalleTecnico?->mat_final_padrones ?? '—';
+               $pap = $ent->detalleTecnico?->mat_final_papeletas ?? $ent->detalleTecnico?->cantidad_papeletas ?? '—';
+$mesas = $ent->detalleTecnico?->cantidad_mesas ?? 0;
+$act = $ent->detalleTecnico?->mat_final_actas ?? ($mesas > 0 ? $mesas * 3 : '—');
+$pad = $ent->detalleTecnico?->mat_final_padrones ?? ($mesas > 0 ? $mesas * 3 : '—');
             @endphp
             <div style="background:#fff8f8; border:1px solid rgba(220,38,38,0.15); border-radius:10px; padding:10px 12px;">
                 <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
