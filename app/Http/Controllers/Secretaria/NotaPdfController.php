@@ -201,11 +201,28 @@ class NotaPdfController extends Controller
     $dompdf->setPaper('letter', 'portrait');
     $dompdf->render();
 
-   $conNota->update([
-    'log_impreso_at' => now(),
-    'log_estado'     => 'entregada',
-]);
-
+  if ($conNota->asunto_log && !$conNota->asunto_tec) {
+    $conNota->update([
+        'log_impreso_at' => now(),
+        'log_estado'     => 'entregada',
+    ]);
+} else {
+    $conNota->update([
+        'log_impreso_at' => now(),
+    ]);
+}
+// Notificar a Secretaria Sin Nota
+$secretarias = \App\Models\User::role('Secretaria Sin Nota')->get();
+foreach ($secretarias as $secretaria) {
+    $secretaria->notify(new \App\Notifications\TrabajoPendienteNotification(
+        'Logística impresa: ' . $conNota->nombre_organizacion . ' (' . $conNota->codigo_org . ')',
+        'Panel Logístico',
+        $conNota->id
+    ));
+    if ($secretaria->notifications()->count() > 8) {
+        $secretaria->notifications()->latest()->skip(8)->take(100)->delete();
+    }
+}
 return new Response($dompdf->output(), 200, [
     'Content-Type'        => 'application/pdf',
     'Content-Disposition' => 'inline; filename="recibo-log-' . $codigo . '.pdf"',

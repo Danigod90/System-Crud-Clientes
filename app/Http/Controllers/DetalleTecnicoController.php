@@ -426,6 +426,24 @@ if ($entrada->asunto_log && !$entrada->asunto_tec) {
         'log_impreso_at' => now(),
     ]);
 }
+
+// Notificar a Secretaria Sin Nota
+$secretarias = \App\Models\User::role('Secretaria Sin Nota')->get();
+foreach ($secretarias as $secretaria) {
+    $secretaria->notify(new \App\Notifications\TrabajoPendienteNotification(
+        'Logística impresa: ' . $entrada->nombre_organizacion . ' (' . $entrada->codigo_org . ')',
+        'Panel Logístico',
+        $entrada->id
+    ));
+    if ($secretaria->notifications()->count() > 8) {
+        $secretaria->notifications()->latest()->skip(8)->take(100)->delete();
+    }
+}
+
+return new \Illuminate\Http\Response($dompdf->output(), 200, [
+    'Content-Type'        => 'application/pdf',
+    'Content-Disposition' => 'inline; filename="recibo-tec-' . $codigo . '.pdf"',
+]);
     return new \Illuminate\Http\Response($dompdf->output(), 200, [
         'Content-Type'        => 'application/pdf',
         'Content-Disposition' => 'inline; filename="recibo-tec-' . $codigo . '.pdf"',
