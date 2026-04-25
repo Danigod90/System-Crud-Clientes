@@ -68,42 +68,69 @@ return view('secretaria.con_nota.index', compact('entradas', 'asesores', 'charla
         return view('secretaria.con_nota.create', compact('asesores', 'tipos'));
     }
 
-    public function store(Request $request)
-    {
-        $request->validate([
-            'nombre_organizacion'    => 'required|string|max:255',
-            'tipo_organizacion'      => 'required|string|max:255',
-            'nombre_representante'   => 'required|string|max:255',
-            'telefono_representante' => 'nullable|string|max:50',
-            'fecha_eleccion'         => 'nullable|date',
-            'asesor_asignado'        => 'required|string|max:255',
-            'via_ingreso'            => 'required|in:correo,presencial',
-            'asunto'                 => 'required|array|min:1',
-            'asunto.*'               => 'in:char,log,tec,obs',
-        ]);
+   public function store(Request $request)
+{
+    $request->validate([
+        'nombre_organizacion'    => 'required|string|max:255',
+        'tipo_organizacion'      => 'required|string|max:255',
+        'nombre_representante'   => 'required|string|max:255',
+        'telefono_representante' => 'nullable|string|max:50',
+        'fecha_eleccion'         => 'nullable|date',
+        'asesor_asignado'        => 'required|string|max:255',
+        'via_ingreso'            => 'required|in:correo,presencial',
+        'asunto'                 => 'required|array|min:1',
+        'asunto.*'               => 'in:char,log,tec,obs',
+    ]);
 
-        $entrada = EntradaConNota::create([
-    'nombre_organizacion'    => $request->nombre_organizacion,
-    'tipo_organizacion'      => $request->tipo_organizacion,
-    'nombre_representante'   => $request->nombre_representante,
-    'telefono_representante' => $request->telefono_representante,
-    'fecha_eleccion'         => $request->fecha_eleccion,
-    'asesor_asignado'        => $request->asesor_asignado,
-    'via_ingreso'            => $request->via_ingreso,
-    'asunto_char'            => in_array('char', $request->asunto),
-    'asunto_log'             => in_array('log', $request->asunto),
-    'asunto_tec'             => in_array('tec', $request->asunto),
-    'log_urnas'              => in_array('log', $request->asunto) ? (int)$request->log_urnas : 0,
-    'log_cuartos'            => in_array('log', $request->asunto) ? (int)$request->log_cuartos : 0,
-    'log_tintas'             => in_array('log', $request->asunto) ? (int)$request->log_tintas : 0,
-    'user_id'                => auth()->id(),
-    'asunto_obs'  => in_array('obs', $request->asunto),
-]);
-
-return redirect()->route('secretaria.con-nota.show', $entrada)
-    ->with('success', 'Mesa de entrada registrada correctamente.');
+    $entrada = EntradaConNota::create([
+        'nombre_organizacion'    => $request->nombre_organizacion,
+        'tipo_organizacion'      => $request->tipo_organizacion,
+        'nombre_representante'   => $request->nombre_representante,
+        'telefono_representante' => $request->telefono_representante,
+        'fecha_eleccion'         => $request->fecha_eleccion,
+        'asesor_asignado'        => $request->asesor_asignado,
+        'via_ingreso'            => $request->via_ingreso,
+        'asunto_char'            => in_array('char', $request->asunto),
+        'asunto_log'             => in_array('log', $request->asunto),
+        'asunto_tec'             => in_array('tec', $request->asunto),
+        'log_urnas'              => in_array('log', $request->asunto) ? (int)$request->log_urnas : 0,
+        'log_cuartos'            => in_array('log', $request->asunto) ? (int)$request->log_cuartos : 0,
+        'log_tintas'             => in_array('log', $request->asunto) ? (int)$request->log_tintas : 0,
+        'user_id'                => auth()->id(),
+        'asunto_obs'             => in_array('obs', $request->asunto),
+    ]);
+// Notificaciones según rol
+if (auth()->user()->hasRole('Asesor')) {
+    $secretarias = \App\Models\User::role('Secretaria Con Nota')->get();
+    foreach ($secretarias as $secretaria) {
+        $secretaria->notify(new \App\Notifications\TrabajoPendienteNotification(
+            'Nueva entrada: ' . $request->nombre_organizacion . ' cargada por ' . auth()->user()->name,
+            'Mesa de Entrada',
+            $entrada->id
+        ));
+        if ($secretaria->notifications()->count() > 8) {
+            $secretaria->notifications()->latest()->skip(8)->take(100)->delete();
+        }
     }
-
+    return redirect()->route('asesor.organizacion.edit', $entrada)
+        ->with('success', 'Mesa de entrada registrada correctamente.');
+} else {
+    $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$request->asesor_asignado])->first();
+    if ($asesor && $asesor->user_id) {
+        $usuario = \App\Models\User::find($asesor->user_id);
+        $usuario?->notify(new \App\Notifications\TrabajoPendienteNotification(
+            'Nueva entrada asignada: ' . $request->nombre_organizacion,
+            'Mis Organizaciones',
+            $entrada->id
+        ));
+        if ($usuario && $usuario->notifications()->count() > 8) {
+            $usuario->notifications()->latest()->skip(8)->take(100)->delete();
+        }
+    }
+    return redirect()->route('secretaria.con-nota.show', $entrada)
+        ->with('success', 'Mesa de entrada registrada correctamente.');
+}
+}
     public function show(EntradaConNota $conNota)
 {
     $conNota->load(['charlas', 'charla', 'detalleTecnico', 'observador', 'documentos.user']);

@@ -280,7 +280,7 @@
         <span style="background:#e24b4a; color:#fff; font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px;">{{ $unread }}</span>
         @endif
     </div>
-    <div style="max-height:320px; overflow:auto;">
+    <div id="notif-contenido" style="max-height:320px; overflow:auto;">
         @forelse(auth()->user()->notifications->take(8) as $notif)
         <div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px;">
             <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:{{ $notif->read_at ? '#d1d5db' : '#185FA5' }};"></span>
@@ -409,7 +409,45 @@ function toggleNotif() {
     const notif = document.getElementById('notifMenu');
     const visible = notif.style.display === 'block';
     closeAll();
-    if (!visible) notif.style.display = 'block';
+    if (!visible) {
+        notif.style.display = 'block';
+        // Cargar notificaciones frescas
+        fetch('/notificaciones/lista')
+    .then(r => r.json())
+    .then(d => {
+        const contenido = document.getElementById('notif-contenido');
+        console.log('contenido:', contenido);
+        console.log('data:', d);
+        if (!contenido) return;
+        if (d.notificaciones.length === 0) {
+            contenido.innerHTML = '<div style="padding:20px 16px; text-align:center; font-size:12px; color:#9ca3af;">Sin notificaciones.</div>';
+        } else {
+            contenido.innerHTML = d.notificaciones.map(n => `
+                <div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px;">
+                    <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:${n.leida ? '#d1d5db' : '#185FA5'};"></span>
+                    <div style="flex:1;">
+                        <div style="font-size:12px; color:#111827; line-height:1.4;">${n.mensaje}</div>
+                        ${n.seccion ? `<div style="font-size:10.5px; color:#6b7280; margin-top:2px;">${n.seccion}</div>` : ''}
+                        <div style="font-size:10px; color:#9ca3af; margin-top:3px;">${n.hace}</div>
+                    </div>
+                </div>
+            `).join('');
+            contenido.scrollTop = 0;
+        }
+    });
+        // Marcar como leídas
+        fetch('/notificaciones/leer', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json'
+            }
+        }).then(() => {
+            const campanita = document.querySelector('[onclick="toggleNotif()"]');
+            const badge = campanita?.querySelector('span');
+            if (badge) badge.remove();
+        });
+    }
 }
 
 function toggleMenu() {
@@ -427,6 +465,30 @@ document.addEventListener('click', function(e) {
         closeAll();
     }
 });
+
+// Polling notificaciones cada 30 segundos
+setInterval(async function() {
+    try {
+        const r = await fetch('/notificaciones/count');
+        const d = await r.json();
+        const campanita = document.querySelector('[onclick="toggleNotif()"]');
+        const badge = campanita?.querySelector('span');
+
+        if (d.count > 0) {
+            if (!badge) {
+                const span = document.createElement('span');
+                span.style.cssText = 'position:absolute; top:-5px; right:-5px; background:#e24b4a; color:#fff; font-size:9px; font-weight:600; width:15px; height:15px; border-radius:50%; display:flex; align-items:center; justify-content:center;';
+                span.textContent = d.count;
+                campanita.appendChild(span);
+            } else {
+                badge.textContent = d.count;
+            }
+        } else {
+            if (badge) badge.remove();
+        }
+    } catch(e) {}
+}, 30000);
 </script>
+
 </body>
 </html>

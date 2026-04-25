@@ -62,16 +62,29 @@ if ($request->has('nota_asesor')) $detalle->nota_asesor = $request->nota_asesor;
     return redirect()->back()->with('success', 'Datos técnicos guardados correctamente.');
 }
 
-    public function enviarTecnica($entrada_id)
-    {
-        $detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();
-        $detalle->enviado_tecnica    = true;
-        $detalle->enviado_tecnica_at = now();
-        $detalle->asesor_updated_at = now();
-        $detalle->save();
+   public function enviarTecnica($entrada_id)
+{
+    $detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();
+    $detalle->enviado_tecnica    = true;
+    $detalle->enviado_tecnica_at = now();
+    $detalle->asesor_updated_at = now();
+    $detalle->save();
 
-        return redirect()->back()->with('success', 'Enviado a técnica correctamente.');
-    }
+    $entrada = EntradaConNota::findOrFail($entrada_id);
+    $tecnicos = \App\Models\User::role('Tecnico')->get();
+    foreach ($tecnicos as $tecnico) {
+    $tecnico->notify(new \App\Notifications\TrabajoPendienteNotification(
+        'Nuevo trabajo: ' . $entrada->nombre_organizacion . ' enviado a técnica por ' . $entrada->asesor_asignado,
+        'Panel Técnico',
+        $entrada->id
+    ));
+   if ($tecnico->notifications()->count() > 8) {
+    $tecnico->notifications()->latest()->skip(8)->take(100)->delete();
+}
+}
+
+    return redirect()->back()->with('success', 'Enviado a técnica correctamente.');
+}
 
     // ── PANEL TÉCNICO ──
     public function createTecnico($entrada_id)
@@ -418,19 +431,32 @@ if ($entrada->asunto_log && !$entrada->asunto_tec) {
         'Content-Disposition' => 'inline; filename="recibo-tec-' . $codigo . '.pdf"',
     ]);
 }
-    public function marcarRealizado($entrada_id)
+   public function marcarRealizado($entrada_id)
 {
     $detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();
     $detalle->tec_realizado    = true;
     $detalle->tec_realizado_at = now();
     $detalle->save();
 
-    // Si tiene asunto_log + asunto_tec juntos, cambiar log_estado también
     $entrada = EntradaConNota::findOrFail($entrada_id);
-   if ($entrada->asunto_tec) {
-    $entrada->log_estado = 'entregada';
-    $entrada->save();
+    if ($entrada->asunto_tec) {
+        $entrada->log_estado = 'entregada';
+        $entrada->save();
+    }
+
+    // Notificar al asesor
+    $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$entrada->asesor_asignado])->first();
+    if ($asesor && $asesor->user_id) {
+        $usuario = \App\Models\User::find($asesor->user_id);
+        $usuario?->notify(new \App\Notifications\TrabajoPendienteNotification(
+    'Trabajo técnico completado: ' . $entrada->nombre_organizacion,
+    'Mis Organizaciones',
+    $entrada->id
+));
+if ($usuario && $usuario->notifications()->count() > 8) {
+    $usuario->notifications()->latest()->skip(8)->take(100)->delete();
 }
+    }
 
     return redirect()->back()->with('success', 'Trabajo técnico marcado como realizado.');
 }

@@ -109,6 +109,25 @@ Route::get('/test-borrador', function () {
     return 'funciona';
 });
 
+Route::get('/notificaciones/count', function() {
+    return response()->json(['count' => auth()->user()->unreadNotifications->count()]);
+})->middleware('auth');
+Route::post('/notificaciones/leer', function() {
+    auth()->user()->unreadNotifications->markAsRead();
+    return response()->json(['ok' => true]);
+})->middleware('auth');
+Route::get('/notificaciones/lista', function() {
+    $notifs = auth()->user()->notifications->take(8)->map(function($n) {
+        return [
+            'mensaje' => $n->data['mensaje'] ?? '',
+            'seccion' => $n->data['seccion'] ?? '',
+            'leida'   => !is_null($n->read_at),
+            'hace'    => $n->created_at->diffForHumans(),
+        ];
+    });
+    return response()->json(['notificaciones' => $notifs]);
+})->middleware('auth');
+
 require __DIR__.'/auth.php';
 
 
