@@ -141,13 +141,19 @@ class EntradaSinNotaController extends Controller
 }
 public function log(Request $request)
 {
-    $pendientes = \App\Models\EntradaConNota::where('asunto_log', true)
+    $pendientes = \App\Models\EntradaConNota::where(function($q) {
+            $q->where('asunto_log', true)
+              ->orWhere('asunto_tec', true);
+        })
         ->where('log_estado', 'pendiente')
         ->with(['logDevolucion', 'detalleTecnico'])
         ->latest()
         ->get();
 
-    $entregados = \App\Models\EntradaConNota::where('asunto_log', true)
+    $entregados = \App\Models\EntradaConNota::where(function($q) {
+            $q->where('asunto_log', true)
+              ->orWhere('asunto_tec', true);
+        })
         ->where('log_estado', 'entregada')
         ->with(['logDevolucion', 'detalleTecnico'])
         ->latest()

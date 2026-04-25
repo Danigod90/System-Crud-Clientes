@@ -187,4 +187,9 @@ return redirect()->route('secretaria.con-nota.show', $entrada)
     $conNota->refresh();
     return response()->json(['mostrar_en_ticker' => $conNota->mostrar_en_ticker]);
 }
+public function entregarTec(EntradaConNota $conNota)
+{
+    $conNota->update(['log_estado' => 'entregada']);
+    return redirect()->back()->with('success', 'Marcado como entregado correctamente.');
+}
 }

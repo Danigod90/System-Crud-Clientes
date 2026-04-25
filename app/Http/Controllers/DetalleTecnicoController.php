@@ -401,13 +401,18 @@ $padronCINO  = $detalle->padron_con_cedula ? '[  ]' : '[X]';
     $dompdf->setPaper('letter', 'portrait');
     $dompdf->render();
 
-// Actualizar log_estado y log_impreso_at si tiene asunto_log
-    if ($entrada->asunto_log) {
-        $entrada->update([
-            'log_impreso_at' => now(),
-            'log_estado'     => 'entregada',
-        ]);
-    }
+// Solo actualizar log_estado si tiene Log SIN Tec
+if ($entrada->asunto_log && !$entrada->asunto_tec) {
+    $entrada->update([
+        'log_impreso_at' => now(),
+        'log_estado'     => 'entregada',
+    ]);
+} else {
+    // Log+Tec o Tec solo — solo marcar impreso, no cambiar estado
+    $entrada->update([
+        'log_impreso_at' => now(),
+    ]);
+}
     return new \Illuminate\Http\Response($dompdf->output(), 200, [
         'Content-Type'        => 'application/pdf',
         'Content-Disposition' => 'inline; filename="recibo-tec-' . $codigo . '.pdf"',
@@ -422,10 +427,10 @@ $padronCINO  = $detalle->padron_con_cedula ? '[  ]' : '[X]';
 
     // Si tiene asunto_log + asunto_tec juntos, cambiar log_estado también
     $entrada = EntradaConNota::findOrFail($entrada_id);
-    if ($entrada->asunto_log && $entrada->asunto_tec) {
-        $entrada->log_estado = 'realizado';
-        $entrada->save();
-    }
+   if ($entrada->asunto_tec) {
+    $entrada->log_estado = 'entregada';
+    $entrada->save();
+}
 
     return redirect()->back()->with('success', 'Trabajo técnico marcado como realizado.');
 }

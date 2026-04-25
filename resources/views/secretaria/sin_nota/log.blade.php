@@ -53,7 +53,7 @@
                         <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $entrada->log_cuartos }}</td>
                         <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $entrada->log_tintas }}</td>
                         <td style="padding:10px 16px;">
-    @if($entrada->asunto_log && !$entrada->asunto_tec)
+   @if($entrada->asunto_log && !$entrada->asunto_tec)
     <button onclick="abrirModalImprimir({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}')"
             style="display:inline-flex; align-items:center; gap:5px; background:#f0f9ff; border:1px solid #bae6fd; color:#0369a1; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">
         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -63,8 +63,16 @@
         </svg>
         Imprimir Log
     </button>
+@elseif($entrada->asunto_tec && $entrada->detalleTecnico?->impreso)
+    <form method="POST" action="{{ route('secretaria.con-nota.entregar-tec', $entrada) }}">
+        @csrf @method('PATCH')
+        <button type="submit" onclick="return confirm('¿Confirmar entrega a {{ addslashes($entrada->nombre_organizacion) }}?')"
+                style="display:inline-flex; align-items:center; gap:5px; background:#dcfce7; border:1px solid #86efac; color:#166534; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">
+            ✓ Entregar
+        </button>
+    </form>
 @else
-    <span style="font-size:11px; color:#94a3b8;">Sin imprimir Log</span>
+    <span style="font-size:11px; color:#94a3b8;">Sin imprimir Tec</span>
 @endif
 </td>
 </td>
@@ -110,10 +118,14 @@
     <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $cuartos }}</td>
     <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $tintas }}</td>
                         <td style="padding:10px 16px;">
-                           <button onclick="abrirModal({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}', {{ $urnas }}, {{ $cuartos }}, {{ $tintas }})"
-        style="background:#2563eb; color:white; border:none; padding:4px 8px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500; white-space:nowrap;">
+                           @if($entrada->asunto_log)
+<button onclick="abrirModal({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}', {{ $urnas }}, {{ $cuartos }}, {{ $tintas }})"
+    style="background:#2563eb; color:white; border:none; padding:4px 8px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500; white-space:nowrap;">
     Registrar devolución
 </button>
+@else
+<span style="font-size:11px; color:#16a34a; font-weight:500;">✓ Entregado</span>
+@endif
                         </td>
                     </tr>
                     @empty
