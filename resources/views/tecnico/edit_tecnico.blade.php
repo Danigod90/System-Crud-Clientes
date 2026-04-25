@@ -191,19 +191,20 @@
     @if($entrada->detalleTecnico->mat_final_padrones_formato)
     <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($entrada->detalleTecnico->mat_final_padrones_formato) }}</p>
     @endif
+@if($entrada->asunto_log)
+<div style="text-align:center;">
+    <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Cuartos Oscuros</p>
+    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $cuartosRO }}</p>
 </div>
-                <div style="text-align:center;">
-                    <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Cuartos Oscuros</p>
-                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $cuartosRO }}</p>
-                </div>
-                <div style="text-align:center;">
-                    <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Urnas</p>
-                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $urnasRO }}</p>
-                    </div>
-                    <div style="text-align:center;">
+<div style="text-align:center;">
+    <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Urnas</p>
+    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $urnasRO }}</p>
+</div>
+<div style="text-align:center;">
     <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Tintas</p>
     <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $tintasRO }}</p>
 </div>
+@endif
                 </div>
             </div>
         @endif

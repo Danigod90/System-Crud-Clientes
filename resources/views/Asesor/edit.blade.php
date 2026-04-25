@@ -681,6 +681,7 @@ $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->de
             <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($entrada->detalleTecnico->mat_final_padrones_formato) }}</p>
             @endif
         </div>
+       @if($entrada->asunto_log)
         <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Cuartos Oscuros</p>
             <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $cuartos }}</p>
@@ -693,6 +694,7 @@ $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->de
             <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Tintas</p>
             <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $tintas }}</p>
         </div>
+        @endif
     </div>
 </div>
 
@@ -834,6 +836,7 @@ $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->de
                     <option value="sin_padron" {{ old('mat_final_padrones_formato', $entrada->detalleTecnico?->mat_final_padrones_formato) == 'sin_padron' ? 'selected' : '' }}>Sin Padrón</option>
                 </select>
             </div>
+           @if($entrada->asunto_log)
             <div>
                 <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Cuartos</label>
                 <input type="number" id="asesor_mat_cuartos" name="mat_final_cuartos" min="0"
@@ -852,6 +855,7 @@ $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->de
                     value="{{ old('mat_final_tintas', $entrada->detalleTecnico?->mat_final_tintas) }}"
                     style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
             </div>
+            @endif
         </div>
     </div>
 </div>
