@@ -100,19 +100,21 @@
         <h3>Reporte de Servicios Realizados</h3>
     </div>
 
-    <div class="periodo">
-        Período:
-        <strong>{{ $fecha_desde == 'inicio' ? 'Desde el inicio' : \Carbon\Carbon::parse($fecha_desde)->format('d/m/Y') }}</strong>
-        hasta
-        <strong>{{ \Carbon\Carbon::parse($fecha_hasta)->format('d/m/Y') }}</strong>
-    </div>
+   <div class="periodo">
+    <table style="width:100%; border-collapse:collapse;">
+        <tr>
+            <td style="text-align:left; padding:0;"><strong>Mesa de Entrada:</strong> {{ $usuario }}</td>
+            <td style="text-align:right; padding:0;"><strong>Período:</strong> {{ $fecha_desde == 'inicio' ? 'Desde el inicio' : \Carbon\Carbon::parse($fecha_desde)->format('d/m/Y') }} hasta {{ \Carbon\Carbon::parse($fecha_hasta)->format('d/m/Y') }}</td>
+        </tr>
+    </table>
+</div>
+ 
 
     <table>
         <thead>
             <tr>
                 <th>N° Entrada</th>
-                <th>Nombre</th>
-                <th>Apellido</th>
+                <th>Nombre/s y Apellido/s</th>
                 <th>Teléfono</th>
                 <th>Tipo de Servicio</th>
                 <th>Asesor</th>
@@ -123,8 +125,7 @@
             @forelse($entradas as $entrada)
                 <tr>
                     <td>{{ $entrada->numero_entrada }}</td>
-                    <td>{{ $entrada->nombre }}</td>
-                    <td>{{ $entrada->apellido }}</td>
+                    <td>{{ $entrada->nombre_completo }}</td>
                     <td>{{ $entrada->telefono ?? '—' }}</td>
                     <td>{{ $entrada->tipo_charla }}</td>
                     <td>{{ $entrada->asesor ? $entrada->asesor->nombre . ' ' . $entrada->asesor->apellido : '—' }}</td>

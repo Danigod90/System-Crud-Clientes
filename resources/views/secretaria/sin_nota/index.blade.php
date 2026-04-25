@@ -31,7 +31,7 @@
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:16px 20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.04);">
             <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
                 <div>
-                    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Nombre o Apellido</label>
+                    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Nombre/s y Apellido/s</label>
                     <input type="text" name="nombre" value="{{ request('nombre') }}" placeholder="Buscar..."
                            style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
                 </div>
@@ -70,8 +70,7 @@
                 <thead>
                     <tr style="background:#f8fafc; border-bottom:1px solid #e5e7eb;">
                         <th style="padding:10px 16px; text-align:left; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">N° Entrada</th>
-                        <th style="padding:10px 16px; text-align:left; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">Nombre</th>
-                        <th style="padding:10px 16px; text-align:left; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">Apellido</th>
+                        <th style="padding:10px 16px; text-align:left; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">Nombre/s y Apellido/s</th>
                         <th style="padding:10px 16px; text-align:left; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">Tipo de Charla</th>
                         <th style="padding:10px 16px; text-align:left; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">Asesor</th>
                         <th style="padding:10px 16px; text-align:left; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">Fecha</th>
@@ -82,8 +81,7 @@
                     @forelse($entradas as $entrada)
                     <tr style="border-bottom:1px solid #f3f4f6;">
                         <td style="padding:10px 16px; font-size:12px; color:#6b7280; font-weight:600;">{{ $entrada->numero_entrada }}</td>
-                        <td style="padding:10px 16px; font-size:13px; color:#1e293b; font-weight:500;">{{ $entrada->nombre }}</td>
-                        <td style="padding:10px 16px; font-size:13px; color:#1e293b;">{{ $entrada->apellido }}</td>
+                       <td style="padding:10px 16px; font-size:13px; color:#1e293b; font-weight:500;">{{ $entrada->nombre_completo }}</td>
                         <td style="padding:10px 16px; font-size:13px; color:#374151;">{{ $entrada->tipo_charla }}</td>
                         <td style="padding:10px 16px; font-size:13px; color:#374151;">{{ $entrada->asesor ? $entrada->asesor->nombre . ' ' . $entrada->asesor->apellido : '—' }}</td>
                         <td style="padding:10px 16px; font-size:12px; color:#94a3b8;">{{ $entrada->created_at ? $entrada->created_at->format('d/m/Y') : '—' }}</td>

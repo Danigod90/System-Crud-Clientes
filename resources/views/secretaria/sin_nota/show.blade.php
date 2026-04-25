@@ -15,14 +15,10 @@
             </div>
 
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:20px;">
-                <div>
-                    <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 3px;">Nombre</p>
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $sinNota->nombre }}</p>
-                </div>
-                <div>
-                    <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 3px;">Apellido</p>
-                    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $sinNota->apellido }}</p>
-                </div>
+                <div style="grid-column: span 2;">
+    <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 3px;">Nombre/s y Apellido/s</p>
+    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $sinNota->nombre_completo }}</p>
+</div>
                 <div>
                     <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 3px;">Teléfono</p>
                     <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $sinNota->telefono ?? '—' }}</p>

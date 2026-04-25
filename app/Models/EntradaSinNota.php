@@ -11,8 +11,7 @@ class EntradaSinNota extends Model
 
     protected $fillable = [
         'numero_entrada',
-        'nombre',
-        'apellido',
+        'nombre_completo',
         'telefono',
         'tipo_charla',
         'asesor_id',

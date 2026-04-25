@@ -28,17 +28,12 @@
                     @csrf
                     @method('PUT')
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold mb-1">Nombre</label>
-                        <input type="text" name="nombre" value="{{ old('nombre', $sinNota->nombre) }}"
-                               class="w-full border rounded px-3 py-2" required>
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-semibold mb-1">Apellido</label>
-                        <input type="text" name="apellido" value="{{ old('apellido', $sinNota->apellido) }}"
-                               class="w-full border rounded px-3 py-2" required>
-                    </div>
+                    <div style="margin-bottom:12px;">
+    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Nombre/s y Apellido/s *</label>
+    <input type="text" name="nombre_completo" value="{{ old('nombre_completo', $sinNota->nombre_completo) }}" required
+           placeholder="Ej: Juan Carlos García"
+           style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+</div>
 
                     <div class="mb-4">
                         <label class="block text-gray-700 font-semibold mb-1">Teléfono <span class="text-gray-400 font-normal">(opcional)</span></label>

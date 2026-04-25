@@ -14,8 +14,7 @@ class EntradaSinNotaController extends Controller
 
     if ($request->filled('nombre')) {
         $query->where(function($q) use ($request) {
-            $q->where('nombre', 'like', '%' . $request->nombre . '%')
-              ->orWhere('apellido', 'like', '%' . $request->nombre . '%');
+            $q->where('nombre_completo', 'like', '%' . $request->nombre . '%');
         });
     }
 
@@ -46,21 +45,19 @@ class EntradaSinNotaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre'      => 'required|string|max:255',
-            'apellido'    => 'required|string|max:255',
+            'nombre_completo' => 'required|string|max:255',
             'telefono'    => 'nullable|string|max:20',
             'tipo_charla' => 'required|string|max:255',
             'asesor_id'   => 'nullable|exists:asesores,id',
         ]);
 
-        EntradaSinNota::create([
-    'nombre'      => $request->nombre,
-    'apellido'    => $request->apellido,
-    'telefono'    => $request->telefono,
-    'tipo_charla' => $request->tipo_charla,
-    'asesor_id'   => $request->asesor_id,
-    'user_id'     => auth()->id(),
-    'fecha'       => $request->fecha,
+       EntradaSinNota::create([
+    'nombre_completo' => $request->nombre_completo,
+    'telefono'        => $request->telefono,
+    'tipo_charla'     => $request->tipo_charla,
+    'asesor_id'       => $request->asesor_id,
+    'user_id'         => auth()->id(),
+    'fecha'           => $request->fecha,
 ]);
 
         return redirect()->route('secretaria.sin-nota.index')
@@ -82,8 +79,7 @@ class EntradaSinNotaController extends Controller
     public function update(Request $request, EntradaSinNota $sinNota)
     {
         $request->validate([
-            'nombre'      => 'required|string|max:255',
-            'apellido'    => 'required|string|max:255',
+            'nombre_completo' => 'required|string|max:255',
             'telefono'    => 'nullable|string|max:20',
             'tipo_charla' => 'required|string|max:255',
             'asesor_id'   => 'nullable|exists:asesores,id',
@@ -91,12 +87,11 @@ class EntradaSinNotaController extends Controller
         ]);
 
         $sinNota->update([
-            'nombre'      => $request->nombre,
-            'apellido'    => $request->apellido,
-            'telefono'    => $request->telefono,
-            'tipo_charla' => $request->tipo_charla,
-            'asesor_id'   => $request->asesor_id,
-        ]);
+    'nombre_completo' => $request->nombre_completo,
+    'telefono'        => $request->telefono,
+    'tipo_charla'     => $request->tipo_charla,
+    'asesor_id'       => $request->asesor_id,
+]);
 
         return redirect()->route('secretaria.sin-nota.show', $sinNota)
             ->with('success', 'Entrada actualizada correctamente.');
@@ -135,9 +130,9 @@ class EntradaSinNotaController extends Controller
     $fecha_desde = $request->fecha_desde ?? 'inicio';
     $fecha_hasta = $request->fecha_hasta ?? now()->format('Y-m-d');
 
-    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('secretaria.sin_nota.pdf', compact('entradas', 'fecha_desde', 'fecha_hasta'));
-
-    return $pdf->stream('reporte-entradas-sin-nota.pdf');
+$usuario = auth()->user()->name;
+$pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('secretaria.sin_nota.pdf', compact('entradas', 'fecha_desde', 'fecha_hasta', 'usuario'));
+return $pdf->stream('reporte-entradas-sin-nota.pdf');
 }
 public function log(Request $request)
 {
