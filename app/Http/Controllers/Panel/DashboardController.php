@@ -14,9 +14,12 @@ class DashboardController extends Controller
     $user = Auth::user();
     $rol = $user->roles->first()?->name;
 
-    if ($rol === 'Tecnico') {
-        return redirect()->route('tecnico.dashboard');
-    }
+   if ($rol === 'Tecnico') {
+    return redirect()->route('tecnico.dashboard');
+}
+if ($rol === 'Supervisor') {
+    return redirect()->route('supervisor.dashboard');
+}
 if ($rol === 'Secretaria Sin Nota') {
     $stats = [
         'entradas_mes'    => \App\Models\EntradaSinNota::whereMonth('created_at', now()->month)->count(),
