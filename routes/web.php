@@ -9,6 +9,9 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
+    if (auth()->user()->hasRole('Supervisor')) {
+        return redirect()->route('supervisor.dashboard');
+    }
     if (auth()->user()->hasRole('Admin')) {
         return redirect()->route('admin.users.index');
     }
@@ -16,8 +19,8 @@ Route::get('/dashboard', function () {
         return redirect()->route('secretaria.sin-nota.index');
     }
     if (auth()->user()->hasRole('Secretaria Con Nota')) {
-    return redirect()->route('panel.dashboard');
-}
+        return redirect()->route('panel.dashboard');
+    }
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -103,6 +106,13 @@ Route::middleware(['auth', 'role:Tecnico|Admin'])->prefix('tecnico')->name('tecn
     Route::get('detalle/{entrada_id}/check-update', [\App\Http\Controllers\DetalleTecnicoController::class, 'checkAsesorUpdate'])->name('detalle_tecnico.checkUpdate');
     Route::post('detalle/{entrada_id}/asesor', [\App\Http\Controllers\DetalleTecnicoController::class, 'saveAsesor'])->name('detalle_tecnico.saveAsesor');
     Route::post('prioridad/{entrada}', [\App\Http\Controllers\Tecnico\PrioridadTecnicaController::class, 'toggle'])->name('prioridad.toggle');
+});
+// ── SUPERVISOR ──
+Route::middleware(['auth', 'role:Supervisor'])->prefix('supervisor')->name('supervisor.')->group(function () {
+    Route::get('/dashboard', [App\Http\Controllers\Supervisor\SupervisorController::class, 'dashboard'])->name('dashboard');
+    Route::get('/organizaciones', [App\Http\Controllers\Supervisor\SupervisorController::class, 'index'])->name('index');
+    Route::get('/organizaciones/{entrada}', [App\Http\Controllers\Supervisor\SupervisorController::class, 'show'])->name('show');
+    Route::patch('/organizaciones/{entrada}/cargado', [App\Http\Controllers\Supervisor\SupervisorController::class, 'marcarCargado'])->name('cargado');
 });
 
 Route::get('/test-borrador', function () {

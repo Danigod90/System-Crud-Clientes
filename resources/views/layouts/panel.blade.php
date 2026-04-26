@@ -49,13 +49,23 @@
 
         {{-- NAV PRINCIPAL --}}
         <div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Principal</div>
-        <a href="{{ route('panel.dashboard') }}"
-            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('panel.dashboard') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('panel.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('panel.dashboard') ? '1px solid rgba(99,130,255,0.3)' : '1px solid transparent' }}; transition:all 0.2s;"
-            onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-            onmouseout="this.style.background='{{ request()->routeIs('panel.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}'">
-            <span style="width:7px; height:7px; border-radius:50%; background:#60a5fa; flex-shrink:0;"></span>
-            Panel General
-        </a>
+       @if(auth()->user()->hasRole('Supervisor'))
+<a href="{{ route('supervisor.dashboard') }}"
+    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('supervisor.dashboard') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('supervisor.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('supervisor.dashboard') ? '1px solid rgba(99,130,255,0.3)' : '1px solid transparent' }}; transition:all 0.2s;"
+    onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+    onmouseout="this.style.background='{{ request()->routeIs('supervisor.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}'">
+    <span style="width:7px; height:7px; border-radius:50%; background:#60a5fa; flex-shrink:0;"></span>
+    Panel General
+</a>
+@else
+<a href="{{ route('panel.dashboard') }}"
+    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('panel.dashboard') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('panel.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('panel.dashboard') ? '1px solid rgba(99,130,255,0.3)' : '1px solid transparent' }}; transition:all 0.2s;"
+    onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+    onmouseout="this.style.background='{{ request()->routeIs('panel.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}'">
+    <span style="width:7px; height:7px; border-radius:50%; background:#60a5fa; flex-shrink:0;"></span>
+    Panel General
+</a>
+@endif
 
         {{-- NAV ENTRADAS --}}
         @if(auth()->user()->hasAnyRole(['Admin', 'Asesor', 'Secretaria Con Nota', 'Secretaria Sin Nota']))
@@ -87,7 +97,17 @@
     Entradas sin nota
 </a>
 @endif
-        </a>
+
+    @if(auth()->user()->hasRole('Supervisor'))
+<div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Mis Organizaciones</div>
+<a href="{{ route('supervisor.index') }}"
+    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('supervisor.index') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('supervisor.index') ? 'rgba(52,211,153,0.15)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('supervisor.index') ? '1px solid rgba(52,211,153,0.25)' : '1px solid transparent' }}; transition:all 0.2s;"
+    onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+    onmouseout="this.style.background='{{ request()->routeIs('supervisor.index') ? 'rgba(52,211,153,0.15)' : 'transparent' }}'">
+    <span style="width:7px; height:7px; border-radius:50%; background:#34d399; flex-shrink:0;"></span>
+    Organizaciones
+</a>
+@endif
 
         {{-- NAV TRABAJO --}}
         @if(auth()->user()->hasAnyRole(['Tecnico', 'Asesor']))

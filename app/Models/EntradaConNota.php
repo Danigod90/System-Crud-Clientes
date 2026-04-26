@@ -29,6 +29,8 @@ class EntradaConNota extends Model
         'mostrar_en_ticker',
         'asunto_obs',
         'log_impreso_at',
+        'supervisor_cargado',
+        'supervisor_cargado_at',
     ];
 
     protected $casts = [

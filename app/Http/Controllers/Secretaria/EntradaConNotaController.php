@@ -127,6 +127,20 @@ if (auth()->user()->hasRole('Asesor')) {
             $usuario->notifications()->latest()->skip(8)->take(100)->delete();
         }
     }
+
+    // Notificar al Supervisor
+    $supervisores = \App\Models\User::role('Supervisor')->get();
+    foreach ($supervisores as $supervisor) {
+        $supervisor->notify(new \App\Notifications\TrabajoPendienteNotification(
+            'Nueva entrada: ' . $request->nombre_organizacion,
+            'Mis Organizaciones',
+            $entrada->id
+        ));
+        if ($supervisor->notifications()->count() > 8) {
+            $supervisor->notifications()->latest()->skip(8)->take(100)->delete();
+        }
+    }
+
     return redirect()->route('secretaria.con-nota.show', $entrada)
         ->with('success', 'Mesa de entrada registrada correctamente.');
 }
