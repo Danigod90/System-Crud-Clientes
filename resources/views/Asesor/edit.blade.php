@@ -4,7 +4,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/l10n/es.min.js"></script>
 <style>
-.flatpickr-calendar { font-size: 12px !important; width: 240px !important; }
+.flatpickr-calendar { font-size: 12px !important; width: 300px !important; }
 .flatpickr-day { max-width: 30px !important; height: 30px !important; line-height: 30px !important; }
 .flatpickr-months .flatpickr-month { height: 34px !important; }
 </style>
@@ -44,6 +44,26 @@
                         </svg>
                         Imprimir Logístico
                     </a>
+              @endif
+                    @if($entrada->asunto_log && !$entrada->asunto_tec && $entrada->log_estado !== 'entregada')
+                    <form method="POST" action="{{ route('secretaria.con-nota.entregar-log', $entrada->id) }}" style="display:inline;">
+                        @csrf @method('PATCH')
+                        <button type="submit"
+                                onclick="return confirm('¿Confirmar entrega logística de {{ addslashes($entrada->nombre_organizacion) }}?')"
+                                style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
+                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                            Marcar entregado
+                        </button>
+                    </form>
+                    @elseif($entrada->asunto_log && !$entrada->asunto_tec && $entrada->log_estado === 'entregada')
+                    <span style="display:inline-flex; align-items:center; gap:6px; background:#d1fae5; color:#065f46; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:500;">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Entregado
+                    </span>
                     @endif
                 </div>
             </div>
@@ -159,27 +179,7 @@
                         {{ in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? 'Entregada' : 'Pendiente' }}
                     </span>
                 </h3>
-                @if($entrada->asunto_log && !$entrada->asunto_tec && $entrada->log_estado !== 'entregada')
-                <form method="POST" action="{{ route('secretaria.con-nota.entregar-log', $entrada->id) }}" style="display:inline;">
-                    @csrf
-                    @method('PATCH')
-                    <button type="submit"
-                            onclick="return confirm('¿Confirmar entrega logística de {{ $entrada->nombre_organizacion }}?')"
-                            style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
-                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                        Marcar entregado
-                    </button>
-                </form>
-                @elseif($entrada->log_estado === 'entregada')
-                <span style="display:inline-flex; align-items:center; gap:6px; background:#d1fae5; color:#065f46; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:500;">
-                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    Entregado
-                </span>
-                @endif
+               
             </div>
             <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
                 <div style="text-align:center;">
@@ -491,16 +491,9 @@
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                     <div>
                         <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora <span style="color:#9ca3af; font-weight:400;">(opcional)</span></label>
-                        <div style="position:relative;">
-                            <input type="text" id="obs_fecha_hora_display"
-                                   placeholder="Seleccionar fecha y hora..."
-                                   value="{{ $entrada->observador?->fecha_hora?->format('d/m/Y H:i') }}"
-                                   style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 32px 7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; cursor:pointer;">
-                            <button type="button" onclick="limpiarFechaObs()"
-                                    style="position:absolute; right:8px; top:50%; transform:translateY(-50%); background:none; border:none; cursor:pointer; color:#9ca3af; font-size:14px; padding:0; line-height:1;">✕</button>
-                        </div>
-                        <input type="hidden" name="fecha_hora" id="obs_fecha_hora_input"
-                               value="{{ $entrada->observador?->fecha_hora?->format('Y-m-d H:i:s') }}">
+                        <input type="datetime-local" name="fecha_hora"
+                               value="{{ $entrada->observador?->fecha_hora?->format('Y-m-d\TH:i') }}"
+                               style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
                     </div>
                     <div>
                         <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Descripción <span style="color:#9ca3af; font-weight:400;">(opcional)</span></label>
@@ -1011,7 +1004,7 @@ $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->de
 
 <script>
 let botonListoAgregado = false;
-let botonListoObsAgregado = false;
+
 
 let fpInstance;
 if (document.getElementById('fecha_hora_display')) {
@@ -1048,50 +1041,12 @@ if (document.getElementById('fecha_hora_display')) {
     });
 }
 
-let fpObsInstance;
-if (document.getElementById('obs_fecha_hora_display')) {
-    fpObsInstance = flatpickr("#obs_fecha_hora_display", {
-        locale: "es",
-        enableTime: true,
-        time_24hr: true,
-        dateFormat: "d/m/Y H:i",
-        defaultDate: document.getElementById('obs_fecha_hora_display').value || null,
-        closeOnSelect: false,
-        onOpen: function(selectedDates, dateStr, instance) {
-            instance.jumpToDate(instance.selectedDates[0] || new Date());
-            if (!botonListoObsAgregado) {
-                const btn = document.createElement('button');
-                btn.textContent = '✓ Listo';
-                btn.type = 'button';
-                btn.style.cssText = 'width:100%; margin-top:8px; padding:7px; background:#2563eb; color:white; border:none; border-radius:6px; font-size:13px; font-weight:500; cursor:pointer;';
-                btn.addEventListener('click', function() { instance.close(); });
-                instance.calendarContainer.appendChild(btn);
-                botonListoObsAgregado = true;
-            }
-        },
-        onChange: function(selectedDates) {
-            if (selectedDates.length > 0) {
-                const d = selectedDates[0];
-                document.getElementById('obs_fecha_hora_input').value =
-                    d.getFullYear() + '-' +
-                    String(d.getMonth()+1).padStart(2,'0') + '-' +
-                    String(d.getDate()).padStart(2,'0') + ' ' +
-                    String(d.getHours()).padStart(2,'0') + ':' +
-                    String(d.getMinutes()).padStart(2,'0') + ':00';
-            }
-        }
-    });
-}
 
 function limpiarFecha() {
     if (fpInstance) fpInstance.clear();
     document.getElementById('fecha_hora_input').value = '';
 }
 
-function limpiarFechaObs() {
-    if (fpObsInstance) fpObsInstance.clear();
-    document.getElementById('obs_fecha_hora_input').value = '';
-}
 
 const modalidadSelect = document.getElementById('modalidad-select');
 const seccionDireccion = document.getElementById('seccion-direccion');
