@@ -191,6 +191,7 @@
     @if($entrada->detalleTecnico->mat_final_padrones_formato)
     <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($entrada->detalleTecnico->mat_final_padrones_formato) }}</p>
     @endif
+</div>
 @if($entrada->asunto_log)
 <div style="text-align:center;">
     <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Cuartos Oscuros</p>
