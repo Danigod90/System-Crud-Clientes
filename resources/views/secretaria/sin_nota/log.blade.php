@@ -110,9 +110,9 @@
     <td style="padding:10px 16px; color:#185FA5; font-weight:600; font-family:monospace;">{{ $entrada->codigo_org }}</td>
     <td style="padding:10px 16px; color:#1e293b; font-weight:500;">{{ $entrada->nombre_organizacion }}</td>
     @php
-        $urnas   = $entrada->asunto_tec ? ($entrada->detalleTecnico->mat_final_urnas  ?? ($entrada->detalleTecnico->cantidad_mesas * $entrada->detalleTecnico->cantidad_papeletas ?? 0)) : $entrada->log_urnas;
-        $cuartos = $entrada->asunto_tec ? ($entrada->detalleTecnico->mat_final_cuartos ?? $entrada->detalleTecnico->cantidad_mesas ?? 0) : $entrada->log_cuartos;
-        $tintas  = $entrada->asunto_tec ? ($entrada->detalleTecnico->mat_final_tintas  ?? $entrada->detalleTecnico->cantidad_mesas ?? 0) : $entrada->log_tintas;
+        $urnas   = ($entrada->asunto_tec && $entrada->asunto_log) ? ($entrada->detalleTecnico->mat_final_urnas  ?? 0) : ($entrada->asunto_log ? $entrada->log_urnas : 0);
+$cuartos = ($entrada->asunto_tec && $entrada->asunto_log) ? ($entrada->detalleTecnico->mat_final_cuartos ?? 0) : ($entrada->asunto_log ? $entrada->log_cuartos : 0);
+$tintas  = ($entrada->asunto_tec && $entrada->asunto_log) ? ($entrada->detalleTecnico->mat_final_tintas  ?? 0) : ($entrada->asunto_log ? $entrada->log_tintas : 0);
     @endphp
     <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $urnas }}</td>
     <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $cuartos }}</td>
