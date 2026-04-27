@@ -2,11 +2,14 @@
 <div class="px-2 py-2">
     <div style="max-width:760px; margin:0 auto;">
 
-        @if(session('error'))
-        <div style="background:#fee2e2; color:#991b1b; padding:10px 14px; border-radius:8px; margin-bottom:14px; font-size:13px;">
-            {{ session('error') }}
-        </div>
-        @endif
+@if(session('error'))
+<div style="display:flex; align-items:center; gap:10px; background:#fee2e2; color:#991b1b; padding:12px 16px; border-radius:10px; margin-bottom:14px; font-size:13px; border-left:4px solid #dc2626; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+    <svg width="18" height="18" fill="none" stroke="#dc2626" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    {{ session('error') }}
+</div>
+@endif
 
         <form method="POST" action="{{ route('asesor.borrador.store') }}">
             @csrf

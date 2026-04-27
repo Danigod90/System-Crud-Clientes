@@ -2,11 +2,14 @@
 <div style="padding:0 8px;">
     <div style="width:100%;">
 
-        @if(session('success'))
-        <div style="background-color:#d1fae5; color:#065f46; padding:12px 16px; border-radius:6px; margin-bottom:16px; font-size:14px;">
-            {{ session('success') }}
-        </div>
-        @endif
+    @if(session('success'))
+<div style="display:flex; align-items:center; gap:10px; background:#d1fae5; color:#065f46; padding:12px 16px; border-radius:10px; margin-bottom:14px; font-size:13px; border-left:4px solid #16a34a; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+    <svg width="18" height="18" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;">
+        <circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/>
+    </svg>
+    {{ session('success') }}
+</div>
+@endif
 
         <div class="bg-white shadow-sm sm:rounded-lg p-6">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">

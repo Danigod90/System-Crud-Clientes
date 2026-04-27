@@ -393,11 +393,14 @@
                 </div>
             </div>
 
-            @if(session('success'))
-            <div style="background:#d1fae5; border:1px solid #6ee7b7; border-radius:8px; padding:12px 16px; margin-bottom:16px; font-size:13px; color:#065f46;">
-                {{ session('success') }}
-            </div>
-            @endif
+    @if(session('success'))
+<div style="display:flex; align-items:center; gap:10px; background:#d1fae5; color:#065f46; padding:12px 16px; border-radius:10px; margin-bottom:14px; font-size:13px; border-left:4px solid #16a34a; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+    <svg width="18" height="18" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;">
+        <circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/>
+    </svg>
+    {{ session('success') }}
+</div>
+@endif
 
             {{-- VISTA SOLO LECTURA --}}
 <div id="tec-readonly" style="display:block;">
