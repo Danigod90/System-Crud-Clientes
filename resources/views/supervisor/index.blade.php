@@ -39,17 +39,18 @@
                                 style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;"
                                 autocomplete="off">
                         </div>
-                        <div>
-                            <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Asesor</label>
-                            <select name="asunto" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff;">
-    <option value="">Todos</option>
-    <option value="char" {{ request('asunto') == 'char' ? 'selected' : '' }}>Char — Charla</option>
-    <option value="log" {{ request('asunto') == 'log' ? 'selected' : '' }}>Log — Logística</option>
-    <option value="tec" {{ request('asunto') == 'tec' ? 'selected' : '' }}>Tec — Técnica</option>
-    <option value="obs" {{ request('asunto') == 'obs' ? 'selected' : '' }}>Obs — Observadores</option>
-   
-</select>
-                        </div>
+                       <div>
+    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Asesor</label>
+    <select name="asesor" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff;">
+        <option value="">Todos</option>
+        @foreach($asesores as $asesor)
+            <option value="{{ $asesor->nombre }} {{ $asesor->apellido }}"
+                {{ request('asesor') == $asesor->nombre . ' ' . $asesor->apellido ? 'selected' : '' }}>
+                {{ $asesor->nombre }} {{ $asesor->apellido }}
+            </option>
+        @endforeach
+    </select>
+</div>
                         <div>
                             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Asunto</label>
                             <select name="asunto" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff;">
@@ -58,9 +59,14 @@
                                 <option value="log" {{ request('asunto') == 'log' ? 'selected' : '' }}>Log — Logística</option>
                                 <option value="tec" {{ request('asunto') == 'tec' ? 'selected' : '' }}>Tec — Técnica</option>
                                 <option value="obs" {{ request('asunto') == 'obs' ? 'selected' : '' }}>Obs — Observadores</option>
-                                 <option disabled style="color:#d1d5db;">──────────</option>
-    <option value="cargado_si" {{ request('asunto') == 'cargado_si' ? 'selected' : '' }}>✓ Cargados</option>
-    <option value="cargado_no" {{ request('asunto') == 'cargado_no' ? 'selected' : '' }}>⏳ Pendientes</option>
+                            </select>
+                        </div>
+                          <div>
+                            <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cargado</label>
+                            <select name="cargado" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff;">
+                                <option value="">Todos</option>
+                                <option value="si" {{ request('cargado') == 'si' ? 'selected' : '' }}>✓ Cargados</option>
+                                <option value="no" {{ request('cargado') == 'no' ? 'selected' : '' }}>Pendientes</option>
                             </select>
                         </div>
                         <div>
@@ -73,14 +79,7 @@
                             <input type="month" name="mes_eleccion" value="{{ request('mes_eleccion') }}"
                                 style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
                         </div>
-                        <div>
-                            <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cargado</label>
-                            <select name="cargado" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff;">
-                                <option value="">Todos</option>
-                                <option value="si" {{ request('cargado') == 'si' ? 'selected' : '' }}>✓ Cargados</option>
-                                <option value="no" {{ request('cargado') == 'no' ? 'selected' : '' }}>Pendientes</option>
-                            </select>
-                        </div>
+                      
                     </div>
 
                     <div style="display:flex; gap:8px;">
