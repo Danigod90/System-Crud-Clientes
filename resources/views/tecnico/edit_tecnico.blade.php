@@ -170,7 +170,7 @@
 @endphp
         <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px;">
             <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar</p>
-            <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:8px;">
+           <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:4px; min-width:0;">
                 <div style="text-align:center;">
                     <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Papeletas</p>
                     <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $entrada->detalleTecnico->mat_final_papeletas !== null ? $entrada->detalleTecnico->mat_final_papeletas : ($entrada->detalleTecnico->cantidad_papeletas ?? 0) }}</p>
