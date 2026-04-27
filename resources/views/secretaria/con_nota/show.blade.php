@@ -343,18 +343,20 @@
         <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($mTec->mat_final_padrones_formato) }}</p>
         @endif
     </div>
-    <div style="text-align:center;">
-        <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Cuartos Oscuros</p>
-        <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estCuartos }}</p>
-    </div>
-    <div style="text-align:center;">
-        <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Urnas</p>
-        <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estUrnas }}</p>
-    </div>
-    <div style="text-align:center;">
-        <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Tintas</p>
-        <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estTintas }}</p>
-    </div>
+    @if($conNota->asunto_log)
+<div style="text-align:center;">
+    <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Cuartos Oscuros</p>
+    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estCuartos }}</p>
+</div>
+<div style="text-align:center;">
+    <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Urnas</p>
+    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estUrnas }}</p>
+</div>
+<div style="text-align:center;">
+    <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Tintas</p>
+    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estTintas }}</p>
+</div>
+@endif
 </div>
     </div>
 </div>
