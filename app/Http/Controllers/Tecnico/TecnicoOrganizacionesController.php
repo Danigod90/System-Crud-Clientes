@@ -25,8 +25,8 @@ class TecnicoOrganizacionesController extends Controller
         if ($request->estado === 'enviado') {
             $query->whereHas('detalleTecnico', fn($q) => $q->where('enviado_tecnica', true));
         } elseif ($request->estado === 'pendiente') {
-            $query->whereDoesntHave('detalleTecnico', fn($q) => $q->where('enviado_tecnica', true));
-        } elseif ($request->estado === 'impreso') {
+    $query->whereHas('detalleTecnico', fn($q) => $q->where('tec_realizado', false)->orWhereNull('tec_realizado'));
+} elseif ($request->estado === 'impreso') {
             $query->whereHas('detalleTecnico', fn($q) => $q->where('impreso', true));
         }
 
