@@ -219,6 +219,16 @@ if (auth()->user()->hasRole('Asesor')) {
     public function entregarLog(EntradaConNota $conNota)
 {
     $conNota->update(['log_estado' => 'entregada']);
+
+    $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$conNota->asesor_asignado])->first();
+
+    \App\Models\EntradaSinNota::create([
+    'nombre_completo' => $conNota->nombre_organizacion,
+    'tipo_charla'     => 'Materiales Entregados',
+    'asesor_id'       => $asesor?->id,
+    'user_id'         => auth()->id(),
+]);
+
     return redirect()->route('secretaria.con-nota.show', $conNota)
         ->with('success', 'Logística entregada — ' . $conNota->codigo_org);
 }
@@ -231,6 +241,16 @@ if (auth()->user()->hasRole('Asesor')) {
 public function entregarTec(EntradaConNota $conNota)
 {
     $conNota->update(['log_estado' => 'entregada']);
+
+    $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$conNota->asesor_asignado])->first();
+
+    \App\Models\EntradaSinNota::create([
+    'nombre_completo' => $conNota->nombre_organizacion,
+    'tipo_charla'     => 'Materiales Entregados',
+    'asesor_id'       => $asesor?->id,
+    'user_id'         => auth()->id(),
+]);
+
     return redirect()->back()->with('success', 'Marcado como entregado correctamente.');
 }
 }
