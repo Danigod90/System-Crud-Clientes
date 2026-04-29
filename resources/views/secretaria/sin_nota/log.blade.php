@@ -1,4 +1,4 @@
-<x-panel-layout title="Gestión de Log">
+﻿<x-panel-layout title="Gestión de Log">
 <div class="px-2 py-2">
     <div style="max-width:1000px; margin:0 auto;">
 
@@ -49,17 +49,17 @@
                         <td style="padding:10px 16px; color:#185FA5; font-weight:600; font-family:monospace;">{{ $entrada->codigo_org }}</td>
                         <td style="padding:10px 16px; color:#1e293b; font-weight:500;">{{ $entrada->nombre_organizacion }}</td>
                         <td style="padding:6px 16px; color:#374151;">{{ $entrada->asesor_asignado ?? '—' }}</td>
-                       @php
+                      @php
     $mTec = $entrada->detalleTecnico;
     $m = $mTec->cantidad_mesas ?? 0;
     $p = $mTec->cantidad_papeletas ?? 0;
-    $gUrnas   = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_urnas ?? ($m * $p)) : ($entrada->log_urnas ?? 0);
-    $gCuartos = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_cuartos ?? $m) : ($entrada->log_cuartos ?? 0);
-    $gTintas  = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_tintas ?? $m) : ($entrada->log_tintas ?? 0);
+    $urnas   = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_urnas ?? ($m * $p)) : ($entrada->asunto_log ? $entrada->log_urnas : 0);
+    $cuartos = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_cuartos ?? $m) : ($entrada->asunto_log ? $entrada->log_cuartos : 0);
+    $tintas  = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_tintas ?? $m) : ($entrada->asunto_log ? $entrada->log_tintas : 0);
 @endphp
-<td style="padding:10px 16px; text-align:center; color:#374151;">{{ $gUrnas }}</td>
-<td style="padding:10px 16px; text-align:center; color:#374151;">{{ $gCuartos }}</td>
-<td style="padding:10px 16px; text-align:center; color:#374151;">{{ $gTintas }}</td>
+<td style="padding:10px 16px; text-align:center; color:#374151;">{{ $urnas }}</td>
+<td style="padding:10px 16px; text-align:center; color:#374151;">{{ $cuartos }}</td>
+<td style="padding:10px 16px; text-align:center; color:#374151;">{{ $tintas }}</td>
                         <td style="padding:10px 16px;">
    @if($entrada->asunto_log && !$entrada->asunto_tec)
     <button onclick="abrirModalImprimir({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}')"
@@ -118,10 +118,13 @@
     <td style="padding:10px 16px; color:#185FA5; font-weight:600; font-family:monospace;">{{ $entrada->codigo_org }}</td>
     <td style="padding:10px 16px; color:#1e293b; font-weight:500;">{{ $entrada->nombre_organizacion }}</td>
     @php
-        $urnas   = ($entrada->asunto_tec && $entrada->asunto_log) ? ($entrada->detalleTecnico->mat_final_urnas  ?? 0) : ($entrada->asunto_log ? $entrada->log_urnas : 0);
-$cuartos = ($entrada->asunto_tec && $entrada->asunto_log) ? ($entrada->detalleTecnico->mat_final_cuartos ?? 0) : ($entrada->asunto_log ? $entrada->log_cuartos : 0);
-$tintas  = ($entrada->asunto_tec && $entrada->asunto_log) ? ($entrada->detalleTecnico->mat_final_tintas  ?? 0) : ($entrada->asunto_log ? $entrada->log_tintas : 0);
-    @endphp
+    $mTec = $entrada->detalleTecnico;
+    $m = $mTec->cantidad_mesas ?? 0;
+    $p = $mTec->cantidad_papeletas ?? 0;
+    $urnas   = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_urnas ?? ($m * $p)) : ($entrada->asunto_log ? $entrada->log_urnas : 0);
+    $cuartos = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_cuartos ?? $m) : ($entrada->asunto_log ? $entrada->log_cuartos : 0);
+    $tintas  = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_tintas ?? $m) : ($entrada->asunto_log ? $entrada->log_tintas : 0);
+@endphp
     <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $urnas }}</td>
     <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $cuartos }}</td>
     <td style="padding:10px 16px; text-align:center; color:#374151;">{{ $tintas }}</td>
