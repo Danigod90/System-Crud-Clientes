@@ -115,26 +115,38 @@ for ($p = 1; $p <= 10; $p++) {
 }
 
 
-      // Materiales finales calculados
-$detalle->mat_final_actas    = $request->mat_final_actas;
-$detalle->mat_final_padrones = $request->mat_final_padrones;
-if ($request->has('mat_final_cuartos') && $request->mat_final_cuartos !== null) $detalle->mat_final_cuartos = $request->mat_final_cuartos;
-if ($request->has('mat_final_urnas')   && $request->mat_final_urnas   !== null) $detalle->mat_final_urnas   = $request->mat_final_urnas;
+  // Materiales finales calculados
+if ($request->has('mat_final_actas')    && $request->mat_final_actas    !== null) $detalle->mat_final_actas    = $request->mat_final_actas;
+if ($request->has('mat_final_padrones') && $request->mat_final_padrones !== null) $detalle->mat_final_padrones = $request->mat_final_padrones;
+if ($request->has('mat_final_cuartos')  && $request->mat_final_cuartos  !== null) $detalle->mat_final_cuartos  = $request->mat_final_cuartos;
+if ($request->has('mat_final_urnas')    && $request->mat_final_urnas    !== null) $detalle->mat_final_urnas    = $request->mat_final_urnas;
 $mesas = $detalle->cantidad_mesas ?? 0;
-$detalle->mat_mesas                     = $request->mat_mesas ?? $detalle->cantidad_mesas ?? $mesas;
-$detalle->mat_actas_electorales         = $request->mat_actas_electorales ?? $detalle->mat_final_actas ?? ($mesas * 3);
-$detalle->mat_actas_electorales_formato = $request->mat_actas_electorales_formato ?? $detalle->mat_final_actas_formato;
-$detalle->mat_padron                    = $request->mat_padron ?? $detalle->mat_final_padrones ?? ($mesas * 3);
-$detalle->mat_padron_formato            = $request->mat_padron_formato ?? $detalle->mat_final_padrones_formato;
-$detalle->mat_matriz_boletin            = $request->mat_matriz_boletin ?? $detalle->mat_final_papeletas ?? $detalle->cantidad_papeletas;
-$detalle->mat_matriz_boletin_formato    = $request->mat_matriz_boletin_formato ?? $detalle->mat_final_papeletas_formato;
-// Sincronizar formatos con campos del asesor
-if ($request->mat_actas_electorales_formato) $detalle->mat_final_actas_formato    = $request->mat_actas_electorales_formato;
-if ($request->mat_padron_formato)            $detalle->mat_final_padrones_formato  = $request->mat_padron_formato;
-if ($request->mat_matriz_boletin_formato)    $detalle->mat_final_papeletas_formato = $request->mat_matriz_boletin_formato;
-$detalle->mat_actas_proclamacion        = $request->mat_actas_proclamacion;
-$detalle->mat_certificados              = $request->mat_certificados;
-$detalle->mat_cuenta_votos              = $request->mat_cuenta_votos;
+$detalle->mat_mesas = $request->mat_mesas ?? $detalle->cantidad_mesas ?? $mesas;
+
+if ($request->has('mat_actas_electorales') && $request->mat_actas_electorales !== null) {
+    $detalle->mat_actas_electorales = $request->mat_actas_electorales;
+    $detalle->mat_final_actas       = $request->mat_actas_electorales;
+}
+if ($request->mat_actas_electorales_formato) {
+    $detalle->mat_actas_electorales_formato = $request->mat_actas_electorales_formato;
+    $detalle->mat_final_actas_formato       = $request->mat_actas_electorales_formato;
+}
+if ($request->has('mat_padron') && $request->mat_padron !== null) {
+    $detalle->mat_padron         = $request->mat_padron;
+    $detalle->mat_final_padrones = $request->mat_padron;
+}
+if ($request->mat_padron_formato) {
+    $detalle->mat_padron_formato         = $request->mat_padron_formato;
+    $detalle->mat_final_padrones_formato = $request->mat_padron_formato;
+}
+
+$detalle->mat_matriz_boletin         = $request->mat_matriz_boletin ?? $detalle->mat_final_papeletas ?? $detalle->cantidad_papeletas;
+$detalle->mat_matriz_boletin_formato = $request->mat_matriz_boletin_formato ?? $detalle->mat_final_papeletas_formato;
+if ($request->mat_matriz_boletin_formato) $detalle->mat_final_papeletas_formato = $request->mat_matriz_boletin_formato;
+
+$detalle->mat_actas_proclamacion = $request->mat_actas_proclamacion;
+$detalle->mat_certificados       = $request->mat_certificados;
+$detalle->mat_cuenta_votos       = $request->mat_cuenta_votos;
 
 // Padrón
 $detalle->padron_definitivo         = $request->has('padron_definitivo') ? 1 : 0;
