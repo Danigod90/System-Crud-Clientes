@@ -188,7 +188,7 @@
                         {{ in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? 'Entregada' : 'Pendiente' }}
                     </span>
                 </h3>
-               
+
             </div>
             <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px;">
                 <div style="text-align:center;">
@@ -798,9 +798,9 @@ $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->de
             </datalist>
         </div>
 <div style="margin-bottom:14px;">
-    <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 10px;">Materiales Estimados</p>
+    <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 10px;">*Campo Obligatorio* Cargar manualmente los Materiales a Entregar</p>
     <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:10px; padding:16px;">
-        <p style="font-size:11px; font-weight:600; color:#1e40af; margin:0 0 12px; text-transform:uppercase;">Calculado automáticamente — podés editar los valores</p>
+        <p style="font-size:11px; font-weight:600; color:#1e40af; margin:0 0 12px; text-transform:uppercase;">podés editar los valores  ej: una(1) mesa se imprime 3 actas y 3 padrones</p>
         <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:12px;">
             <div>
                 <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Papeletas</label>
@@ -1198,16 +1198,17 @@ function calcularMaterialesAsesor() {
 
   const tintas = mesas;
 
-    if (fActas)    fActas.value    = actas;
-    if (fPadrones) fPadrones.value = padrones;
-    if (fCuartos)  fCuartos.value  = cuartos;
-    if (fUrnas)    fUrnas.value    = urnas;
+ if (fActas    && fActas.value    === '') fActas.value    = actas;
+    if (fPadrones && fPadrones.value === '') fPadrones.value = padrones;
+    if (fCuartos  && fCuartos.value  === '') fCuartos.value  = cuartos;
+    if (fUrnas    && fUrnas.value    === '') fUrnas.value    = urnas;
 
     const fPapeletas = document.getElementById('asesor_mat_papeletas');
-if (fPapeletas) fPapeletas.value = papeletas;
+if (fPapeletas && fPapeletas.value === '') fPapeletas.value = papeletas;
 
     const fTintas = document.getElementById('asesor_mat_tintas');
-    if (fTintas) fTintas.value = tintas;
+    if (fTintas    && fTintas.value    === '') fTintas.value    = tintas;
+
 }
 
 document.querySelector('[name="cantidad_listas"]')?.addEventListener('input', generarPapeletas);
@@ -1243,6 +1244,8 @@ function toggleEditarCharla(id) {
     readonly.style.display = visible ? 'grid' : 'none';
 }
 
-calcularMaterialesAsesor();
+// Solo calcular automáticamente si es registro nuevo (campos vacíos)
+const esNuevo = {{ $entrada->detalleTecnico ? 'false' : 'true' }};
+if (esNuevo) calcularMaterialesAsesor();
 </script>
 </x-panel-layout>

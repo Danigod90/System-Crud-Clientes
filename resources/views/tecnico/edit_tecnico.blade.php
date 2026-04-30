@@ -310,7 +310,7 @@
         <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Actas</p>
             <input type="number" name="mat_final_actas" min="0"
-                value="{{ old('mat_final_actas', $entrada->detalleTecnico->mat_final_actas ?? ($mEstForm * 3)) }}"
+                value="{{ old('mat_final_actas', is_null($entrada->detalleTecnico->mat_final_actas) ? ($mEstForm * 3) : $entrada->detalleTecnico->mat_final_actas) }}"
                 style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center; margin-bottom:4px;">
             <select name="mat_final_actas_formato" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 4px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
                 <option value="">Formato...</option>
@@ -322,7 +322,7 @@
       <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Padrones</p>
             <input type="number" name="mat_final_padrones" min="0"
-                value="{{ old('mat_final_padrones', $entrada->detalleTecnico->mat_final_padrones ?? ($mEstForm * 3)) }}"
+                value="{{ old('mat_final_padrones', is_null($entrada->detalleTecnico->mat_final_padrones) ? ($mEstForm * 3) : $entrada->detalleTecnico->mat_final_padrones) }}"
                 style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center; margin-bottom:4px;">
             <select name="mat_final_padrones_formato" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 4px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
                 <option value="">Formato...</option>
@@ -334,19 +334,19 @@
         <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Cuartos Oscuros</p>
             <input type="number" name="mat_final_cuartos" min="0"
-                value="{{ old('mat_final_cuartos', $entrada->detalleTecnico->mat_final_cuartos ?? $mEstForm) }}"
+                value="{{ old('mat_final_cuartos', is_null($entrada->detalleTecnico->mat_final_cuartos) ? $mEstForm : $entrada->detalleTecnico->mat_final_cuartos) }}"
                 style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
         </div>
         <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Urnas</p>
             <input type="number" name="mat_final_urnas" min="0"
-                value="{{ old('mat_final_urnas', $entrada->detalleTecnico->mat_final_urnas ?? ($mEstForm * $pEstForm)) }}"
+                value="{{ old('mat_final_urnas', is_null($entrada->detalleTecnico->mat_final_urnas) ? ($mEstForm * $pEstForm) : $entrada->detalleTecnico->mat_final_urnas) }}"
                 style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
         </div>
         <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Tintas</p>
             <input type="number" name="mat_final_tintas" min="0"
-                value="{{ old('mat_final_tintas', $entrada->detalleTecnico->mat_final_tintas ?? $mEstForm) }}"
+                value="{{ old('mat_final_tintas', is_null($entrada->detalleTecnico->mat_final_tintas) ? $mEstForm : $entrada->detalleTecnico->mat_final_tintas) }}"
                 style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
         </div>
     </div>
@@ -504,9 +504,9 @@
   @php
     $mesas          = $entrada->detalleTecnico?->cantidad_mesas ?? 0;
     $defaultMesas   = $entrada->detalleTecnico?->cantidad_mesas ?? $mesas;
-    $defaultActas   = $entrada->detalleTecnico?->mat_final_actas ?? ($mesas * 3);
-    $defaultPadron  = $entrada->detalleTecnico?->mat_final_padrones ?? ($mesas * 3);
-    $defaultBoletin = $entrada->detalleTecnico?->mat_final_papeletas ?? ($entrada->detalleTecnico?->cantidad_papeletas ?? 0);
+    $defaultActas   = is_null($entrada->detalleTecnico?->mat_final_actas)    ? ($mesas * 3) : $entrada->detalleTecnico->mat_final_actas;
+$defaultPadron  = is_null($entrada->detalleTecnico?->mat_final_padrones)  ? ($mesas * 3) : $entrada->detalleTecnico->mat_final_padrones;
+$defaultBoletin = is_null($entrada->detalleTecnico?->mat_final_papeletas) ? ($entrada->detalleTecnico?->cantidad_papeletas ?? 0) : $entrada->detalleTecnico->mat_final_papeletas;
 @endphp
 
     {{-- MATERIALES ENTREGADOS --}}
@@ -747,43 +747,29 @@ function generarPapeletasTec() {
 
 
 function calcularMaterialesTec() {
-    const mesas     = parseInt(document.querySelector('#asesor-form [name="cantidad_mesas"]')?.value) || 0;
-    const papeletas = parseInt(document.querySelector('#asesor-form [name="cantidad_papeletas"]')?.value) || 0;
-
-    const fPapeletas = document.querySelector('#asesor-form [name="mat_final_papeletas"]');
-    const fActas     = document.querySelector('#asesor-form [name="mat_final_actas"]');
-    const fPadrones  = document.querySelector('#asesor-form [name="mat_final_padrones"]');
-    const fCuartos   = document.querySelector('#asesor-form [name="mat_final_cuartos"]');
-    const fUrnas     = document.querySelector('#asesor-form [name="mat_final_urnas"]');
-    const fTintas    = document.querySelector('#asesor-form [name="mat_final_tintas"]');
-
-    if (fPapeletas) fPapeletas.value = papeletas;
-    if (fActas)     fActas.value     = mesas * 3;
-    if (fPadrones)  fPadrones.value  = mesas * 3;
-    if (fCuartos)   fCuartos.value   = mesas;
-    if (fUrnas)     fUrnas.value     = mesas * papeletas;
-    if (fTintas)    fTintas.value    = mesas;
+    // Los valores vienen correctos desde PHP, no recalcular
 }
+
 
 function activarEdicionAsesor() {
     document.getElementById('asesor-readonly').style.display = 'none';
     document.getElementById('asesor-form').style.display = 'block';
     document.getElementById('btn-editar-asesor').style.display = 'none';
     generarPapeletasTec();
-    calcularMaterialesTec();
-    document.querySelector('#asesor-form [name="cantidad_papeletas"]')?.addEventListener('input', () => { generarPapeletasTec(); calcularMaterialesTec(); });
+    // calcularMaterialesTec() ← ELIMINADO, ya no calcula al abrir
+
+    document.querySelector('#asesor-form [name="cantidad_papeletas"]')?.addEventListener('input', () => { generarPapeletasTec(); });
     document.querySelector('#asesor-form [name="cantidad_listas"]')?.addEventListener('input', generarPapeletasTec);
-    document.querySelector('#asesor-form [name="cantidad_mesas"]')?.addEventListener('input', calcularMaterialesTec);
-    // Sincronización inversa — cambiás papeletas en materiales y se actualiza arriba
-document.querySelector('#asesor-form [name="mat_final_papeletas"]')?.addEventListener('input', function() {
-    const val = parseInt(this.value) || 0;
-    const inputCantPap = document.querySelector('#asesor-form [name="cantidad_papeletas"]');
-    if (inputCantPap) {
-        inputCantPap.value = val;
-        generarPapeletasTec();
-    }
-});
- document.querySelector('#asesor-form [name="mat_final_papeletas_formato"]')?.addEventListener('change', function() {
+    // cantidad_mesas ya no dispara recalculo automático
+    document.querySelector('#asesor-form [name="mat_final_papeletas"]')?.addEventListener('input', function() {
+        const val = parseInt(this.value) || 0;
+        const inputCantPap = document.querySelector('#asesor-form [name="cantidad_papeletas"]');
+        if (inputCantPap) {
+            inputCantPap.value = val;
+            generarPapeletasTec();
+        }
+    });
+    document.querySelector('#asesor-form [name="mat_final_papeletas_formato"]')?.addEventListener('change', function() {
         if (this.value === 'sin_papeletas') document.querySelector('#asesor-form [name="mat_final_papeletas"]').value = 0;
     });
     document.querySelector('#asesor-form [name="mat_final_actas_formato"]')?.addEventListener('change', function() {
@@ -793,6 +779,7 @@ document.querySelector('#asesor-form [name="mat_final_papeletas"]')?.addEventLis
         if (this.value === 'sin_padron') document.querySelector('#asesor-form [name="mat_final_padrones"]').value = 0;
     });
 }
+
 
 function cancelarEdicionAsesor() {
     document.getElementById('asesor-readonly').style.display = 'block';

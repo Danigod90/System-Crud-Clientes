@@ -154,13 +154,15 @@ return redirect()->back()->with('success', 'Datos técnicos guardados correctame
 
    public function imprimirLogistica($entrada_id)
 {
-    $entrada = EntradaConNota::with('detalleTecnico')->findOrFail($entrada_id);
-    $detalle = $entrada->detalleTecnico;
+    $entrada = EntradaConNota::findOrFail($entrada_id);
+$entrada->refresh();
+$detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();
 
     // Marcar como impreso
     $detalle->impreso    = true;
     $detalle->impreso_at = now();
     $detalle->save();
+    $detalle->refresh();
 
     // Datos base
     $fecha      = now()->format('d/m/Y');
@@ -444,10 +446,7 @@ return new \Illuminate\Http\Response($dompdf->output(), 200, [
     'Content-Type'        => 'application/pdf',
     'Content-Disposition' => 'inline; filename="recibo-tec-' . $codigo . '.pdf"',
 ]);
-    return new \Illuminate\Http\Response($dompdf->output(), 200, [
-        'Content-Type'        => 'application/pdf',
-        'Content-Disposition' => 'inline; filename="recibo-tec-' . $codigo . '.pdf"',
-    ]);
+
 }
    public function marcarRealizado($entrada_id)
 {
