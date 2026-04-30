@@ -199,11 +199,11 @@ $detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();
     // Materiales técnicos
     $matMesas    = $detalle->mat_mesas ?? $mesas;
     $matActas    = $detalle->mat_actas_electorales ?? ($mesas * 3);
-    $matActasFmt = $detalle->mat_actas_electorales_formato ? ucfirst($detalle->mat_actas_electorales_formato) : '';
+    $matActasFmt  = $detalle->mat_final_actas_formato    ? ucfirst($detalle->mat_final_actas_formato)    : ($detalle->mat_actas_electorales_formato    ? ucfirst($detalle->mat_actas_electorales_formato)    : '');
     $matPadron   = $detalle->mat_padron ?? ($mesas * 3);
-    $matPadronFmt= $detalle->mat_padron_formato ? ucfirst($detalle->mat_padron_formato) : '';
+    $matPadronFmt = $detalle->mat_final_padrones_formato  ? ucfirst($detalle->mat_final_padrones_formato)  : ($detalle->mat_padron_formato                ? ucfirst($detalle->mat_padron_formato)                : '');
     $matBoletin  = $detalle->mat_matriz_boletin ?? $papeletas;
-    $matBoletinFmt= $detalle->mat_matriz_boletin_formato ? ucfirst($detalle->mat_matriz_boletin_formato) : '';
+    $matBoletinFmt= $detalle->mat_final_papeletas_formato ? ucfirst($detalle->mat_final_papeletas_formato) : ($detalle->mat_matriz_boletin_formato         ? ucfirst($detalle->mat_matriz_boletin_formato)         : '');
     $matProclamacion = $detalle->mat_actas_proclamacion ?? 3;
     $matCertificados = $detalle->mat_certificados ?? '—';
     $matCuentaVotos  = $detalle->mat_cuenta_votos ?? '—';
