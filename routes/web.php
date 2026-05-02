@@ -80,6 +80,12 @@ Route::middleware(['auth'])->prefix('asesor')->name('asesor.')->group(function (
     Route::post('observador/{entrada}', [\App\Http\Controllers\Asesor\ObservadorController::class, 'store'])->name('observador.store');
     Route::patch('observador/{observador}/estado', [\App\Http\Controllers\Asesor\ObservadorController::class, 'updateEstado'])->name('observador.estado');
     Route::post('prioridad/{entrada}', [\App\Http\Controllers\Asesor\PrioridadAsesorController::class, 'toggle'])->name('prioridad.toggle');
+    Route::get('calculadora-dhondt', [\App\Http\Controllers\Asesor\UtilidadesController::class, 'dhondt'])->name('calculadora.dhondt');
+    Route::get('manuales', [\App\Http\Controllers\Asesor\ManualController::class, 'index'])->name('manuales.index');
+Route::post('manuales', [\App\Http\Controllers\Asesor\ManualController::class, 'store'])->name('manuales.store');
+Route::patch('manuales/{manual}', [\App\Http\Controllers\Asesor\ManualController::class, 'update'])->name('manuales.update');
+Route::delete('manuales/{manual}', [\App\Http\Controllers\Asesor\ManualController::class, 'destroy'])->name('manuales.destroy');
+Route::get('manuales/{manual}/ver', [\App\Http\Controllers\Asesor\ManualController::class, 'show'])->name('manuales.show');
 
     // ── DETALLE TÉCNICO — PANEL ASESOR ──
     Route::get('detalle-tecnico/{entrada_id}', [\App\Http\Controllers\DetalleTecnicoController::class, 'createAsesor'])->name('detalle_tecnico.asesor');
