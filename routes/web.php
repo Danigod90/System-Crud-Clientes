@@ -33,8 +33,8 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('users', UserController::class)->only(['index', 'create', 'store', 'destroy', 'edit', 'update']);
     Route::resource('asesores', \App\Http\Controllers\Admin\AsesorController::class)
-    ->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])
-    ->parameters(['asesores' => 'asesor']);
+        ->only(['index', 'create', 'store', 'edit', 'update', 'destroy'])
+        ->parameters(['asesores' => 'asesor']);
     Route::get('configuracion', [\App\Http\Controllers\Admin\ConfiguracionController::class, 'index'])->name('configuracion.index');
     Route::patch('configuracion', [\App\Http\Controllers\Admin\ConfiguracionController::class, 'update'])->name('configuracion.update');
     Route::get('tipo-organizaciones', [\App\Http\Controllers\Admin\TipoOrganizacionController::class, 'index'])->name('tipo-organizaciones.index');
@@ -42,33 +42,44 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::delete('tipo-organizaciones/{tipoOrganizacion}', [\App\Http\Controllers\Admin\TipoOrganizacionController::class, 'destroy'])->name('tipo-organizaciones.destroy');
 });
 
-Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin|Asesor'])->prefix('secretaria')->name('secretaria.')->group(function () {
+Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin|Asesor'])
+    ->prefix('secretaria')
+    ->name('secretaria.')
+    ->group(function () {
 
-    // ← Rutas específicas ANTES del resource
+    // ── Sin nota ─────────────────────────────────────────────
     Route::get('sin-nota/pdf', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'exportPdf'])->name('sin-nota.pdf');
     Route::get('sin-nota/log', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'log'])->name('sin-nota.log');
     Route::post('sin-nota/log/{id}/devolucion', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'storeDevolucion'])->name('sin-nota.devolucion');
-    Route::patch('con-nota/{conNota}/entregar-tec', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'entregarTec'])->name('con-nota.entregar-tec');
+
+    // ── Rutas nuevas de entrega ───────────────────────────────
+    Route::patch('sin-nota/log/{id}/entregar',          [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'entregar'])         ->name('sin-nota.log.entregar');
+    Route::patch('sin-nota/log/{id}/editar-entrega',    [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'editarEntrega'])     ->name('sin-nota.log.editar-entrega');
+    Route::get('sin-nota/log/{id}/imprimir-logistica',  [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'imprimirLogistica']) ->name('sin-nota.log.imprimir-logistica');
+
     Route::resource('sin-nota', \App\Http\Controllers\Secretaria\EntradaSinNotaController::class)
          ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
          ->parameters(['sin-nota' => 'sinNota']);
-    Route::get('sin-nota/log', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'log'])->name('sin-nota.log');
-    Route::post('sin-nota/log/{id}/devolucion', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'storeDevolucion'])->name('sin-nota.devolucion');
+
+    // ── Con nota ─────────────────────────────────────────────
+    Route::patch('con-nota/{conNota}/entregar-tec', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'entregarTec'])->name('con-nota.entregar-tec');
 
     Route::resource('con-nota', \App\Http\Controllers\Secretaria\EntradaConNotaController::class)
         ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
         ->parameters(['con-nota' => 'conNota']);
 
-    Route::get('con-nota/{conNota}/nota-pdf', [\App\Http\Controllers\Secretaria\NotaPdfController::class, 'notaPresidente'])->name('con-nota.nota-pdf');
-    Route::get('con-nota/{conNota}/recibo-logistica', [\App\Http\Controllers\Secretaria\NotaPdfController::class, 'reciboLogistica'])->name('con-nota.recibo-logistica');
+    Route::get('con-nota/{conNota}/nota-pdf',       [\App\Http\Controllers\Secretaria\NotaPdfController::class, 'notaPresidente'])->name('con-nota.nota-pdf');
+    Route::get('con-nota/{conNota}/recibo-logistica',[\App\Http\Controllers\Secretaria\NotaPdfController::class, 'reciboLogistica'])->name('con-nota.recibo-logistica');
     Route::patch('con-nota/{conNota}/entregar-log', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'entregarLog'])->name('con-nota.entregar-log');
-    Route::patch('con-nota/{conNota}/ticker', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'toggleTicker'])->name('con-nota.toggle-ticker');
+    Route::patch('con-nota/{conNota}/ticker',       [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'toggleTicker'])->name('con-nota.toggle-ticker');
 });
+
 Route::middleware(['auth'])->prefix('documentos')->name('documentos.')->group(function () {
-    Route::post('{entrada}', [\App\Http\Controllers\DocumentoController::class, 'store'])->name('store');
-    Route::delete('{documento}', [\App\Http\Controllers\DocumentoController::class, 'destroy'])->name('destroy');
-    Route::get('{documento}', [\App\Http\Controllers\DocumentoController::class, 'show'])->name('show');
+    Route::post('{entrada}',   [\App\Http\Controllers\DocumentoController::class, 'store'])->name('store');
+    Route::delete('{documento}',[\App\Http\Controllers\DocumentoController::class, 'destroy'])->name('destroy');
+    Route::get('{documento}',  [\App\Http\Controllers\DocumentoController::class, 'show'])->name('show');
 });
+
 Route::middleware(['auth'])->get('/panel/dashboard', [\App\Http\Controllers\Panel\DashboardController::class, 'index'])->name('panel.dashboard');
 
 Route::middleware(['auth'])->prefix('asesor')->name('asesor.')->group(function () {
@@ -82,16 +93,15 @@ Route::middleware(['auth'])->prefix('asesor')->name('asesor.')->group(function (
     Route::post('prioridad/{entrada}', [\App\Http\Controllers\Asesor\PrioridadAsesorController::class, 'toggle'])->name('prioridad.toggle');
     Route::get('calculadora-dhondt', [\App\Http\Controllers\Asesor\UtilidadesController::class, 'dhondt'])->name('calculadora.dhondt');
     Route::get('manuales', [\App\Http\Controllers\Asesor\ManualController::class, 'index'])->name('manuales.index');
-Route::post('manuales', [\App\Http\Controllers\Asesor\ManualController::class, 'store'])->name('manuales.store');
-Route::patch('manuales/{manual}', [\App\Http\Controllers\Asesor\ManualController::class, 'update'])->name('manuales.update');
-Route::delete('manuales/{manual}', [\App\Http\Controllers\Asesor\ManualController::class, 'destroy'])->name('manuales.destroy');
-Route::get('manuales/{manual}/ver', [\App\Http\Controllers\Asesor\ManualController::class, 'show'])->name('manuales.show');
+    Route::post('manuales', [\App\Http\Controllers\Asesor\ManualController::class, 'store'])->name('manuales.store');
+    Route::patch('manuales/{manual}', [\App\Http\Controllers\Asesor\ManualController::class, 'update'])->name('manuales.update');
+    Route::delete('manuales/{manual}', [\App\Http\Controllers\Asesor\ManualController::class, 'destroy'])->name('manuales.destroy');
+    Route::get('manuales/{manual}/ver', [\App\Http\Controllers\Asesor\ManualController::class, 'show'])->name('manuales.show');
 
-    // ── DETALLE TÉCNICO — PANEL ASESOR ──
     Route::get('detalle-tecnico/{entrada_id}', [\App\Http\Controllers\DetalleTecnicoController::class, 'createAsesor'])->name('detalle_tecnico.asesor');
     Route::post('detalle-tecnico/{entrada_id}', [\App\Http\Controllers\DetalleTecnicoController::class, 'saveAsesor'])->name('detalle_tecnico.saveAsesor');
     Route::post('detalle-tecnico/{entrada_id}/enviar', [\App\Http\Controllers\DetalleTecnicoController::class, 'enviarTecnica'])->name('detalle_tecnico.enviarTecnica');
-    // ── BORRADOR PRIVADO ──
+
     Route::get('borrador/lista', [\App\Http\Controllers\Asesor\BorradorPrivadoController::class, 'index'])->name('borrador.index');
     Route::get('borrador/crear', [\App\Http\Controllers\Asesor\BorradorPrivadoController::class, 'create'])->name('borrador.create');
     Route::post('borrador/crear', [\App\Http\Controllers\Asesor\BorradorPrivadoController::class, 'store'])->name('borrador.store');
@@ -101,7 +111,6 @@ Route::get('manuales/{manual}/ver', [\App\Http\Controllers\Asesor\ManualControll
     Route::delete('borrador/{id}', [\App\Http\Controllers\Asesor\BorradorPrivadoController::class, 'destroy'])->name('borrador.destroy');
 });
 
-// ── PANEL TÉCNICO ──
 Route::middleware(['auth', 'role:Tecnico|Admin'])->prefix('tecnico')->name('tecnico.')->group(function () {
     Route::get('dashboard', [\App\Http\Controllers\Tecnico\TecnicoDashboardController::class, 'index'])->name('dashboard');
     Route::get('organizaciones', [\App\Http\Controllers\Tecnico\TecnicoOrganizacionesController::class, 'index'])->name('organizaciones');
@@ -113,7 +122,7 @@ Route::middleware(['auth', 'role:Tecnico|Admin'])->prefix('tecnico')->name('tecn
     Route::post('detalle/{entrada_id}/asesor', [\App\Http\Controllers\DetalleTecnicoController::class, 'saveAsesor'])->name('detalle_tecnico.saveAsesor');
     Route::post('prioridad/{entrada}', [\App\Http\Controllers\Tecnico\PrioridadTecnicaController::class, 'toggle'])->name('prioridad.toggle');
 });
-// ── SUPERVISOR ──
+
 Route::middleware(['auth', 'role:Supervisor'])->prefix('supervisor')->name('supervisor.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Supervisor\SupervisorController::class, 'dashboard'])->name('dashboard');
     Route::get('/organizaciones', [App\Http\Controllers\Supervisor\SupervisorController::class, 'index'])->name('index');
@@ -145,5 +154,3 @@ Route::get('/notificaciones/lista', function() {
 })->middleware('auth');
 
 require __DIR__.'/auth.php';
-
-

@@ -18,6 +18,11 @@
     * { scrollbar-width: none; -ms-overflow-style: none; }
     *::-webkit-scrollbar { display: none; }
     #ticker-nombre, #ticker-dias { transition: opacity 0.3s ease; }
+    .tabla-scroll { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; -ms-overflow-style: auto; }
+.tabla-scroll::-webkit-scrollbar { display: block; width: 5px; }
+.tabla-scroll::-webkit-scrollbar-track { background: transparent; }
+.tabla-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+.tabla-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 
@@ -49,29 +54,30 @@
 
         {{-- NAV PRINCIPAL --}}
         <div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Principal</div>
-       @if(auth()->user()->hasRole('Supervisor'))
-<a href="{{ route('supervisor.dashboard') }}"
-    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('supervisor.dashboard') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('supervisor.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('supervisor.dashboard') ? '1px solid rgba(99,130,255,0.3)' : '1px solid transparent' }}; transition:all 0.2s;"
-    onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-    onmouseout="this.style.background='{{ request()->routeIs('supervisor.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}'">
-    <span style="width:7px; height:7px; border-radius:50%; background:#60a5fa; flex-shrink:0;"></span>
-    Panel General
-</a>
-@else
-<a href="{{ route('panel.dashboard') }}"
-    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('panel.dashboard') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('panel.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('panel.dashboard') ? '1px solid rgba(99,130,255,0.3)' : '1px solid transparent' }}; transition:all 0.2s;"
-    onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-    onmouseout="this.style.background='{{ request()->routeIs('panel.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}'">
-    <span style="width:7px; height:7px; border-radius:50%; background:#60a5fa; flex-shrink:0;"></span>
-    Panel General
-</a>
-@endif
+        @if(auth()->user()->hasRole('Supervisor'))
+        <a href="{{ route('supervisor.dashboard') }}"
+            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('supervisor.dashboard') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('supervisor.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('supervisor.dashboard') ? '1px solid rgba(99,130,255,0.3)' : '1px solid transparent' }}; transition:all 0.2s;"
+            onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+            onmouseout="this.style.background='{{ request()->routeIs('supervisor.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}'">
+            <span style="width:7px; height:7px; border-radius:50%; background:#60a5fa; flex-shrink:0;"></span>
+            Panel General
+        </a>
+        @else
+        <a href="{{ route('panel.dashboard') }}"
+            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('panel.dashboard') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('panel.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('panel.dashboard') ? '1px solid rgba(99,130,255,0.3)' : '1px solid transparent' }}; transition:all 0.2s;"
+            onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+            onmouseout="this.style.background='{{ request()->routeIs('panel.dashboard') ? 'rgba(99,130,255,0.2)' : 'transparent' }}'">
+            <span style="width:7px; height:7px; border-radius:50%; background:#60a5fa; flex-shrink:0;"></span>
+            Panel General
+        </a>
+        @endif
 
         {{-- NAV ENTRADAS --}}
         @if(auth()->user()->hasAnyRole(['Admin', 'Asesor', 'Secretaria Con Nota', 'Secretaria Sin Nota']))
         <div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Entradas</div>
         @endif
-      @if(auth()->user()->hasAnyRole(['Admin', 'Asesor', 'Secretaria Con Nota']))
+
+        @if(auth()->user()->hasAnyRole(['Admin', 'Asesor', 'Secretaria Con Nota']))
         <a href="{{ route('secretaria.con-nota.index') }}"
             style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('secretaria.con-nota.*') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('secretaria.con-nota.*') ? 'rgba(52,211,153,0.15)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('secretaria.con-nota.*') ? '1px solid rgba(52,211,153,0.25)' : '1px solid transparent' }}; transition:all 0.2s;"
             onmouseover="this.style.background='rgba(255,255,255,0.12)'"
@@ -80,34 +86,50 @@
             Mesa de Entrada
         </a>
         @endif
-        @if(auth()->user()->roles->first()?->name === 'Asesor')
-<a href="{{ route('asesor.mis-organizaciones') }}"
-    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('asesor.*') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('asesor.*') ? 'rgba(52,211,153,0.15)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('asesor.*') ? '1px solid rgba(52,211,153,0.25)' : '1px solid transparent' }}; transition:all 0.2s;"
-    onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-    onmouseout="this.style.background='{{ request()->routeIs('asesor.*') ? 'rgba(52,211,153,0.15)' : 'transparent' }}'">
-    <span style="width:7px; height:7px; border-radius:50%; background:{{ request()->routeIs('asesor.*') ? '#34d399' : 'rgba(255,255,255,0.28)' }}; flex-shrink:0;"></span>
-    Mis organizaciones
-</a>
-@elseif(auth()->user()->hasAnyRole(['Secretaria Sin Nota', 'Secretaria Con Nota']))
-<a href="{{ route('secretaria.sin-nota.index') }}"
-    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('secretaria.sin-nota.*') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('secretaria.sin-nota.*') ? 'rgba(255,255,255,0.1)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('secretaria.sin-nota.*') ? '1px solid rgba(255,255,255,0.15)' : '1px solid transparent' }}; transition:all 0.2s;"
-    onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-    onmouseout="this.style.background='{{ request()->routeIs('secretaria.sin-nota.*') ? 'rgba(255,255,255,0.1)' : 'transparent' }}'">
-    <span style="width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.28); flex-shrink:0;"></span>
-    Entradas sin nota
-</a>
-@endif
 
-    @if(auth()->user()->hasRole('Supervisor'))
-<div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Mis Organizaciones</div>
-<a href="{{ route('supervisor.index') }}"
-    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('supervisor.index') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('supervisor.index') ? 'rgba(52,211,153,0.15)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('supervisor.index') ? '1px solid rgba(52,211,153,0.25)' : '1px solid transparent' }}; transition:all 0.2s;"
-    onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-    onmouseout="this.style.background='{{ request()->routeIs('supervisor.index') ? 'rgba(52,211,153,0.15)' : 'transparent' }}'">
-    <span style="width:7px; height:7px; border-radius:50%; background:#34d399; flex-shrink:0;"></span>
-    Organizaciones
-</a>
-@endif
+        @if(auth()->user()->roles->first()?->name === 'Asesor')
+        <a href="{{ route('asesor.mis-organizaciones') }}"
+            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('asesor.*') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('asesor.*') ? 'rgba(52,211,153,0.15)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('asesor.*') ? '1px solid rgba(52,211,153,0.25)' : '1px solid transparent' }}; transition:all 0.2s;"
+            onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+            onmouseout="this.style.background='{{ request()->routeIs('asesor.*') ? 'rgba(52,211,153,0.15)' : 'transparent' }}'">
+            <span style="width:7px; height:7px; border-radius:50%; background:{{ request()->routeIs('asesor.*') ? '#34d399' : 'rgba(255,255,255,0.28)' }}; flex-shrink:0;"></span>
+            Mis organizaciones
+        </a>
+
+        @elseif(auth()->user()->hasAnyRole(['Secretaria Sin Nota', 'Secretaria Con Nota']))
+        {{-- Entradas sin nota — excluye la ruta del log para no marcar ambos activos --}}
+        @php $sinNotaActivo = request()->routeIs('secretaria.sin-nota.*') && !request()->routeIs('secretaria.sin-nota.log'); @endphp
+        <a href="{{ route('secretaria.sin-nota.index') }}"
+            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ $sinNotaActivo ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ $sinNotaActivo ? 'rgba(255,255,255,0.1)' : 'transparent' }}; text-decoration:none; border:{{ $sinNotaActivo ? '1px solid rgba(255,255,255,0.15)' : '1px solid transparent' }}; transition:all 0.2s;"
+            onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+            onmouseout="this.style.background='{{ $sinNotaActivo ? 'rgba(255,255,255,0.1)' : 'transparent' }}'">
+            <span style="width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.28); flex-shrink:0;"></span>
+            Entradas sin nota
+        </a>
+
+        {{-- Gestión Logística — solo Secretaria Sin Nota y Admin --}}
+        @if(auth()->user()->hasAnyRole(['Secretaria Sin Nota', 'Admin']))
+        @php $logActivo = request()->routeIs('secretaria.sin-nota.log'); @endphp
+        <a href="{{ route('secretaria.sin-nota.log') }}"
+            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ $logActivo ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ $logActivo ? 'rgba(52,211,153,0.15)' : 'transparent' }}; text-decoration:none; border:{{ $logActivo ? '1px solid rgba(52,211,153,0.25)' : '1px solid transparent' }}; transition:all 0.2s;"
+            onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+            onmouseout="this.style.background='{{ $logActivo ? 'rgba(52,211,153,0.15)' : 'transparent' }}'">
+            <span style="width:7px; height:7px; border-radius:50%; background:{{ $logActivo ? '#34d399' : 'rgba(255,255,255,0.28)' }}; flex-shrink:0;"></span>
+            Gestión Logística
+        </a>
+        @endif
+        @endif
+
+        @if(auth()->user()->hasRole('Supervisor'))
+        <div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Mis Organizaciones</div>
+        <a href="{{ route('supervisor.index') }}"
+            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('supervisor.index') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('supervisor.index') ? 'rgba(52,211,153,0.15)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('supervisor.index') ? '1px solid rgba(52,211,153,0.25)' : '1px solid transparent' }}; transition:all 0.2s;"
+            onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+            onmouseout="this.style.background='{{ request()->routeIs('supervisor.index') ? 'rgba(52,211,153,0.15)' : 'transparent' }}'">
+            <span style="width:7px; height:7px; border-radius:50%; background:#34d399; flex-shrink:0;"></span>
+            Organizaciones
+        </a>
+        @endif
 
         {{-- NAV TRABAJO --}}
         @if(auth()->user()->hasAnyRole(['Tecnico', 'Asesor']))
@@ -131,32 +153,32 @@
             Charlas
         </a>
         <a href="{{ route('asesor.borrador.index') }}"
-    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('asesor.borrador.*') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('asesor.borrador.*') ? 'rgba(244,114,182,0.2)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('asesor.borrador.*') ? '1px solid rgba(244,114,182,0.3)' : '1px solid transparent' }}; transition:all 0.2s;"
-    onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-    onmouseout="this.style.background='{{ request()->routeIs('asesor.borrador.*') ? 'rgba(244,114,182,0.2)' : 'transparent' }}'">
-    <span style="width:7px; height:7px; border-radius:50%; background:#f472b6; flex-shrink:0;"></span>
-    Borrador privado
-</a>
+            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('asesor.borrador.*') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('asesor.borrador.*') ? 'rgba(244,114,182,0.2)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('asesor.borrador.*') ? '1px solid rgba(244,114,182,0.3)' : '1px solid transparent' }}; transition:all 0.2s;"
+            onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+            onmouseout="this.style.background='{{ request()->routeIs('asesor.borrador.*') ? 'rgba(244,114,182,0.2)' : 'transparent' }}'">
+            <span style="width:7px; height:7px; border-radius:50%; background:#f472b6; flex-shrink:0;"></span>
+            Borrador privado
+        </a>
         @endif
 
-       {{-- NAV UTILIDADES --}}
-<div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Utilidades</div>
-<a href="{{ route('asesor.manuales.index') }}"
-    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('asesor.manuales.*') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('asesor.manuales.*') ? 'rgba(255,255,255,0.1)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('asesor.manuales.*') ? '1px solid rgba(255,255,255,0.15)' : '1px solid transparent' }}; transition:all 0.2s;"
-    onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-    onmouseout="this.style.background='{{ request()->routeIs('asesor.manuales.*') ? 'rgba(255,255,255,0.1)' : 'transparent' }}'">
-    <span style="width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.28); flex-shrink:0;"></span>
-    Manuales
-</a>
-@if(auth()->user()->hasRole('Asesor'))
-<a href="{{ route('asesor.calculadora.dhondt') }}"
-    style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('asesor.calculadora.dhondt') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('asesor.calculadora.dhondt') ? 'rgba(251,191,36,0.2)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('asesor.calculadora.dhondt') ? '1px solid rgba(251,191,36,0.3)' : '1px solid transparent' }}; transition:all 0.2s;"
-    onmouseover="this.style.background='rgba(255,255,255,0.12)'"
-    onmouseout="this.style.background='{{ request()->routeIs('asesor.calculadora.dhondt') ? 'rgba(251,191,36,0.2)' : 'transparent' }}'">
-    <span style="width:7px; height:7px; border-radius:50%; background:#fbbf24; flex-shrink:0;"></span>
-    Calculadora D'Hondt
-</a>
-@endif
+        {{-- NAV UTILIDADES --}}
+        <div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Utilidades</div>
+        <a href="{{ route('asesor.manuales.index') }}"
+            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('asesor.manuales.*') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('asesor.manuales.*') ? 'rgba(255,255,255,0.1)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('asesor.manuales.*') ? '1px solid rgba(255,255,255,0.15)' : '1px solid transparent' }}; transition:all 0.2s;"
+            onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+            onmouseout="this.style.background='{{ request()->routeIs('asesor.manuales.*') ? 'rgba(255,255,255,0.1)' : 'transparent' }}'">
+            <span style="width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.28); flex-shrink:0;"></span>
+            Manuales
+        </a>
+        @if(auth()->user()->hasRole('Asesor'))
+        <a href="{{ route('asesor.calculadora.dhondt') }}"
+            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('asesor.calculadora.dhondt') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('asesor.calculadora.dhondt') ? 'rgba(251,191,36,0.2)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('asesor.calculadora.dhondt') ? '1px solid rgba(251,191,36,0.3)' : '1px solid transparent' }}; transition:all 0.2s;"
+            onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+            onmouseout="this.style.background='{{ request()->routeIs('asesor.calculadora.dhondt') ? 'rgba(251,191,36,0.2)' : 'transparent' }}'">
+            <span style="width:7px; height:7px; border-radius:50%; background:#fbbf24; flex-shrink:0;"></span>
+            Calculadora D'Hondt
+        </a>
+        @endif
 
     </div>
     {{-- FIN SIDEBAR --}}
@@ -179,7 +201,7 @@
             {{-- DERECHA --}}
             <div style="display:flex; align-items:center; gap:14px;">
 
-               {{-- TICKER ELECCIONES --}}
+                {{-- TICKER ELECCIONES --}}
                 @isset($elecciones)
                 @if($elecciones->count() > 0)
                 @php $primera = $elecciones->first(); $diasPrimera = (int) now()->startOfDay()->diffInDays($primera->fecha_eleccion->startOfDay(), false); @endphp
@@ -203,9 +225,9 @@
                 @endisset
 
                 {{-- TICKER CHARLAS --}}
-@php $cp = $charlasPendientes ?? null; @endphp
-@if($cp && $cp->count() > 0)
-@php $primeraCharla = $cp->first(); $diasCharla = (int) now()->startOfDay()->diffInDays($primeraCharla->fecha_hora->startOfDay(), false); @endphp
+                @php $cp = $charlasPendientes ?? null; @endphp
+                @if($cp && $cp->count() > 0)
+                @php $primeraCharla = $cp->first(); $diasCharla = (int) now()->startOfDay()->diffInDays($primeraCharla->fecha_hora->startOfDay(), false); @endphp
                 <div onclick="toggleCharlas()" id="ticker-box-charla"
                      style="display:flex; align-items:center; gap:8px; background:#fefce8; border:1px solid #fde68a; border-radius:8px; padding:5px 12px; cursor:pointer; min-width:180px; max-width:260px;">
                     <svg width="13" height="13" fill="none" stroke="#854d0e" stroke-width="1.8" viewBox="0 0 24 24" style="flex-shrink:0;">
@@ -243,9 +265,9 @@
         {{-- FIN TOPBAR --}}
 
         {{-- SLOT PRINCIPAL --}}
-       <div style="flex:1; padding:10px 8px 60px 8px; overflow-y:auto; overflow-x:hidden; background:linear-gradient(135deg, #e8eaf6 0%, #d4d8f0 25%, #e8d5f0 50%, #d4e8f0 75%, #e8eaf6 100%);">
-    {{ $slot }}
-</div>
+        <div style="flex:1; padding:10px 8px 60px 8px; overflow-y:auto; overflow-x:hidden; background:linear-gradient(135deg, #e8eaf6 0%, #d4d8f0 25%, #e8d5f0 50%, #d4e8f0 75%, #e8eaf6 100%);">
+            {{ $slot }}
+        </div>
 
     </div>
     {{-- FIN CONTENIDO PRINCIPAL --}}
@@ -255,22 +277,22 @@
 {{-- DROPDOWN ELECCIONES --}}
 <div id="eleccionesMenu" style="display:none; position:fixed; top:52px; right:80px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.12); width:290px; z-index:99999; overflow:hidden;">
     <div style="padding:10px 14px; border-bottom:1px solid #f3f4f6;">
-    <span style="font-size:11px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px;">Elecciones próximas</span>
-</div>
-@isset($elecciones)
-@forelse($elecciones as $e)
-@php $dias = (int) now()->startOfDay()->diffInDays($e->fecha_eleccion->startOfDay(), false); @endphp
-<div style="display:flex; justify-content:space-between; align-items:center; padding:9px 14px; border-bottom:1px solid #f9fafb;">
-    <div>
-        <div style="font-size:12px; font-weight:500; color:#111827;">{{ $e->nombre_organizacion }}</div>
-        <div style="font-size:10.5px; color:#6b7280;">{{ $e->fecha_eleccion->format('d M Y') }} — {{ $e->asesor_asignado }}</div>
+        <span style="font-size:11px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px;">Elecciones próximas</span>
     </div>
-    <span style="font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:20px; flex-shrink:0;
-        background:{{ $dias <= 7 ? '#fee2e2' : ($dias <= 15 ? '#fef3c7' : '#d1fae5') }};
-        color:{{ $dias <= 7 ? '#991b1b' : ($dias <= 15 ? '#92400e' : '#065f46') }};">
-        {{ $dias }} días
-    </span>
-</div>
+    @isset($elecciones)
+    @forelse($elecciones as $e)
+    @php $dias = (int) now()->startOfDay()->diffInDays($e->fecha_eleccion->startOfDay(), false); @endphp
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 14px; border-bottom:1px solid #f9fafb;">
+        <div>
+            <div style="font-size:12px; font-weight:500; color:#111827;">{{ $e->nombre_organizacion }}</div>
+            <div style="font-size:10.5px; color:#6b7280;">{{ $e->fecha_eleccion->format('d M Y') }} — {{ $e->asesor_asignado }}</div>
+        </div>
+        <span style="font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:20px; flex-shrink:0;
+            background:{{ $dias <= 7 ? '#fee2e2' : ($dias <= 15 ? '#fef3c7' : '#d1fae5') }};
+            color:{{ $dias <= 7 ? '#991b1b' : ($dias <= 15 ? '#92400e' : '#065f46') }};">
+            {{ $dias }} días
+        </span>
+    </div>
     @empty
     <div style="padding:16px; text-align:center; font-size:12px; color:#9ca3af;">Sin elecciones próximas.</div>
     @endforelse
@@ -411,6 +433,7 @@ if (tickerCharlaNombre && charlasItems.length > 1) {
     }, 3000);
 }
 @endif
+
 function closeAll() {
     document.getElementById('notifMenu').style.display = 'none';
     document.getElementById('userMenu').style.display = 'none';
@@ -440,31 +463,27 @@ function toggleNotif() {
     closeAll();
     if (!visible) {
         notif.style.display = 'block';
-        // Cargar notificaciones frescas
         fetch('/notificaciones/lista')
-    .then(r => r.json())
-    .then(d => {
-        const contenido = document.getElementById('notif-contenido');
-        console.log('contenido:', contenido);
-        console.log('data:', d);
-        if (!contenido) return;
-        if (d.notificaciones.length === 0) {
-            contenido.innerHTML = '<div style="padding:20px 16px; text-align:center; font-size:12px; color:#9ca3af;">Sin notificaciones.</div>';
-        } else {
-            contenido.innerHTML = d.notificaciones.map(n => `
-                <div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px;">
-                    <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:${n.leida ? '#d1d5db' : '#185FA5'};"></span>
-                    <div style="flex:1;">
-                        <div style="font-size:12px; color:#111827; line-height:1.4;">${n.mensaje}</div>
-                        ${n.seccion ? `<div style="font-size:10.5px; color:#6b7280; margin-top:2px;">${n.seccion}</div>` : ''}
-                        <div style="font-size:10px; color:#9ca3af; margin-top:3px;">${n.hace}</div>
-                    </div>
-                </div>
-            `).join('');
-            contenido.scrollTop = 0;
-        }
-    });
-        // Marcar como leídas
+            .then(r => r.json())
+            .then(d => {
+                const contenido = document.getElementById('notif-contenido');
+                if (!contenido) return;
+                if (d.notificaciones.length === 0) {
+                    contenido.innerHTML = '<div style="padding:20px 16px; text-align:center; font-size:12px; color:#9ca3af;">Sin notificaciones.</div>';
+                } else {
+                    contenido.innerHTML = d.notificaciones.map(n => `
+                        <div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px;">
+                            <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:${n.leida ? '#d1d5db' : '#185FA5'};"></span>
+                            <div style="flex:1;">
+                                <div style="font-size:12px; color:#111827; line-height:1.4;">${n.mensaje}</div>
+                                ${n.seccion ? `<div style="font-size:10.5px; color:#6b7280; margin-top:2px;">${n.seccion}</div>` : ''}
+                                <div style="font-size:10px; color:#9ca3af; margin-top:3px;">${n.hace}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                    contenido.scrollTop = 0;
+                }
+            });
         fetch('/notificaciones/leer', {
             method: 'POST',
             headers: {
@@ -495,14 +514,12 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Polling notificaciones cada 30 segundos
 setInterval(async function() {
     try {
         const r = await fetch('/notificaciones/count');
         const d = await r.json();
         const campanita = document.querySelector('[onclick="toggleNotif()"]');
         const badge = campanita?.querySelector('span');
-
         if (d.count > 0) {
             if (!badge) {
                 const span = document.createElement('span');

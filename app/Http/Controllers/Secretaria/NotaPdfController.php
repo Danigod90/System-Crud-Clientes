@@ -77,11 +77,11 @@ class NotaPdfController extends Controller
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
-        return new Response($dompdf->output(), 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="nota-' . $conNota->codigo_org . '.pdf"',
-        ]);
-    }
+return new Response($dompdf->output(), 200, [
+    'Content-Type' => 'application/pdf',
+    'Content-Disposition' => 'inline; filename="nota-' . $conNota->codigo_org . '.pdf"',
+]);
+}
 
     public function reciboLogistica(EntradaConNota $conNota)
 {
@@ -201,16 +201,38 @@ class NotaPdfController extends Controller
     $dompdf->setPaper('letter', 'portrait');
     $dompdf->render();
 
-  if ($conNota->asunto_log && !$conNota->asunto_tec) {
+ // Guardar si ya estaba impreso ANTES de actualizar
+$yaImpreso = !is_null($conNota->log_impreso_at);
+
+if ($conNota->asunto_log && !$conNota->asunto_tec) {
     $conNota->update([
         'log_impreso_at' => now(),
         'log_estado'     => 'entregada',
+        'entregado_por'  => auth()->user()->name,
+        'fecha_entrega'  => now(),
     ]);
 } else {
     $conNota->update([
         'log_impreso_at' => now(),
+        'entregado_por'  => auth()->user()->name,
+        'fecha_entrega'  => now(),
     ]);
 }
+
+// Crear registro en servicios realizados — solo LOG, solo la primera vez
+if ($conNota->asunto_log && !$conNota->asunto_tec && !$yaImpreso) {
+    $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$conNota->asesor_asignado])->first();
+    \App\Models\EntradaSinNota::create([
+        'nombre_completo' => $conNota->nombre_organizacion,
+        'telefono'        => $conNota->telefono_representante ?? null,
+        'tipo_charla'     => 'Materiales Entregados',
+        'asesor_id'       => $asesor?->id,
+        'user_id'         => auth()->id(),
+        'fecha'           => now()->format('Y-m-d'),
+    ]);
+}
+
+
 // Notificar a Secretaria Sin Nota
 $secretarias = \App\Models\User::role('Secretaria Sin Nota')->get();
 foreach ($secretarias as $secretaria) {
@@ -223,6 +245,7 @@ foreach ($secretarias as $secretaria) {
         $secretaria->notifications()->latest()->skip(8)->take(100)->delete();
     }
 }
+
 return new Response($dompdf->output(), 200, [
     'Content-Type'        => 'application/pdf',
     'Content-Disposition' => 'inline; filename="recibo-log-' . $codigo . '.pdf"',

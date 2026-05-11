@@ -56,7 +56,7 @@ class SupervisorController extends Controller
                 }
             })
             ->latest()
-            ->paginate(10);
+            ->paginate(10)->withQueryString();
 
         return view('supervisor.index', compact('entradas', 'asesores'));
     }

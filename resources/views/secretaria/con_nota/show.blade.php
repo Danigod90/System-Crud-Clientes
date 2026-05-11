@@ -133,6 +133,12 @@
                     <p style="font-size:14px; font-weight:700; color:#111827; font-family:monospace; margin:0;">{{ $conNota->asunto_texto }}</p>
                 </div>
             </div>
+            @if($conNota->direccion)
+<div style="grid-column:span 2;">
+    <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Dirección</p>
+    <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $conNota->direccion }}</p>
+</div>
+@endif
         </div>
 {{-- SECCIÓN DOCUMENTOS --}}
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">

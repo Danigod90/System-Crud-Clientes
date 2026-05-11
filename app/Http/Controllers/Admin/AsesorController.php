@@ -9,7 +9,7 @@ class AsesorController extends Controller
 {
     public function index()
     {
-        $asesores = Asesor::latest()->paginate(10);
+        $asesores = Asesor::latest()->paginate(10)->withQueryString();
         return view('admin.asesores.index', compact('asesores'));
     }
 

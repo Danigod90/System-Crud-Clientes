@@ -58,7 +58,7 @@ $prioridadIds = $prioridades->pluck('entrada_con_nota_id')->toArray();
 
 $entradas = $query->orderByRaw("FIELD(id, " . (count($prioridadIds) ? implode(',', $prioridadIds) : '0') . ") DESC")
     ->latest()
-    ->paginate(15);
+    ->paginate(15)->withQueryString();
 
 return view('asesor.mis-organizaciones', compact('entradas', 'asesores', 'charlasPendientes', 'prioridades'));
 }

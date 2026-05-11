@@ -40,8 +40,7 @@ class TecnicoOrganizacionesController extends Controller
 
 $entradas = $query->orderByRaw("FIELD(id, " . (count($prioridadIds) ? implode(',', $prioridadIds) : '0') . ") DESC")
     ->latest()
-    ->paginate(20)
-    ->withQueryString();
+    ->paginate(20)->withQueryString();
     $asesores = \App\Models\Asesor::orderBy('nombre')->get();
 
     $prioridades = \App\Models\PrioridadTecnica::all();

@@ -47,7 +47,7 @@ class EntradaConNotaController extends Controller
                   ->whereMonth('fecha_eleccion', substr($request->mes_eleccion, 5, 2))
             )
             ->latest()
-->paginate(10);
+->paginate(10)->withQueryString();
 
 $charlasPendientes = \App\Models\Charla::with('entrada')
     ->where('estado', 'pendiente')
@@ -70,17 +70,18 @@ return view('secretaria.con_nota.index', compact('entradas', 'asesores', 'charla
 
    public function store(Request $request)
 {
-    $request->validate([
-        'nombre_organizacion'    => 'required|string|max:255',
-        'tipo_organizacion'      => 'required|string|max:255',
-        'nombre_representante'   => 'required|string|max:255',
-        'telefono_representante' => 'nullable|string|max:50',
-        'fecha_eleccion'         => 'nullable|date',
-        'asesor_asignado'        => 'required|string|max:255',
-        'via_ingreso'            => 'required|in:correo,presencial',
-        'asunto'                 => 'required|array|min:1',
-        'asunto.*'               => 'in:char,log,tec,obs',
-    ]);
+   $request->validate([
+    'nombre_organizacion'    => 'required|string|max:255',
+    'tipo_organizacion'      => 'required|string|max:255',
+    'nombre_representante'   => 'required|string|max:255',
+    'telefono_representante' => 'nullable|string|max:50',
+    'fecha_eleccion'         => 'nullable|date',
+    'asesor_asignado'        => 'required|string|max:255',
+    'via_ingreso'            => 'required|in:correo,presencial',
+    'asunto'                 => 'required|array|min:1',
+    'asunto.*'               => 'in:char,log,tec,obs',
+    'direccion'              => 'nullable|string|max:255',
+]);
 
     $entrada = EntradaConNota::create([
         'nombre_organizacion'    => $request->nombre_organizacion,
@@ -98,6 +99,7 @@ return view('secretaria.con_nota.index', compact('entradas', 'asesores', 'charla
         'log_tintas'             => in_array('log', $request->asunto) ? (int)$request->log_tintas : 0,
         'user_id'                => auth()->id(),
         'asunto_obs'             => in_array('obs', $request->asunto),
+        'direccion'     => $request->direccion,
     ]);
 // Notificaciones según rol
 if (auth()->user()->hasRole('Asesor')) {
@@ -179,6 +181,7 @@ if (auth()->user()->hasRole('Asesor')) {
             'via_ingreso'            => 'required|in:correo,presencial',
             'asunto'                 => 'required|array|min:1',
             'asunto.*'               => 'in:char,log,tec,obs',
+            'direccion' => 'nullable|string|max:255',
         ]);
 
         $conNota->update([
@@ -195,7 +198,8 @@ if (auth()->user()->hasRole('Asesor')) {
             'log_urnas'              => in_array('log', $request->asunto ?? []) ? (int)$request->log_urnas : 0,
             'log_cuartos'            => in_array('log', $request->asunto ?? []) ? (int)$request->log_cuartos : 0,
             'log_tintas'             => in_array('log', $request->asunto ?? []) ? (int)$request->log_tintas : 0,
-            'asunto_obs'  => in_array('obs', $request->asunto ?? []),
+            'asunto_obs'             => in_array('obs', $request->asunto ?? []),
+            'direccion'             => $request->direccion,
         ]);
 
        if ($request->from === 'asesor') {
