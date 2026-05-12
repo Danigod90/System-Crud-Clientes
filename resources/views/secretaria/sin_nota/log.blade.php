@@ -447,11 +447,16 @@ function confirmarImprimirLog() {
     const fecha       = document.getElementById('log-fecha').value;
     if (!funcionario) { alert('Por favor ingresá el nombre del funcionario.'); return; }
     if (!fecha)       { alert('Por favor ingresá la fecha.'); return; }
+
     const url = '/secretaria/sin-nota/log/' + _logEntradaId + '/imprimir-logistica'
         + '?entregado_por=' + encodeURIComponent(funcionario)
         + '&fecha_entrega=' + encodeURIComponent(fecha);
+
     document.getElementById('modal-imprimir-log').style.display = 'none';
     window.open(url, '_blank');
+
+    // Recargar la página para actualizar el estado
+    setTimeout(() => { window.location.reload(); }, 1500);
 }
 
 function abrirModalEditarEntrega(id, org, funcionario, fecha) {
