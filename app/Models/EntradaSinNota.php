@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class EntradaSinNota extends Model
 {
@@ -29,13 +30,15 @@ class EntradaSinNota extends Model
         return $this->belongsTo(Asesor::class);
     }
 
-    protected static function boot()
-    {
-        parent::boot();
-        static::creating(function ($model) {
-            $year = date('Y');
-            $ultimo = self::whereYear('created_at', $year)->count() + 1;
-            $model->numero_entrada = 'SN-' . $year . '-' . str_pad($ultimo, 4, '0', STR_PAD_LEFT);
-        });
-    }
+   protected static function boot()
+{
+    parent::boot();
+    static::creating(function ($model) {
+        $year = date('Y');
+        $ultimo = self::whereYear('created_at', $year)
+            ->max(\DB::raw('CAST(SUBSTRING_INDEX(numero_entrada, "-", -1) AS UNSIGNED)'));
+        $siguiente = ($ultimo ?? 0) + 1;
+        $model->numero_entrada = 'SN-' . $year . '-' . str_pad($siguiente, 4, '0', STR_PAD_LEFT);
+    });
+}
 }
