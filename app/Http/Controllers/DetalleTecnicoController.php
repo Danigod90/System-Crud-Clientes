@@ -468,10 +468,6 @@ return new \Illuminate\Http\Response($dompdf->output(), 200, [
     $detalle->save();
 
     $entrada = EntradaConNota::findOrFail($entrada_id);
-    if ($entrada->asunto_tec) {
-        $entrada->log_estado = 'entregada';
-        $entrada->save();
-    }
 
     // Notificar al asesor
     $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$entrada->asesor_asignado])->first();
@@ -489,6 +485,7 @@ if ($usuario && $usuario->notifications()->count() > 8) {
 
     return redirect()->back()->with('success', 'Trabajo técnico marcado como realizado.');
 }
+
 public function checkAsesorUpdate($entrada_id)
 {
     $detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();

@@ -626,7 +626,7 @@ $defaultBoletin = is_null($entrada->detalleTecnico?->mat_final_papeletas) ? ($en
 
             {{-- BOTONES EXTERNOS --}}
             <div style="display:flex; gap:10px; margin-top:16px; padding-top:16px; border-top:1px solid #f3f4f6;">
-                <form method="POST" action="{{ route('tecnico.detalle_tecnico.imprimir', $entrada->id) }}">
+                <form method="POST" action="{{ route('tecnico.detalle_tecnico.imprimir', $entrada->id) }}" target="_blank">
                     @csrf
                     <button type="submit" onclick="return confirm('¿Marcar como impreso?')"
                         style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:10px 20px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
