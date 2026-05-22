@@ -611,8 +611,6 @@ function calcularModo2() {
             candidatos.push({ nombre: cNombre, votos: totalCand });
         });
 
-        // Ordenar candidatos por votos desc
-        candidatos.sort((a, b) => b.votos - a.votos);
 
         totalVotos += totalLista;
         partidos.push({ nombre, votos: totalLista, color: COLORES[li % COLORES.length], idx: li, candidatos, habilitado: true });
@@ -689,51 +687,74 @@ function ejecutarDhondt(partidos, cargos, esModo2) {
     let hayElectos = false;
 
     if (esModo2) {
-        // Modo 2: ordenar todos los candidatos electos por votos desc
-        let todosElectos = [];
-        partidos.forEach(p => {
-            const cant = cargosPartido[p.idx] || 0;
-            if (cant > 0 && p.candidatos) {
-                p.candidatos.slice(0, cant).forEach((c, ci) => {
-                    todosElectos.push({ lista: p.nombre, color: p.color, nombre: c.nombre, votos: c.votos, pos: ci + 1 });
-                });
-            }
+    let todosElectos = [];
+
+    const ganadoresOrdenados = [...ganadores].sort((a, b) => b.valor - a.valor);
+
+    const candidatosPorLista = {};
+    partidos.forEach(p => {
+        candidatosPorLista[p.idx] = [...(p.candidatos || [])].sort((a, b) => b.votos - a.votos);
+    });
+
+    const asignadosPorLista = {};
+    partidos.forEach(p => asignadosPorLista[p.idx] = 0);
+
+    ganadoresOrdenados.forEach(g => {
+        const p = g.partido;
+        const ci = asignadosPorLista[p.idx];
+        const candidato = candidatosPorLista[p.idx][ci];
+        asignadosPorLista[p.idx]++;
+        todosElectos.push({
+            lista: p.nombre,
+            color: p.color,
+            nombre: candidato?.nombre || '—',
+            votos: candidato?.votos || 0,
+            cociente: g.valor
         });
-        todosElectos.sort((a, b) => b.votos - a.votos);
+    });
 
         if (todosElectos.length > 0) {
             hayElectos = true;
-            let html = `<thead><tr>
-                <th>#</th><th>Candidato</th><th>Lista</th><th style="text-align:right;">Votos</th>
-            </tr></thead><tbody>`;
-            todosElectos.forEach((e, i) => {
-                html += `<tr>
-                    <td style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:#6b7280;">${i+1}</td>
-                    <td style="font-weight:600;color:#111827;">${e.nombre || '—'}</td>
-                    <td><span style="display:inline-flex;align-items:center;gap:5px;">
-                        <span style="width:8px;height:8px;border-radius:50%;background:${e.color};display:inline-block;"></span>
-                        ${e.lista}
-                    </span></td>
-                    <td style="text-align:right;font-family:'IBM Plex Mono',monospace;font-weight:700;color:#1e3a5f;">
-                        ${e.votos.toLocaleString('es-PY')}
-                    </td>
-                </tr>`;
+          let html = `<thead><tr>
+    <th>#</th><th>Candidato</th><th>Lista</th><th style="text-align:right;">Votos</th><th style="text-align:right;">Cociente</th>
+</tr></thead><tbody>`;
+          todosElectos.forEach((e, i) => {
+    html += `<tr>
+        <td style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:#6b7280;">${i+1}</td>
+        <td style="font-weight:600;color:#111827;">${e.nombre || '—'}</td>
+        <td><span style="display:inline-flex;align-items:center;gap:5px;">
+            <span style="width:8px;height:8px;border-radius:50%;background:${e.color};display:inline-block;"></span>
+            ${e.lista}
+        </span></td>
+        <td style="text-align:right;font-family:'IBM Plex Mono',monospace;font-weight:700;color:#1e3a5f;">
+            ${e.votos.toLocaleString('es-PY')}
+        </td>
+        <td style="text-align:right;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#6b7280;">
+            ${e.cociente.toLocaleString('es-PY', {maximumFractionDigits:3})}
+        </td>
+    </tr>`;
             });
             html += '</tbody>';
             electosTabla.innerHTML = html;
         }
     } else {
-        // Modo 1: mostrar proponentes si los hay
-        let todosElectos = [];
-        partidos.forEach(p => {
-            const cant = cargosPartido[p.idx] || 0;
-            if (cant > 0 && p.proponentes && p.proponentes.length > 0) {
-                p.proponentes.slice(0, cant).forEach((nombre, ci) => {
-                    if (nombre) todosElectos.push({ lista: p.nombre, color: p.color, nombre, pos: ci + 1 });
-                });
-            }
-        });
-
+    let todosElectos = [];
+    partidos.forEach(p => {
+        const cant = cargosPartido[p.idx] || 0;
+        if (cant > 0 && p.proponentes && p.proponentes.length > 0) {
+            // obtener los cocientes ganadores de esta lista ordenados desc
+            const cocientesLista = ganadores
+                .filter(g => g.partido.idx === p.idx)
+                .sort((a, b) => b.valor - a.valor);
+            p.proponentes.slice(0, cant).forEach((nombre, ci) => {
+                if (nombre) {
+                    const cociente = cocientesLista[ci]?.valor || 0;
+                    todosElectos.push({ lista: p.nombre, color: p.color, nombre, cociente });
+                }
+            });
+        }
+    });
+    todosElectos.sort((a, b) => b.cociente - a.cociente);
         if (todosElectos.length > 0) {
             hayElectos = true;
             let html = `<thead><tr><th>#</th><th>Candidato</th><th>Lista</th></tr></thead><tbody>`;
@@ -775,6 +796,9 @@ function limpiarTodo() {
 // Inicializar
 document.getElementById('num-partidos').addEventListener('change', generarPartidos);
 document.getElementById('num-proponentes').addEventListener('change', generarPartidos);
+document.getElementById('num-listas-m2').addEventListener('change', generarListasConMesas);
+document.getElementById('num-candidatos-m2').addEventListener('change', generarListasConMesas);
+document.getElementById('num-mesas-m2').addEventListener('change', generarListasConMesas);
 generarPartidos();
 </script>
 
