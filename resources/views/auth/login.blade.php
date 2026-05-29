@@ -88,7 +88,11 @@
         <p>Tribunal Superior de Justicia Electoral</p>
     </div>
 
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    @if (session('status'))
+    <div style="background:#fef9c3;color:#854d0e;font-size:12px;padding:10px 14px;border-radius:8px;margin-bottom:16px;text-align:center;font-weight:600;">
+        ⚠️ {{ session('status') }}
+    </div>
+@endif
 
     <form method="POST" action="{{ route('login') }}">
         @csrf
