@@ -44,7 +44,7 @@ return Application::configure(basePath: dirname(__DIR__))
             return redirect()->route('dashboard');
         }
 
-        return redirect()->route('login');
+        return redirect()->route('login')->with('status', 'Tu sesión expiró por inactividad. Por favor iniciá sesión nuevamente.');
     });
 
    $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
