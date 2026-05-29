@@ -21,6 +21,12 @@ Route::get('/dashboard', function () {
     if (auth()->user()->hasRole('Secretaria Con Nota')) {
         return redirect()->route('panel.dashboard');
     }
+    if (auth()->user()->hasRole('Asesor')) {
+        return redirect()->route('asesor.mis-organizaciones');
+    }
+    if (auth()->user()->hasRole('Tecnico')) {
+        return redirect()->route('tecnico.dashboard');
+    }
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 

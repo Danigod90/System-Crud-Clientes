@@ -18,5 +18,37 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
+    $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
+        if (auth()->check()) {
+            $user = auth()->user();
+
+            if ($user->hasRole('Admin')) {
+                return redirect()->route('admin.users.index');
+            }
+            if ($user->hasRole('Supervisor')) {
+                return redirect()->route('supervisor.dashboard');
+            }
+            if ($user->hasRole('Tecnico')) {
+                return redirect()->route('tecnico.dashboard');
+            }
+            if ($user->hasRole('Asesor')) {
+                return redirect()->route('asesor.mis-organizaciones');
+            }
+            if ($user->hasRole('Secretaria Con Nota')) {
+                return redirect()->route('panel.dashboard');
+            }
+            if ($user->hasRole('Secretaria Sin Nota')) {
+                return redirect()->route('secretaria.sin-nota.index');
+            }
+
+            return redirect()->route('dashboard');
+        }
+
+        return redirect()->route('login');
+    });
+
+   $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
+    return redirect()->route('login');
+
+    });
+})->create();
