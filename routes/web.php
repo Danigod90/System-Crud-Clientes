@@ -69,7 +69,7 @@ Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin|A
 
     // ── Con nota ─────────────────────────────────────────────
     Route::patch('con-nota/{conNota}/entregar-tec', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'entregarTec'])->name('con-nota.entregar-tec');
-
+    Route::get('con-nota/export-pdf', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'exportPdf'])->name('con-nota.export-pdf');
     Route::resource('con-nota', \App\Http\Controllers\Secretaria\EntradaConNotaController::class)
         ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
         ->parameters(['con-nota' => 'conNota']);

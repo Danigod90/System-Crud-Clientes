@@ -103,23 +103,32 @@
 </div>
                     </div>
 
-                    <div style="display:flex; gap:8px;">
-                        <button type="submit"
-                            style="display:inline-flex; align-items:center; gap:6px; background:#2563eb; color:white; padding:7px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer;">
-                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
-                            </svg>
-                            Filtrar
-                        </button>
-                        <a href="{{ route('secretaria.con-nota.index') }}"
-                            style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:7px 16px; border-radius:8px; font-size:13px; text-decoration:none;">
-                            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <polyline points="1 4 1 10 7 10"/>
-                                <path d="M3.51 15a9 9 0 1 0 .49-4"/>
-                            </svg>
-                            Limpiar
-                        </a>
-                    </div>
+                  <div style="display:flex; gap:8px;">
+    <button type="submit"
+        style="display:inline-flex; align-items:center; gap:6px; background:#2563eb; color:white; padding:7px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+        </svg>
+        Filtrar
+    </button>
+    <a href="{{ route('secretaria.con-nota.index') }}"
+        style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:7px 16px; border-radius:8px; font-size:13px; text-decoration:none;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="1 4 1 10 7 10"/>
+            <path d="M3.51 15a9 9 0 1 0 .49-4"/>
+        </svg>
+        Limpiar
+    </a>
+    <button type="button" onclick="abrirModalListado()"
+        style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:7px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"/>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        Imprimir listado
+    </button>
+</div>
                 </div>
             </form>
 
@@ -273,5 +282,88 @@ input.addEventListener('input', function() {
     }, 500);
 });
 </script>
+{{-- MODAL LISTADO PDF --}}
+<div id="modal-listado" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:12px; width:90%; max-width:860px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 8px 32px rgba(0,0,0,0.3);">
 
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid #e5e7eb; flex-shrink:0;">
+            <span style="font-size:14px; font-weight:600; color:#111827;">Vista previa — Listado de entradas</span>
+            <div style="display:flex; gap:8px;">
+                <button onclick="imprimirListado()"
+                    style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <polyline points="6 9 6 2 18 2 18 9"/>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                        <rect x="6" y="14" width="12" height="8"/>
+                    </svg>
+                    Imprimir
+                </button>
+                <button onclick="cerrarModalListado()"
+                    style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                    ✕ Cerrar
+                </button>
+            </div>
+        </div>
+
+        <div style="flex:1; overflow-y:auto; padding:20px; background:#f9fafb;">
+            <div id="listado-html" style="background:#fff; border-radius:8px; padding:16px; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function abrirModalListado() {
+    const params = new URLSearchParams({
+        organizacion: '{{ request('organizacion') }}',
+        asesor:       '{{ request('asesor') }}',
+        asunto:       '{{ request('asunto') }}',
+        mes_ingreso:  '{{ request('mes_ingreso') }}',
+        mes_eleccion: '{{ request('mes_eleccion') }}',
+    });
+
+    const btn = document.querySelector('button[onclick="abrirModalListado()"]');
+    btn.disabled = true;
+    btn.textContent = 'Cargando...';
+
+    try {
+        const response = await fetch('{{ route('secretaria.con-nota.export-pdf') }}?' + params.toString(), {
+            headers: { 'Accept': 'application/json' }
+        });
+
+        const data = await response.json();
+        document.getElementById('listado-html').innerHTML = data.html;
+        document.getElementById('modal-listado').style.display = 'flex';
+
+    } catch (e) {
+        alert('Error al cargar el listado. Intentá de nuevo.');
+        console.error(e);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"/>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+        </svg> Imprimir listado`;
+    }
+}
+
+function imprimirListado() {
+    const contenido = document.getElementById('listado-html').innerHTML;
+    const tituloOriginal = document.title;
+    const bodyOriginal = document.body.innerHTML;
+
+    document.title = 'Listado de Entradas — Dir. Org. Intermedias';
+    document.body.innerHTML = contenido;
+    window.print();
+    document.body.innerHTML = bodyOriginal;
+    document.title = tituloOriginal;
+    window.location.reload();
+}
+
+function cerrarModalListado() {
+    document.getElementById('modal-listado').style.display = 'none';
+    document.getElementById('listado-html').innerHTML = '';
+}
+</script>
 </x-panel-layout>
