@@ -624,20 +624,50 @@ $defaultBoletin = is_null($entrada->detalleTecnico?->mat_final_papeletas) ? ($en
                 </div>
             </form>
 
-            {{-- BOTONES EXTERNOS --}}
-            <div style="display:flex; gap:10px; margin-top:16px; padding-top:16px; border-top:1px solid #f3f4f6;">
-                <form method="POST" action="{{ route('tecnico.detalle_tecnico.imprimir', $entrada->id) }}" target="_blank">
-                    @csrf
-                    <button type="submit" onclick="return confirm('¿Marcar como impreso?')"
-                        style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:10px 20px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
-                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <polyline points="6 9 6 2 18 2 18 9"/>
-                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-                            <rect x="6" y="14" width="12" height="8"/>
-                        </svg>
-                        Imprimir Logística
-                    </button>
-                </form>
+            {{-- MODAL IMPRIMIR --}}
+<div id="modal-imprimir" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:12px; width:90%; max-width:860px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+
+        {{-- Header del modal --}}
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid #e5e7eb; flex-shrink:0;">
+            <span style="font-size:14px; font-weight:600; color:#111827;">Vista previa — Recibo de Logística</span>
+            <div style="display:flex; gap:8px;">
+                <button onclick="imprimirDesdeModal()"
+                    style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <polyline points="6 9 6 2 18 2 18 9"/>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                        <rect x="6" y="14" width="12" height="8"/>
+                    </svg>
+                    Imprimir
+                </button>
+                <button onclick="cerrarModal()"
+                    style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                    ✕ Cerrar
+                </button>
+            </div>
+        </div>
+
+        {{-- Contenido del recibo --}}
+        <div id="modal-contenido" style="flex:1; overflow-y:auto; padding:20px; background:#f9fafb;">
+            <div id="recibo-html" style="background:#fff; border-radius:8px; padding:16px; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                {{-- Se llena con JS --}}
+            </div>
+        </div>
+    </div>
+</div>
+
+{{-- BOTONES EXTERNOS --}}
+<div style="display:flex; gap:10px; margin-top:16px; padding-top:16px; border-top:1px solid #f3f4f6;">
+    <button type="button" onclick="abrirModalImprimir()"
+        style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:10px 20px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"/>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        Imprimir Logística
+    </button>
 
                 @if(!$entrada->detalleTecnico?->tec_realizado)
                 <form method="POST" action="{{ route('tecnico.detalle_tecnico.realizado', $entrada->id) }}">
@@ -832,6 +862,62 @@ if (timestampAsesor || timestampTecnico) {
             }
         } catch(e) {}
     }, 30000);
+}
+</script>
+<script>
+async function abrirModalImprimir() {
+    if (!confirm('¿Marcar como impreso y ver el recibo?')) return;
+
+    const btn = document.querySelector('button[onclick="abrirModalImprimir()"]');
+    btn.disabled = true;
+    btn.textContent = 'Cargando...';
+
+    try {
+        const response = await fetch('{{ route('tecnico.detalle_tecnico.imprimir', $entrada->id) }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json',
+            }
+        });
+
+        const data = await response.json();
+
+        document.getElementById('recibo-html').innerHTML = data.html;
+        document.getElementById('modal-imprimir').style.display = 'flex';
+
+    } catch (e) {
+        alert('Error al cargar el recibo. Intentá de nuevo.');
+        console.error(e);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"/>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+        </svg> Imprimir Logística`;
+    }
+}
+
+function imprimirDesdeModal() {
+    const contenido = document.getElementById('recibo-html').innerHTML;
+    const ventana = window.open('', '_blank', 'width=800,height=600');
+    ventana.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"><title>Recibo Logística</title></head>
+        <body>${contenido}</body>
+        </html>
+    `);
+    ventana.document.close();
+    ventana.focus();
+    ventana.print();
+    ventana.close();
+}
+
+function cerrarModal() {
+    document.getElementById('modal-imprimir').style.display = 'none';
+    document.getElementById('recibo-html').innerHTML = '';
 }
 </script>
 </x-panel-layout>

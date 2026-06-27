@@ -423,10 +423,6 @@ $padronCINO  = $detalle->padron_con_cedula ? '[  ]' : '[X]';
 </body>
 </html>';
 
-    $dompdf = new \Dompdf\Dompdf();
-    $dompdf->loadHtml($html);
-    $dompdf->setPaper('letter', 'portrait');
-    $dompdf->render();
 
 // Solo actualizar log_estado si tiene Log SIN Tec
 if ($entrada->asunto_log && !$entrada->asunto_tec) {
@@ -453,6 +449,17 @@ foreach ($secretarias as $secretaria) {
         $secretaria->notifications()->latest()->skip(8)->take(100)->delete();
     }
 }
+
+// Si piden JSON (desde el modal), devolver el HTML del recibo
+if (request()->expectsJson()) {
+    return response()->json(['html' => $html]);
+}
+
+// Si piden directo (acceso normal), devolver PDF como antes
+$dompdf = new \Dompdf\Dompdf();
+$dompdf->loadHtml($html);
+$dompdf->setPaper('letter', 'portrait');
+$dompdf->render();
 
 return new \Illuminate\Http\Response($dompdf->output(), 200, [
     'Content-Type'        => 'application/pdf',
