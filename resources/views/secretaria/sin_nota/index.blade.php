@@ -15,10 +15,10 @@
                 <p style="font-size:12px; color:#94a3b8; margin:2px 0 0;">Registros de visitas sin nota oficial</p>
             </div>
             <div style="display:flex; gap:8px;">
-                <a href="{{ route('secretaria.sin-nota.pdf', request()->query()) }}" target="_blank"
-                   style="display:inline-flex; align-items:center; gap:6px; background:#ef4444; color:white; padding:8px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
-                    📄 Exportar PDF
-                </a>
+               <button onclick="abrirModalPdfSinNota()"
+   style="display:inline-flex; align-items:center; gap:6px; background:#ef4444; color:white; padding:8px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
+    📄 Exportar PDF
+</button>
                 <a href="{{ route('secretaria.sin-nota.create') }}"
                    style="display:inline-flex; align-items:center; gap:6px; background:#2563eb; color:white; padding:8px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
                     + Nueva entrada
@@ -110,4 +110,71 @@
 
     </div>
 </div>
+{{-- MODAL PDF SIN NOTA --}}
+<div id="modal-pdf-sin-nota" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:12px; width:90%; max-width:900px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid #e5e7eb; flex-shrink:0;">
+            <span style="font-size:14px; font-weight:600; color:#111827;">Vista previa — Reporte Sin Nota</span>
+            <div style="display:flex; gap:8px;">
+                <button onclick="imprimirPdfSinNota()"
+                    style="display:inline-flex; align-items:center; gap:6px; background:#ef4444; color:white; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                    🖨️ Imprimir
+                </button>
+                <button onclick="cerrarModalPdfSinNota()"
+                    style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                    ✕ Cerrar
+                </button>
+            </div>
+        </div>
+        <div style="flex:1; overflow-y:auto; padding:20px; background:#f9fafb;">
+            <div id="pdf-sin-nota-html" style="background:#fff; border-radius:8px; padding:16px; box-shadow:0 1px 4px rgba(0,0,0,0.08);"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function abrirModalPdfSinNota() {
+    const params = new URLSearchParams({
+        nombre:      '{{ request('nombre') }}',
+        asesor_id:   '{{ request('asesor_id') }}',
+        fecha_desde: '{{ request('fecha_desde') }}',
+        fecha_hasta: '{{ request('fecha_hasta') }}',
+    });
+
+    const btn = document.querySelector('button[onclick="abrirModalPdfSinNota()"]');
+    btn.disabled = true;
+    btn.textContent = 'Cargando...';
+
+    try {
+        const response = await fetch('{{ route('secretaria.sin-nota.pdf') }}?' + params.toString(), {
+            headers: { 'Accept': 'application/json' }
+        });
+        const data = await response.json();
+        document.getElementById('pdf-sin-nota-html').innerHTML = data.html;
+        document.getElementById('modal-pdf-sin-nota').style.display = 'flex';
+    } catch(e) {
+        alert('Error al cargar el reporte. Intentá de nuevo.');
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '📄 Exportar PDF';
+    }
+}
+
+function imprimirPdfSinNota() {
+    const contenido = document.getElementById('pdf-sin-nota-html').innerHTML;
+    const tituloOriginal = document.title;
+    const bodyOriginal = document.body.innerHTML;
+    document.title = 'Reporte Mesa de Entrada Sin Nota';
+    document.body.innerHTML = contenido;
+    window.print();
+    document.body.innerHTML = bodyOriginal;
+    document.title = tituloOriginal;
+    window.location.reload();
+}
+
+function cerrarModalPdfSinNota() {
+    document.getElementById('modal-pdf-sin-nota').style.display = 'none';
+    document.getElementById('pdf-sin-nota-html').innerHTML = '';
+}
+</script>
 </x-panel-layout>

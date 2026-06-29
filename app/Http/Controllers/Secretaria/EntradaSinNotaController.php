@@ -132,8 +132,13 @@ class EntradaSinNotaController extends Controller
         $fecha_hasta = $request->fecha_hasta ?? now()->format('Y-m-d');
         $usuario     = auth()->user()->name;
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('secretaria.sin_nota.pdf', compact('entradas', 'fecha_desde', 'fecha_hasta', 'usuario'));
-        return $pdf->stream('reporte-entradas-sin-nota.pdf');
+       if (request()->expectsJson()) {
+    $html = view('secretaria.sin_nota.pdf', compact('entradas', 'fecha_desde', 'fecha_hasta', 'usuario'))->render();
+    return response()->json(['html' => $html]);
+}
+
+$pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('secretaria.sin_nota.pdf', compact('entradas', 'fecha_desde', 'fecha_hasta', 'usuario'));
+return $pdf->stream('reporte-entradas-sin-nota.pdf');
     }
 
     public function log(Request $request)
@@ -245,13 +250,8 @@ class EntradaSinNotaController extends Controller
     }
 
     // ── Imprime logística (solo LOG) guardando funcionario/fecha
-   public function imprimirLogistica(Request $request, $id)
+  public function imprimirLogistica(Request $request, $id)
 {
-    $request->validate([
-        'entregado_por' => 'required|string|max:255',
-        'fecha_entrega' => 'required|date',
-    ]);
-
     $entrada = \App\Models\EntradaConNota::findOrFail($id);
 
     $entrada->update([
@@ -261,18 +261,18 @@ class EntradaSinNotaController extends Controller
         'log_impreso_at' => now(),
     ]);
 
-    // Crear entrada sin nota con tipo "Materiales Entregados"
-   $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$entrada->asesor_asignado])->first();
+    $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$entrada->asesor_asignado])->first();
 
-EntradaSinNota::create([
-    'nombre_completo' => $entrada->nombre_organizacion,
-    'telefono'        => $entrada->telefono_representante ?? null,
-    'tipo_charla'     => 'Materiales Entregados',
-    'asesor_id'       => $asesor?->id,
-    'user_id'         => auth()->id(),
-    'fecha'           => \Carbon\Carbon::parse($request->fecha_entrega)->format('Y-m-d'),
-]);
+    EntradaSinNota::create([
+        'nombre_completo' => $entrada->nombre_organizacion,
+        'telefono'        => $entrada->telefono_representante ?? null,
+        'tipo_charla'     => 'Materiales Entregados',
+        'asesor_id'       => $asesor?->id,
+        'user_id'         => auth()->id(),
+        'fecha'           => \Carbon\Carbon::parse($request->fecha_entrega)->format('Y-m-d'),
+    ]);
 
-    return redirect()->route('secretaria.con-nota.recibo-logistica', $entrada);
+    $notaPdfController = new NotaPdfController();
+    return $notaPdfController->reciboLogistica($entrada);
 }
 }

@@ -8,17 +8,14 @@
         </div>
         @endif
 
-        {{-- HEADER --}}
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
             <div>
                 <h2 style="font-size:16px; font-weight:700; color:#1e293b; margin:0;">Gestión de Log</h2>
                 <p style="font-size:12px; color:#94a3b8; margin:2px 0 0;">Control de materiales prestados y devueltos</p>
             </div>
-            <a href="{{ route('panel.dashboard') }}"
-               style="font-size:12px; color:#94a3b8; text-decoration:none;">← Volver al panel</a>
+            <a href="{{ route('panel.dashboard') }}" style="font-size:12px; color:#94a3b8; text-decoration:none;">← Volver al panel</a>
         </div>
 
-        {{-- FILTRO --}}
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:10px 16px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.04); display:flex; align-items:center; gap:10px;">
             <svg width="14" height="14" fill="none" stroke="#9ca3af" stroke-width="2" viewBox="0 0 24 24">
                 <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -28,9 +25,7 @@
                    style="border:none; outline:none; font-size:13px; color:#374151; width:100%;">
         </div>
 
-        {{-- ══════════════════════════════════════════ --}}
-        {{-- PENDIENTES DE ENTREGA                      --}}
-        {{-- ══════════════════════════════════════════ --}}
+        {{-- PENDIENTES --}}
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; box-shadow:0 1px 4px rgba(0,0,0,0.04); margin-bottom:14px; overflow:hidden;">
             <div style="padding:10px 16px; border-bottom:1px solid #f3f4f6; background:#fffbeb; display:flex; align-items:center; justify-content:space-between;">
                 <span style="font-size:13px; font-weight:600; color:#92400e;">⏳ Pendientes de entrega</span>
@@ -64,17 +59,17 @@
                             <td style="padding:7px 12px; color:#185FA5; font-weight:600; font-family:monospace; white-space:nowrap; font-size:11px;">{{ $entrada->codigo_org }}</td>
                             <td style="padding:7px 12px; color:#1e293b; font-weight:500; font-size:12px;">{{ $entrada->nombre_organizacion }}</td>
                             <td style="padding:7px 12px;">
-    @if($entrada->asunto_tec && $entrada->asunto_log)
-        <span style="display:inline-flex; gap:4px;">
-            <span style="background:#ede9fe; color:#6d28d9; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">TEC</span>
-            <span style="background:#d1fae5; color:#065f46; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">LOG</span>
-        </span>
-    @elseif($entrada->asunto_tec)
-        <span style="background:#ede9fe; color:#6d28d9; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">TEC</span>
-    @elseif($entrada->asunto_log)
-        <span style="background:#d1fae5; color:#065f46; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">LOG</span>
-    @endif
-</td>
+                                @if($entrada->asunto_tec && $entrada->asunto_log)
+                                    <span style="display:inline-flex; gap:4px;">
+                                        <span style="background:#ede9fe; color:#6d28d9; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">TEC</span>
+                                        <span style="background:#d1fae5; color:#065f46; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">LOG</span>
+                                    </span>
+                                @elseif($entrada->asunto_tec)
+                                    <span style="background:#ede9fe; color:#6d28d9; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">TEC</span>
+                                @elseif($entrada->asunto_log)
+                                    <span style="background:#d1fae5; color:#065f46; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">LOG</span>
+                                @endif
+                            </td>
                             <td style="padding:7px 12px; color:#374151; font-size:12px; white-space:nowrap;">{{ $entrada->asesor_asignado ?? '—' }}</td>
                             <td style="padding:7px 12px; text-align:center; color:#374151; font-size:12px;">{{ $urnas }}</td>
                             <td style="padding:7px 12px; text-align:center; color:#374151; font-size:12px;">{{ $cuartos }}</td>
@@ -101,20 +96,14 @@
                             </td>
                         </tr>
                         @empty
-                        <tr>
-                            <td colspan="8" style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">
-                                ✅ No hay log pendientes.
-                            </td>
-                        </tr>
+                        <tr><td colspan="8" style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">✅ No hay log pendientes.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
 
-        {{-- ══════════════════════════════════════════ --}}
-        {{-- ENTREGADOS — ESPERANDO DEVOLUCIÓN          --}}
-        {{-- ══════════════════════════════════════════ --}}
+        {{-- ENTREGADOS --}}
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; box-shadow:0 1px 4px rgba(0,0,0,0.04); margin-bottom:14px; overflow:hidden;">
             <div style="padding:10px 16px; border-bottom:1px solid #f3f4f6; background:#eff6ff; display:flex; align-items:center; justify-content:space-between;">
                 <span style="font-size:13px; font-weight:600; color:#1d4ed8;">📦 Entregados — esperando devolución</span>
@@ -150,31 +139,27 @@
                             <td style="padding:7px 12px; color:#185FA5; font-weight:600; font-family:monospace; white-space:nowrap; font-size:11px;">{{ $entrada->codigo_org }}</td>
                             <td style="padding:7px 12px; color:#1e293b; font-weight:500; font-size:12px;">{{ $entrada->nombre_organizacion }}</td>
                             <td style="padding:7px 12px;">
-    @if($entrada->asunto_tec && $entrada->asunto_log)
-        <span style="display:inline-flex; gap:4px;">
-            <span style="background:#ede9fe; color:#6d28d9; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">TEC</span>
-            <span style="background:#d1fae5; color:#065f46; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">LOG</span>
-        </span>
-    @elseif($entrada->asunto_tec)
-        <span style="background:#ede9fe; color:#6d28d9; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">TEC</span>
-    @elseif($entrada->asunto_log)
-        <span style="background:#d1fae5; color:#065f46; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">LOG</span>
-    @endif
-</td>
+                                @if($entrada->asunto_tec && $entrada->asunto_log)
+                                    <span style="display:inline-flex; gap:4px;">
+                                        <span style="background:#ede9fe; color:#6d28d9; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">TEC</span>
+                                        <span style="background:#d1fae5; color:#065f46; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">LOG</span>
+                                    </span>
+                                @elseif($entrada->asunto_tec)
+                                    <span style="background:#ede9fe; color:#6d28d9; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">TEC</span>
+                                @elseif($entrada->asunto_log)
+                                    <span style="background:#d1fae5; color:#065f46; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">LOG</span>
+                                @endif
+                            </td>
                             <td style="padding:7px 12px; text-align:center; color:#374151; font-size:12px;">{{ $urnas }}</td>
                             <td style="padding:7px 12px; text-align:center; color:#374151; font-size:12px;">{{ $cuartos }}</td>
                             <td style="padding:7px 12px; text-align:center; color:#374151; font-size:12px;">{{ $tintas }}</td>
                             <td style="padding:7px 12px; color:#374151; font-size:12px;">{{ $entrada->entregado_por ?? '—' }}</td>
-                            <td style="padding:7px 12px; color:#94a3b8; white-space:nowrap; font-size:11px;">
-                                {{ $entrada->fecha_entrega ? $entrada->fecha_entrega->format('d/m/Y H:i') : '—' }}
-                            </td>
+                            <td style="padding:7px 12px; color:#94a3b8; white-space:nowrap; font-size:11px;">{{ $entrada->fecha_entrega ? $entrada->fecha_entrega->format('d/m/Y H:i') : '—' }}</td>
                             <td style="padding:7px 12px; white-space:nowrap;">
                                 <div style="display:flex; gap:5px; align-items:center;">
                                     <button onclick="abrirModalEditarEntrega({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}', '{{ addslashes($entrada->entregado_por ?? '') }}', '{{ $fechaEntregaJs }}')"
                                             title="Editar datos de entrega"
-                                            style="display:inline-flex; align-items:center; justify-content:center; background:#f8fafc; border:1px solid #e5e7eb; color:#6b7280; padding:3px 6px; border-radius:6px; font-size:11px; cursor:pointer; line-height:1;">
-                                        ✏️
-                                    </button>
+                                            style="display:inline-flex; align-items:center; justify-content:center; background:#f8fafc; border:1px solid #e5e7eb; color:#6b7280; padding:3px 6px; border-radius:6px; font-size:11px; cursor:pointer; line-height:1;">✏️</button>
                                     @if($entrada->asunto_log)
                                         <button onclick="abrirModal({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}', {{ $urnas }}, {{ $cuartos }}, {{ $tintas }})"
                                                 style="background:#2563eb; color:white; border:none; padding:3px 8px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500; white-space:nowrap;">
@@ -187,20 +172,14 @@
                             </td>
                         </tr>
                         @empty
-                        <tr>
-                            <td colspan="9" style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">
-                                Sin materiales entregados pendientes de devolución.
-                            </td>
-                        </tr>
+                        <tr><td colspan="9" style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">Sin materiales entregados pendientes de devolución.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
 
-        {{-- ══════════════════════════════════════════ --}}
-        {{-- DEVUELTOS                                  --}}
-        {{-- ══════════════════════════════════════════ --}}
+        {{-- DEVUELTOS --}}
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; box-shadow:0 1px 4px rgba(0,0,0,0.04); overflow:hidden;">
             <div style="padding:10px 16px; border-bottom:1px solid #f3f4f6; background:#f0fdf4; display:flex; align-items:center; justify-content:space-between;">
                 <span style="font-size:13px; font-weight:600; color:#15803d;">✅ Devueltos</span>
@@ -228,21 +207,19 @@
                             <td style="padding:7px 12px; color:#185FA5; font-weight:600; font-family:monospace; white-space:nowrap; font-size:11px;">{{ $entrada->codigo_org }}</td>
                             <td style="padding:7px 12px; color:#1e293b; font-weight:500; font-size:12px;">{{ $entrada->nombre_organizacion }}</td>
                             <td style="padding:7px 12px;">
-    @if($entrada->asunto_tec && $entrada->asunto_log)
-        <span style="display:inline-flex; gap:4px;">
-            <span style="background:#ede9fe; color:#6d28d9; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">TEC</span>
-            <span style="background:#d1fae5; color:#065f46; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">LOG</span>
-        </span>
-    @elseif($entrada->asunto_tec)
-        <span style="background:#ede9fe; color:#6d28d9; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">TEC</span>
-    @elseif($entrada->asunto_log)
-        <span style="background:#d1fae5; color:#065f46; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">LOG</span>
-    @endif
-</td>
-                            <td style="padding:7px 12px; color:#374151; font-size:12px;">{{ $entrada->entregado_por ?? '—' }}</td>
-                            <td style="padding:7px 12px; color:#94a3b8; white-space:nowrap; font-size:11px;">
-                                {{ $entrada->fecha_entrega ? $entrada->fecha_entrega->format('d/m/Y H:i') : '—' }}
+                                @if($entrada->asunto_tec && $entrada->asunto_log)
+                                    <span style="display:inline-flex; gap:4px;">
+                                        <span style="background:#ede9fe; color:#6d28d9; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">TEC</span>
+                                        <span style="background:#d1fae5; color:#065f46; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">LOG</span>
+                                    </span>
+                                @elseif($entrada->asunto_tec)
+                                    <span style="background:#ede9fe; color:#6d28d9; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">TEC</span>
+                                @elseif($entrada->asunto_log)
+                                    <span style="background:#d1fae5; color:#065f46; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">LOG</span>
+                                @endif
                             </td>
+                            <td style="padding:7px 12px; color:#374151; font-size:12px;">{{ $entrada->entregado_por ?? '—' }}</td>
+                            <td style="padding:7px 12px; color:#94a3b8; white-space:nowrap; font-size:11px;">{{ $entrada->fecha_entrega ? $entrada->fecha_entrega->format('d/m/Y H:i') : '—' }}</td>
                             <td style="padding:7px 12px; color:#374151; font-size:12px;">{{ $entrada->logDevolucion?->devuelto_por ?? '—' }}</td>
                             <td style="padding:7px 12px; text-align:center; color:#374151; font-size:12px;">{{ $entrada->logDevolucion?->urnas_devueltas ?? '—' }}</td>
                             <td style="padding:7px 12px; text-align:center; color:#374151; font-size:12px;">{{ $entrada->logDevolucion?->cuartos_devueltos ?? '—' }}</td>
@@ -250,34 +227,25 @@
                             <td style="padding:7px 12px; color:#94a3b8; white-space:nowrap; font-size:11px;">{{ $entrada->logDevolucion?->created_at?->format('d/m/Y') ?? '—' }}</td>
                         </tr>
                         @empty
-                        <tr>
-                            <td colspan="10" style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">
-                                Sin devoluciones registradas todavía.
-                            </td>
-                        </tr>
+                        <tr><td colspan="10" style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">Sin devoluciones registradas todavía.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
-
     </div>
 </div>
 
-{{-- ══════════════════════════════════════════════════════ --}}
-{{-- MODAL: ENTREGAR (TEC o TEC+LOG)                       --}}
-{{-- ══════════════════════════════════════════════════════ --}}
+{{-- MODAL: ENTREGAR --}}
 <div id="modal-entregar" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:50; align-items:center; justify-content:center;">
     <div style="background:white; border-radius:12px; padding:28px; max-width:440px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
         <h3 style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:4px;">Registrar entrega</h3>
         <p id="modal-entregar-org" style="font-size:12px; color:#64748b; margin-bottom:18px;"></p>
         <form id="form-entregar" method="POST">
-            @csrf
-            @method('PATCH')
+            @csrf @method('PATCH')
             <div style="margin-bottom:14px;">
                 <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Funcionario que entrega *</label>
-                <input type="text" name="entregado_por" id="entregar-funcionario" required
-                       placeholder="Nombre completo..."
+                <input type="text" name="entregado_por" id="entregar-funcionario" required placeholder="Nombre completo..."
                        style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
             </div>
             <div style="margin-bottom:20px;">
@@ -287,21 +255,14 @@
             </div>
             <div style="display:flex; gap:10px; justify-content:flex-end;">
                 <button type="button" onclick="document.getElementById('modal-entregar').style.display='none'"
-                        style="padding:8px 18px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:13px; cursor:pointer;">
-                    Cancelar
-                </button>
-                <button type="submit"
-                        style="padding:8px 18px; border-radius:8px; border:none; background:#16a34a; color:white; font-size:13px; cursor:pointer; font-weight:500;">
-                    ✓ Confirmar entrega
-                </button>
+                        style="padding:8px 18px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:13px; cursor:pointer;">Cancelar</button>
+                <button type="submit" style="padding:8px 18px; border-radius:8px; border:none; background:#16a34a; color:white; font-size:13px; cursor:pointer; font-weight:500;">✓ Confirmar entrega</button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- ══════════════════════════════════════════════════════ --}}
-{{-- MODAL: IMPRIMIR LOG (solo LOG)                        --}}
-{{-- ══════════════════════════════════════════════════════ --}}
+{{-- MODAL: IMPRIMIR LOG --}}
 <div id="modal-imprimir-log" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:50; align-items:center; justify-content:center;">
     <div style="background:white; border-radius:12px; padding:28px; max-width:440px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
         <div style="font-size:32px; text-align:center; margin-bottom:10px;">🖨️</div>
@@ -317,30 +278,23 @@
             <input type="datetime-local" id="log-fecha" required
                    style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
         </div>
-        <p style="font-size:11px; color:#94a3b8; margin-bottom:16px; text-align:center;">Al confirmar se guarda el registro y se abre el PDF de logística.</p>
+        <p style="font-size:11px; color:#94a3b8; margin-bottom:16px; text-align:center;">Al confirmar se guarda el registro y se muestra la vista previa.</p>
         <div style="display:flex; gap:10px; justify-content:center;">
             <button onclick="document.getElementById('modal-imprimir-log').style.display='none'"
-                    style="padding:8px 18px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:13px; cursor:pointer;">
-                Cancelar
-            </button>
+                    style="padding:8px 18px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:13px; cursor:pointer;">Cancelar</button>
             <button onclick="confirmarImprimirLog()"
-                    style="padding:8px 18px; border-radius:8px; border:none; background:#0369a1; color:white; font-size:13px; cursor:pointer; font-weight:500;">
-                Confirmar e imprimir
-            </button>
+                    style="padding:8px 18px; border-radius:8px; border:none; background:#0369a1; color:white; font-size:13px; cursor:pointer; font-weight:500;">Confirmar e imprimir</button>
         </div>
     </div>
 </div>
 
-{{-- ══════════════════════════════════════════════════════ --}}
-{{-- MODAL: EDITAR ENTREGA                                 --}}
-{{-- ══════════════════════════════════════════════════════ --}}
+{{-- MODAL: EDITAR ENTREGA --}}
 <div id="modal-editar-entrega" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:50; align-items:center; justify-content:center;">
     <div style="background:white; border-radius:12px; padding:28px; max-width:440px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
         <h3 style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:4px;">Editar datos de entrega</h3>
         <p id="modal-editar-org" style="font-size:12px; color:#64748b; margin-bottom:18px;"></p>
         <form id="form-editar-entrega" method="POST">
-            @csrf
-            @method('PATCH')
+            @csrf @method('PATCH')
             <div style="margin-bottom:14px;">
                 <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Funcionario que entrega *</label>
                 <input type="text" name="entregado_por" id="editar-funcionario" required
@@ -353,21 +307,14 @@
             </div>
             <div style="display:flex; gap:10px; justify-content:flex-end;">
                 <button type="button" onclick="document.getElementById('modal-editar-entrega').style.display='none'"
-                        style="padding:8px 18px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:13px; cursor:pointer;">
-                    Cancelar
-                </button>
-                <button type="submit"
-                        style="padding:8px 18px; border-radius:8px; border:none; background:#2563eb; color:white; font-size:13px; cursor:pointer; font-weight:500;">
-                    Guardar cambios
-                </button>
+                        style="padding:8px 18px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:13px; cursor:pointer;">Cancelar</button>
+                <button type="submit" style="padding:8px 18px; border-radius:8px; border:none; background:#2563eb; color:white; font-size:13px; cursor:pointer; font-weight:500;">Guardar cambios</button>
             </div>
         </form>
     </div>
 </div>
 
-{{-- ══════════════════════════════════════════════════════ --}}
-{{-- MODAL: DEVOLUCIÓN                                     --}}
-{{-- ══════════════════════════════════════════════════════ --}}
+{{-- MODAL: DEVOLUCIÓN --}}
 <div id="modal-devolucion" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:50; align-items:center; justify-content:center;">
     <div style="background:white; border-radius:12px; padding:28px; max-width:480px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
         <h3 style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:4px;">Registrar devolución</h3>
@@ -403,15 +350,32 @@
             </div>
             <div style="display:flex; gap:10px; justify-content:flex-end;">
                 <button type="button" onclick="document.getElementById('modal-devolucion').style.display='none'"
-                        style="padding:8px 18px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:13px; cursor:pointer;">
-                    Cancelar
-                </button>
-                <button type="submit"
-                        style="padding:8px 18px; border-radius:8px; border:none; background:#2563eb; color:white; font-size:13px; cursor:pointer; font-weight:500;">
-                    Confirmar devolución
-                </button>
+                        style="padding:8px 18px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:13px; cursor:pointer;">Cancelar</button>
+                <button type="submit" style="padding:8px 18px; border-radius:8px; border:none; background:#2563eb; color:white; font-size:13px; cursor:pointer; font-weight:500;">Confirmar devolución</button>
             </div>
         </form>
+    </div>
+</div>
+
+{{-- MODAL: VISTA PREVIA RECIBO LOG --}}
+<div id="modal-recibo-log" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:12px; width:90%; max-width:860px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid #e5e7eb; flex-shrink:0;">
+            <span style="font-size:14px; font-weight:600; color:#111827;">Vista previa — Recibo de Logística</span>
+            <div style="display:flex; gap:8px;">
+                <button onclick="imprimirReciboLog()"
+                    style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                    🖨️ Imprimir
+                </button>
+                <button onclick="cerrarModalReciboLog()"
+                    style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                    ✕ Cerrar
+                </button>
+            </div>
+        </div>
+        <div style="flex:1; overflow-y:auto; padding:20px; background:#f9fafb;">
+            <div id="recibo-log-html" style="background:#fff; border-radius:8px; padding:16px; box-shadow:0 1px 4px rgba(0,0,0,0.08);"></div>
+        </div>
     </div>
 </div>
 
@@ -442,7 +406,7 @@ function abrirModalImprimirLog(id, org) {
     setTimeout(() => document.getElementById('log-funcionario').focus(), 100);
 }
 
-function confirmarImprimirLog() {
+async function confirmarImprimirLog() {
     const funcionario = document.getElementById('log-funcionario').value.trim();
     const fecha       = document.getElementById('log-fecha').value;
     if (!funcionario) { alert('Por favor ingresá el nombre del funcionario.'); return; }
@@ -453,10 +417,36 @@ function confirmarImprimirLog() {
         + '&fecha_entrega=' + encodeURIComponent(fecha);
 
     document.getElementById('modal-imprimir-log').style.display = 'none';
-    window.open(url, '_blank');
 
-    // Recargar la página para actualizar el estado
-    setTimeout(() => { window.location.reload(); }, 1500);
+    try {
+        const response = await fetch(url, {
+            headers: { 'Accept': 'application/json' }
+        });
+        const data = await response.json();
+        document.getElementById('recibo-log-html').innerHTML = data.html;
+        document.getElementById('modal-recibo-log').style.display = 'flex';
+    } catch(e) {
+        alert('Error al cargar el recibo. Intentá de nuevo.');
+        console.error(e);
+    }
+}
+
+function imprimirReciboLog() {
+    const contenido = document.getElementById('recibo-log-html').innerHTML;
+    const tituloOriginal = document.title;
+    const bodyOriginal = document.body.innerHTML;
+    document.title = 'Recibo Logística';
+    document.body.innerHTML = contenido;
+    window.print();
+    document.body.innerHTML = bodyOriginal;
+    document.title = tituloOriginal;
+    window.location.reload();
+}
+
+function cerrarModalReciboLog() {
+    document.getElementById('modal-recibo-log').style.display = 'none';
+    document.getElementById('recibo-log-html').innerHTML = '';
+    window.location.reload();
 }
 
 function abrirModalEditarEntrega(id, org, funcionario, fecha) {
@@ -469,11 +459,11 @@ function abrirModalEditarEntrega(id, org, funcionario, fecha) {
 }
 
 function abrirModal(id, org, urnas, cuartos, tintas) {
-    document.getElementById('modal-org').textContent   = org;
-    document.getElementById('modal-urnas').value       = urnas;
-    document.getElementById('modal-cuartos').value     = cuartos;
-    document.getElementById('modal-tintas').value      = tintas;
-    document.getElementById('form-devolucion').action  = '/secretaria/sin-nota/log/' + id + '/devolucion';
+    document.getElementById('modal-org').textContent  = org;
+    document.getElementById('modal-urnas').value      = urnas;
+    document.getElementById('modal-cuartos').value    = cuartos;
+    document.getElementById('modal-tintas').value     = tintas;
+    document.getElementById('form-devolucion').action = '/secretaria/sin-nota/log/' + id + '/devolucion';
     document.getElementById('modal-devolucion').style.display = 'flex';
 }
 
@@ -484,11 +474,10 @@ function filtrarTablas(valor) {
     });
 }
 
-['modal-entregar', 'modal-imprimir-log', 'modal-editar-entrega', 'modal-devolucion'].forEach(id => {
+['modal-entregar', 'modal-imprimir-log', 'modal-editar-entrega', 'modal-devolucion', 'modal-recibo-log'].forEach(id => {
     document.getElementById(id).addEventListener('click', function(e) {
         if (e.target === this) this.style.display = 'none';
     });
 });
 </script>
-
 </x-panel-layout>

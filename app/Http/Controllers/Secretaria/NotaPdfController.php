@@ -77,28 +77,28 @@ class NotaPdfController extends Controller
         $dompdf->setPaper('A4', 'portrait');
         $dompdf->render();
 
-return new Response($dompdf->output(), 200, [
-    'Content-Type' => 'application/pdf',
-    'Content-Disposition' => 'inline; filename="nota-' . $conNota->codigo_org . '.pdf"',
-]);
-}
+        return new Response($dompdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="nota-' . $conNota->codigo_org . '.pdf"',
+        ]);
+    }
 
     public function reciboLogistica(EntradaConNota $conNota)
-{
-    $fechaCorta = now()->format('d/m/Y');
-    $org        = strtoupper($conNota->nombre_organizacion);
-    $codigo     = $conNota->codigo_org;
-    $fechaElec  = $conNota->fecha_eleccion?->format('d/m/Y') ?? '—';
+    {
+        $fechaCorta = now()->format('d/m/Y');
+        $org        = strtoupper($conNota->nombre_organizacion);
+        $codigo     = $conNota->codigo_org;
+        $fechaElec  = $conNota->fecha_eleccion?->format('d/m/Y') ?? '—';
 
-    $urnas   = str_pad($conNota->log_urnas   ?? 0, 2, '0', STR_PAD_LEFT);
-    $cuartos = str_pad($conNota->log_cuartos ?? 0, 2, '0', STR_PAD_LEFT);
-    $tintas  = str_pad($conNota->log_tintas  ?? 0, 2, '0', STR_PAD_LEFT);
+        $urnas   = str_pad($conNota->log_urnas   ?? 0, 2, '0', STR_PAD_LEFT);
+        $cuartos = str_pad($conNota->log_cuartos ?? 0, 2, '0', STR_PAD_LEFT);
+        $tintas  = str_pad($conNota->log_tintas  ?? 0, 2, '0', STR_PAD_LEFT);
 
-    $logoPath   = public_path('images/logo.png');
-    $logoBase64 = base64_encode(file_get_contents($logoPath));
-    $logoSrc    = 'data:image/png;base64,' . $logoBase64;
+        $logoPath   = public_path('images/logo.png');
+        $logoBase64 = base64_encode(file_get_contents($logoPath));
+        $logoSrc    = 'data:image/png;base64,' . $logoBase64;
 
-    $html = '<!DOCTYPE html>
+        $html = '<!DOCTYPE html>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -196,59 +196,63 @@ return new Response($dompdf->output(), 200, [
 </body>
 </html>';
 
-    $dompdf = new \Dompdf\Dompdf();
-    $dompdf->loadHtml($html);
-    $dompdf->setPaper('letter', 'portrait');
-    $dompdf->render();
+        // Guardar si ya estaba impreso ANTES de actualizar
+        $yaImpreso = !is_null($conNota->log_impreso_at);
 
- // Guardar si ya estaba impreso ANTES de actualizar
-$yaImpreso = !is_null($conNota->log_impreso_at);
+        if ($conNota->asunto_log && !$conNota->asunto_tec) {
+            $conNota->update([
+                'log_impreso_at' => now(),
+                'log_estado'     => 'entregada',
+                'entregado_por'  => auth()->user()->name,
+                'fecha_entrega'  => now(),
+            ]);
+        } else {
+            $conNota->update([
+                'log_impreso_at' => now(),
+                'entregado_por'  => auth()->user()->name,
+                'fecha_entrega'  => now(),
+            ]);
+        }
 
-if ($conNota->asunto_log && !$conNota->asunto_tec) {
-    $conNota->update([
-        'log_impreso_at' => now(),
-        'log_estado'     => 'entregada',
-        'entregado_por'  => auth()->user()->name,
-        'fecha_entrega'  => now(),
-    ]);
-} else {
-    $conNota->update([
-        'log_impreso_at' => now(),
-        'entregado_por'  => auth()->user()->name,
-        'fecha_entrega'  => now(),
-    ]);
-}
+        // Crear registro en servicios realizados — solo LOG, solo la primera vez
+        if ($conNota->asunto_log && !$conNota->asunto_tec && !$yaImpreso) {
+            $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$conNota->asesor_asignado])->first();
+            \App\Models\EntradaSinNota::create([
+                'nombre_completo' => $conNota->nombre_organizacion,
+                'telefono'        => $conNota->telefono_representante ?? null,
+                'tipo_charla'     => 'Materiales Entregados',
+                'asesor_id'       => $asesor?->id,
+                'user_id'         => auth()->id(),
+                'fecha'           => now()->format('Y-m-d'),
+            ]);
+        }
 
-// Crear registro en servicios realizados — solo LOG, solo la primera vez
-if ($conNota->asunto_log && !$conNota->asunto_tec && !$yaImpreso) {
-    $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$conNota->asesor_asignado])->first();
-    \App\Models\EntradaSinNota::create([
-        'nombre_completo' => $conNota->nombre_organizacion,
-        'telefono'        => $conNota->telefono_representante ?? null,
-        'tipo_charla'     => 'Materiales Entregados',
-        'asesor_id'       => $asesor?->id,
-        'user_id'         => auth()->id(),
-        'fecha'           => now()->format('Y-m-d'),
-    ]);
-}
+        // Notificar a Secretaria Sin Nota
+        $secretarias = \App\Models\User::role('Secretaria Sin Nota')->get();
+        foreach ($secretarias as $secretaria) {
+            $secretaria->notify(new \App\Notifications\TrabajoPendienteNotification(
+                'Logística impresa: ' . $conNota->nombre_organizacion . ' (' . $conNota->codigo_org . ')',
+                'Panel Logístico',
+                $conNota->id
+            ));
+            if ($secretaria->notifications()->count() > 8) {
+                $secretaria->notifications()->latest()->skip(8)->take(100)->delete();
+            }
+        }
 
+        // Si piden JSON (desde el modal), devolver el HTML
+        if (request()->expectsJson()) {
+            return response()->json(['html' => $html]);
+        }
 
-// Notificar a Secretaria Sin Nota
-$secretarias = \App\Models\User::role('Secretaria Sin Nota')->get();
-foreach ($secretarias as $secretaria) {
-    $secretaria->notify(new \App\Notifications\TrabajoPendienteNotification(
-        'Logística impresa: ' . $conNota->nombre_organizacion . ' (' . $conNota->codigo_org . ')',
-        'Panel Logístico',
-        $conNota->id
-    ));
-    if ($secretaria->notifications()->count() > 8) {
-        $secretaria->notifications()->latest()->skip(8)->take(100)->delete();
+        $dompdf = new \Dompdf\Dompdf();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('letter', 'portrait');
+        $dompdf->render();
+
+        return new Response($dompdf->output(), 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="recibo-log-' . $codigo . '.pdf"',
+        ]);
     }
-}
-
-return new Response($dompdf->output(), 200, [
-    'Content-Type'        => 'application/pdf',
-    'Content-Disposition' => 'inline; filename="recibo-log-' . $codigo . '.pdf"',
-]);
-}
 }
