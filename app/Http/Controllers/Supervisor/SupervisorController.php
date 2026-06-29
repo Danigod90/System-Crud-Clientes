@@ -150,14 +150,16 @@ class SupervisorController extends Controller
             : '<span style="background:#fef3c7;color:#92400e;padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;">Pendiente</span>';
 
         $filas .= '
-        <tr>
-            <td>' . htmlspecialchars($e->codigo_org) . '</td>
-            <td>' . htmlspecialchars($e->nombre_organizacion) . '</td>
-            <td>' . htmlspecialchars($e->asesor_asignado ?? '—') . '</td>
-            <td style="text-align:center;">' . ($e->fecha_eleccion ? $e->fecha_eleccion->format('d/m/Y') : '—') . '</td>
-            <td style="text-align:center;">' . $asunto . '</td>
-            <td style="text-align:center;">' . $estado . '</td>
-        </tr>';
+<tr>
+    <td>' . htmlspecialchars($e->codigo_org) . '</td>
+    <td>' . htmlspecialchars($e->nombre_organizacion) . '</td>
+    <td>' . htmlspecialchars($e->asesor_asignado ?? '—') . '</td>
+    <td>' . htmlspecialchars($e->nombre_representante ?? '—') . '</td>
+    <td>' . htmlspecialchars($e->telefono_representante ?? '—') . '</td>
+    <td>' . htmlspecialchars($e->direccion ?? '—') . '</td>
+    <td style="text-align:center;">' . ($e->fecha_eleccion ? $e->fecha_eleccion->format('d/m/Y') : '—') . '</td>
+    <td style="text-align:center;">' . $asunto . '</td>
+</tr>';
     }
 
     $html = '
@@ -194,12 +196,14 @@ class SupervisorController extends Controller
     <table>
         <thead>
             <tr>
-                <th>Código</th>
-                <th>Organización</th>
-                <th>Asesor/a</th>
-                <th style="text-align:center;">Fecha Elección</th>
-                <th style="text-align:center;">Asunto</th>
-                <th style="text-align:center;">Estado</th>
+               <th>Código</th>
+<th>Organización</th>
+<th>Asesor/a</th>
+<th>Contacto</th>
+<th>Teléfono</th>
+<th>Dirección</th>
+<th style="text-align:center;">Fecha Elección</th>
+<th style="text-align:center;">Asunto</th>
             </tr>
         </thead>
         <tbody>' . $filas . '</tbody>

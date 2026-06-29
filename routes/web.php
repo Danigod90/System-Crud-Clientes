@@ -131,6 +131,7 @@ Route::middleware(['auth', 'role:Tecnico|Admin'])->prefix('tecnico')->name('tecn
 
 Route::middleware(['auth', 'role:Supervisor'])->prefix('supervisor')->name('supervisor.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Supervisor\SupervisorController::class, 'dashboard'])->name('dashboard');
+    Route::get('/organizaciones/export-pdf', [App\Http\Controllers\Supervisor\SupervisorController::class, 'exportPdf'])->name('export-pdf');
     Route::get('/organizaciones', [App\Http\Controllers\Supervisor\SupervisorController::class, 'index'])->name('index');
     Route::get('/organizaciones/{entrada}', [App\Http\Controllers\Supervisor\SupervisorController::class, 'show'])->name('show');
     Route::patch('/organizaciones/{entrada}/cargado', [App\Http\Controllers\Supervisor\SupervisorController::class, 'marcarCargado'])->name('cargado');
