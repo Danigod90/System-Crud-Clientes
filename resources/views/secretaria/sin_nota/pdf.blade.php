@@ -94,7 +94,7 @@
 <body>
 
     <div class="header">
-        <img src="{{ public_path('images/logo.png') }}" alt="Logo">
+        <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('images/logo.png'))) }}" alt="Logo">
         <h1>Dirección de Organizaciones Intermedias</h1>
         <h2>Justicia Electoral — República del Paraguay</h2>
         <h3>Reporte de Servicios Realizados</h3>
@@ -108,7 +108,7 @@
         </tr>
     </table>
 </div>
- 
+
 
     <table>
         <thead>

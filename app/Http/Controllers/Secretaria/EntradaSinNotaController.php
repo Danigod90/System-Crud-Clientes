@@ -130,7 +130,7 @@ class EntradaSinNotaController extends Controller
         $entradas    = $query->latest()->get();
         $fecha_desde = $request->fecha_desde ?? 'inicio';
         $fecha_hasta = $request->fecha_hasta ?? now()->format('Y-m-d');
-        $usuario     = auth()->user()->name;
+        $usuario     = 'Abog. ' . auth()->user()->name;
 
        if (request()->expectsJson()) {
     $html = view('secretaria.sin_nota.pdf', compact('entradas', 'fecha_desde', 'fecha_hasta', 'usuario'))->render();
