@@ -217,7 +217,7 @@ $matPadronFmt = $detalle->mat_final_padrones_formato ? ucfirst($detalle->mat_fin
 $matBoletin  = !is_null($detalle->mat_matriz_boletin) ? $detalle->mat_matriz_boletin : (!is_null($detalle->mat_final_papeletas) ? $detalle->mat_final_papeletas : $papeletas);
 $matBoletinFmt = $detalle->mat_final_papeletas_formato ? ucfirst($detalle->mat_final_papeletas_formato) : ($detalle->mat_matriz_boletin_formato ? ucfirst($detalle->mat_matriz_boletin_formato) : '');
 $matProclamacion = $detalle->mat_actas_proclamacion ?? 3;
-$matCertificados = $detalle->mat_certificados ?? '—';
+$matCertificados = !is_null($detalle->mat_certificados) ? $detalle->mat_certificados : 1;
 $matCuentaVotos  = $detalle->mat_cuenta_votos ?? '—';
 
 // Estimado logístico
