@@ -34,6 +34,8 @@ class EntradaConNota extends Model
         'entregado_por',   // nuevo
         'fecha_entrega',   // nuevo
         'direccion',
+        'eleccion_suspendida',
+        'eleccion_suspendida_at',
     ];
 
     protected $casts = [

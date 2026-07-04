@@ -34,6 +34,8 @@ class EntradaConNotaController extends Controller
         $q->where('asunto_tec', true);
     } elseif ($asunto === 'obs') {
         $q->where('asunto_obs', true);
+    } elseif ($asunto === 'suspendida') {
+        $q->where('eleccion_suspendida', 1);
     }
 })
 
@@ -276,6 +278,8 @@ public function exportPdf(Request $request)
             elseif ($asunto === 'log')    { $q->where('asunto_log', true); }
             elseif ($asunto === 'tec')    { $q->where('asunto_tec', true); }
             elseif ($asunto === 'obs')    { $q->where('asunto_obs', true); }
+            elseif ($asunto === 'suspendida') { $q->where('eleccion_suspendida', 1); }
+
         })
         ->when($request->mes_ingreso, fn($q) =>
             $q->whereYear('created_at', substr($request->mes_ingreso, 0, 4))
@@ -298,8 +302,16 @@ public function exportPdf(Request $request)
     if ($request->organizacion) $filtros[] = 'Org: ' . $request->organizacion;
     if ($request->asesor)       $filtros[] = 'Asesor: ' . $request->asesor;
     if ($request->asunto)       $filtros[] = 'Asunto: ' . strtoupper($request->asunto);
-    if ($request->mes_ingreso)  $filtros[] = 'Ingreso: ' . $request->mes_ingreso;
-    if ($request->mes_eleccion) $filtros[] = 'Elección: ' . $request->mes_eleccion;
+    if ($request->mes_ingreso) {
+    $meses = ['01'=>'Enero','02'=>'Febrero','03'=>'Marzo','04'=>'Abril','05'=>'Mayo','06'=>'Junio','07'=>'Julio','08'=>'Agosto','09'=>'Septiembre','10'=>'Octubre','11'=>'Noviembre','12'=>'Diciembre'];
+    $partes = explode('-', $request->mes_ingreso);
+    $filtros[] = 'Ingreso: ' . $partes[0] . '-' . ($meses[$partes[1]] ?? $partes[1]);
+}
+    if ($request->mes_eleccion) {
+    $meses = ['01'=>'Enero','02'=>'Febrero','03'=>'Marzo','04'=>'Abril','05'=>'Mayo','06'=>'Junio','07'=>'Julio','08'=>'Agosto','09'=>'Septiembre','10'=>'Octubre','11'=>'Noviembre','12'=>'Diciembre'];
+    $partes = explode('-', $request->mes_eleccion);
+    $filtros[] = 'Elección: ' . $partes[0] . '-' . ($meses[$partes[1]] ?? $partes[1]);
+}
     $filtroTexto = count($filtros) ? implode(' · ', $filtros) : 'Sin filtros — listado completo';
 
     $filas = '';
@@ -386,5 +398,17 @@ return new \Illuminate\Http\Response($dompdf->output(), 200, [
     'Content-Type'        => 'application/pdf',
     'Content-Disposition' => 'inline; filename="listado-con-nota-' . now()->format('Y-m-d') . '.pdf"',
 ]);
+}
+public function toggleSuspender(EntradaConNota $conNota)
+{
+    $suspendida = !$conNota->eleccion_suspendida;
+    $conNota->update([
+        'eleccion_suspendida'    => $suspendida,
+        'eleccion_suspendida_at' => $suspendida ? now() : null,
+    ]);
+    return response()->json([
+        'suspendida' => $suspendida,
+        'fecha'      => $suspendida ? now()->format('d/m/Y H:i') : null,
+    ]);
 }
 }

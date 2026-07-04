@@ -89,6 +89,7 @@
     <option value="char_pendiente" {{ request('asunto') == 'char_pendiente' ? 'selected' : '' }}>Char — Pendiente</option>
     <option value="char_suspendida" {{ request('asunto') == 'char_suspendida' ? 'selected' : '' }}>Char — Suspendida</option>
     <option value="char_cancelada" {{ request('asunto') == 'char_cancelada' ? 'selected' : '' }}>Char — Cancelada</option>
+    <option value="suspendida" {{ request('asunto') == 'suspendida' ? 'selected' : '' }}>Susp — Suspendida</option>
 </select>
                         </div>
                         <div>
@@ -180,40 +181,47 @@
                             {{ $entrada->created_at?->format('d/m/Y H:i') ?? '-' }}
                         </td>
                         <td class="border border-gray-200 px-2 py-2" style="width:120px; white-space:nowrap;">
-                            @if($entrada->asunto_char)
-    <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
-        <span style="font-size:11px; color:#6b7280;">Char</span>
-        @foreach($entrada->charlas as $i => $ch)
-            @php $charDot = match($ch->estado) { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
-            <span style="width:9px; height:9px; border-radius:50%; background:{{ $charDot }}; display:inline-block;"></span>
-            <sup style="font-size:8px; color:#6b7280;">{{ $i+1 }}</sup>
-        @endforeach
-        @if($entrada->charlas->isEmpty())
-            <span style="width:9px; height:9px; border-radius:50%; background:#eab308; display:inline-block;"></span>
-        @endif
+                           @if($entrada->eleccion_suspendida)
+    <span style="display:inline-flex; align-items:center; gap:4px; background:#fee2e2; color:#dc2626; font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px;">
+        Susp.
+        <span style="width:7px; height:7px; border-radius:50%; background:#dc2626; display:inline-block;"></span>
     </span>
+@else
+    @if($entrada->asunto_char)
+        <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
+            <span style="font-size:11px; color:#6b7280;">Char</span>
+            @foreach($entrada->charlas as $i => $ch)
+                @php $charDot = match($ch->estado) { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
+                <span style="width:9px; height:9px; border-radius:50%; background:{{ $charDot }}; display:inline-block;"></span>
+                <sup style="font-size:8px; color:#6b7280;">{{ $i+1 }}</sup>
+            @endforeach
+            @if($entrada->charlas->isEmpty())
+                <span style="width:9px; height:9px; border-radius:50%; background:#eab308; display:inline-block;"></span>
+            @endif
+        </span>
+    @endif
+    @if($entrada->asunto_log)
+        @php $logDot = in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? '#16a34a' : '#eab308'; @endphp
+        <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
+            <span style="font-size:11px; color:#6b7280;">Log</span>
+            <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>
+        </span>
+    @endif
+    @if($entrada->asunto_tec)
+        @php $tecDot = $entrada->detalleTecnico?->tec_realizado ? '#16a34a' : '#eab308'; @endphp
+        <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
+            <span style="font-size:11px; color:#6b7280;">Tec</span>
+            <span style="width:9px; height:9px; border-radius:50%; background:{{ $tecDot }}; display:inline-block;"></span>
+        </span>
+    @endif
+    @if($entrada->asunto_obs)
+        @php $obsDot = match($entrada->observador?->estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', default => '#eab308' }; @endphp
+        <span style="display:inline-flex; align-items:center; gap:3px;">
+            <span style="font-size:11px; color:#6b7280;">Obs</span>
+            <span style="width:9px; height:9px; border-radius:50%; background:{{ $obsDot }}; display:inline-block;"></span>
+        </span>
+    @endif
 @endif
-                            @if($entrada->asunto_log)
-                                @php $logDot = in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? '#16a34a' : '#eab308'; @endphp
-                                <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
-                                    <span style="font-size:11px; color:#6b7280;">Log</span>
-                                    <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>
-                                </span>
-                            @endif
-                           @if($entrada->asunto_tec)
-    @php $tecDot = $entrada->detalleTecnico?->tec_realizado ? '#16a34a' : '#eab308'; @endphp
-    <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
-        <span style="font-size:11px; color:#6b7280;">Tec</span>
-        <span style="width:9px; height:9px; border-radius:50%; background:{{ $tecDot }}; display:inline-block;"></span>
-    </span>
-@endif
-                            @if($entrada->asunto_obs)
-                                @php $obsDot = match($entrada->observador?->estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', default => '#eab308' }; @endphp
-                                <span style="display:inline-flex; align-items:center; gap:3px;">
-                                    <span style="font-size:11px; color:#6b7280;">Obs</span>
-                                    <span style="width:9px; height:9px; border-radius:50%; background:{{ $obsDot }}; display:inline-block;"></span>
-                                </span>
-                            @endif
                         </td>
                         <td class="border border-gray-200 px-2 py-2" style="width:110px;">
                             <div style="display:flex; gap:6px; align-items:center; justify-content:center;">

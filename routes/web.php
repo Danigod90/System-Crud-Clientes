@@ -78,6 +78,7 @@ Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin|A
     Route::get('con-nota/{conNota}/recibo-logistica',[\App\Http\Controllers\Secretaria\NotaPdfController::class, 'reciboLogistica'])->name('con-nota.recibo-logistica');
     Route::patch('con-nota/{conNota}/entregar-log', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'entregarLog'])->name('con-nota.entregar-log');
     Route::patch('con-nota/{conNota}/ticker',       [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'toggleTicker'])->name('con-nota.toggle-ticker');
+    Route::patch('con-nota/{conNota}/suspender', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'toggleSuspender'])->name('con-nota.suspender');
 });
 
 Route::middleware(['auth'])->prefix('documentos')->name('documentos.')->group(function () {

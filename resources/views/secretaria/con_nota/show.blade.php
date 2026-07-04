@@ -86,7 +86,17 @@
                         Entregado
                     </span>
                     @endif
-
+<button id="btn-suspender" onclick="toggleSuspender()"
+    style="display:inline-flex; align-items:center; gap:6px;
+        background:{{ $conNota->eleccion_suspendida ? '#dc2626' : '#f97316' }};
+        color:white; padding:8px 14px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    <span id="btn-suspender-texto">{{ $conNota->eleccion_suspendida ? 'Suspendido' : 'Suspender' }}</span>
+</button>
                     <a href="{{ request('from') == 'asesor' ? route('asesor.mis-organizaciones') : route('secretaria.con-nota.index') }}"
                        style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 14px; border-radius:8px; font-size:13px; text-decoration:none;">
                         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -578,6 +588,37 @@ async function toggleTicker() {
 
     } catch (err) {
         console.error('Error toggle ticker:', err);
+    }
+}
+
+async function toggleSuspender() {
+    if (!confirm('{{ $conNota->eleccion_suspendida ? "¿Reactivar esta elección?" : "¿Suspender esta elección?" }}')) return;
+
+    try {
+        const response = await fetch('{{ route('secretaria.con-nota.suspender', $conNota) }}', {
+            method: 'PATCH',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            }
+        });
+
+        const data = await response.json();
+        const btn = document.getElementById('btn-suspender');
+        const texto = document.getElementById('btn-suspender-texto');
+
+        if (data.suspendida) {
+            btn.style.background = '#dc2626';
+            texto.textContent = 'Suspendido';
+        } else {
+            btn.style.background = '#f97316';
+            texto.textContent = 'Suspender';
+        }
+
+    } catch(e) {
+        alert('Error al cambiar el estado.');
+        console.error(e);
     }
 }
 </script>
