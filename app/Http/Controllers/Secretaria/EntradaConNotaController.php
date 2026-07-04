@@ -316,13 +316,14 @@ public function exportPdf(Request $request)
 
     $filas = '';
     foreach ($entradas as $e) {
-        $asunto = collect([
-            $e->asunto_char ? 'Char' : null,
-            $e->asunto_log  ? 'Log'  : null,
-            $e->asunto_tec  ? 'Tec'  : null,
-            $e->asunto_obs  ? 'Obs'  : null,
-        ])->filter()->implode(' · ');
-
+       $asunto = $e->eleccion_suspendida
+    ? 'Susp.'
+    : collect([
+        $e->asunto_char ? 'Char' : null,
+        $e->asunto_log  ? 'Log'  : null,
+        $e->asunto_tec  ? 'Tec'  : null,
+        $e->asunto_obs  ? 'Obs'  : null,
+    ])->filter()->implode(' · ');
         $filas .= '
         <tr>
             <td>' . htmlspecialchars($e->codigo_org) . '</td>
