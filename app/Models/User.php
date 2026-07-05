@@ -40,13 +40,14 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+   protected function casts(): array
+{
+    return [
+        'email_verified_at' => 'datetime',
+        'password'          => 'hashed',
+        'last_seen_at'      => 'datetime',
+    ];
+}
     public function asesor()
 {
     return $this->hasOne(\App\Models\Asesor::class);
