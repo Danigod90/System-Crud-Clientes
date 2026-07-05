@@ -23,3 +23,6 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /storage/framework/views
+
+crud_clientes.sql
+crud_clientes_clean.sql
