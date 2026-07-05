@@ -27,9 +27,11 @@ class MisOrganizacionesController extends Controller
             $estado = str_replace('char_', '', $asunto);
             $query->where('asunto_char', true)
                   ->whereHas('charla', fn($q) => $q->where('estado', $estado));
-        } else {
-            $query->where('asunto_' . $asunto, true);
-        }
+        } elseif ($asunto === 'suspendida') {
+    $query->where('eleccion_suspendida', 1);
+} else {
+    $query->where('asunto_' . $asunto, true);
+}
     }
     if (request('mes_ingreso')) {
     $query->whereYear('created_at', substr(request('mes_ingreso'), 0, 4))
