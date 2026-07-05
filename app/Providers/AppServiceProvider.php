@@ -16,6 +16,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        \Carbon\Carbon::setLocale('es');
+
         View::composer('layouts.panel', function ($view) {
     if (!Auth::check()) return;
 

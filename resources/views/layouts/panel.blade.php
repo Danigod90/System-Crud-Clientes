@@ -331,18 +331,22 @@
         <span style="background:#e24b4a; color:#fff; font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px;">{{ $unread }}</span>
         @endif
     </div>
-    <div id="notif-contenido" style="max-height:320px; overflow:auto;">
-        @forelse(auth()->user()->notifications->take(8) as $notif)
-        <div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px;">
-            <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:{{ $notif->read_at ? '#d1d5db' : '#185FA5' }};"></span>
-            <div style="flex:1;">
-                <div style="font-size:12px; color:#111827; line-height:1.4;">{{ $notif->data['mensaje'] ?? '' }}</div>
-                @if(isset($notif->data['seccion']))
-                <div style="font-size:10.5px; color:#6b7280; margin-top:2px;">{{ $notif->data['seccion'] }}</div>
-                @endif
-                <div style="font-size:10px; color:#9ca3af; margin-top:3px;">{{ $notif->created_at->diffForHumans() }}</div>
-            </div>
+   <div id="notif-contenido" style="max-height:320px; overflow:auto;">
+    @forelse(auth()->user()->notifications->take(8) as $notif)
+    @php
+    $esNuevaEntrada = str_contains($notif->data['mensaje'] ?? '', 'Nueva entrada') && is_null($notif->read_at);
+    $bgColor = $esNuevaEntrada ? 'background:#f0fdf4;' : '';
+@endphp
+    <div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px; {{ $bgColor }}">
+        <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:{{ $notif->read_at ? '#d1d5db' : '#185FA5' }};"></span>
+        <div style="flex:1;">
+            <div style="font-size:12px; color:#111827; line-height:1.4;">{{ $notif->data['mensaje'] ?? '' }}</div>
+            @if(isset($notif->data['seccion']))
+            <div style="font-size:10.5px; color:#6b7280; margin-top:2px;">{{ $notif->data['seccion'] }}</div>
+            @endif
+            <div style="font-size:10px; color:#9ca3af; margin-top:3px;">{{ $notif->created_at->diffForHumans() }}</div>
         </div>
+    </div>
         @empty
         <div style="padding:20px 16px; text-align:center; font-size:12px; color:#9ca3af;">Sin notificaciones.</div>
         @endforelse
@@ -472,8 +476,7 @@ function toggleNotif() {
                     contenido.innerHTML = '<div style="padding:20px 16px; text-align:center; font-size:12px; color:#9ca3af;">Sin notificaciones.</div>';
                 } else {
                     contenido.innerHTML = d.notificaciones.map(n => `
-                        <div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px;">
-                            <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:${n.leida ? '#d1d5db' : '#185FA5'};"></span>
+<div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px; ${n.mensaje.includes('Nueva entrada') ? 'background:#d1fae5;' : ''}">                            <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:${n.leida ? '#d1d5db' : '#185FA5'};"></span>
                             <div style="flex:1;">
                                 <div style="font-size:12px; color:#111827; line-height:1.4;">${n.mensaje}</div>
                                 ${n.seccion ? `<div style="font-size:10.5px; color:#6b7280; margin-top:2px;">${n.seccion}</div>` : ''}
