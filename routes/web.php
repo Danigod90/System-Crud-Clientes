@@ -81,6 +81,17 @@ Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin|A
     Route::patch('con-nota/{conNota}/suspender', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'toggleSuspender'])->name('con-nota.suspender');
 });
 
+// Chat
+Route::middleware(['auth'])->prefix('chat')->name('chat.')->group(function () {
+    Route::get('/conversaciones',    [\App\Http\Controllers\ChatController::class, 'conversaciones'])->name('conversaciones');
+    Route::get('/usuarios',          [\App\Http\Controllers\ChatController::class, 'usuarios'])->name('usuarios');
+    Route::get('/mensajes/{id}',     [\App\Http\Controllers\ChatController::class, 'mensajes'])->name('mensajes');
+    Route::post('/enviar/{id}',      [\App\Http\Controllers\ChatController::class, 'enviar'])->name('enviar');
+    Route::post('/directo/{userId}', [\App\Http\Controllers\ChatController::class, 'iniciarDirecto'])->name('directo');
+    Route::get('/no-leidos',         [\App\Http\Controllers\ChatController::class, 'noLeidos'])->name('noLeidos');
+    Route::post('/ping',             [\App\Http\Controllers\ChatController::class, 'ping'])->name('ping');
+});
+
 Route::middleware(['auth'])->prefix('documentos')->name('documentos.')->group(function () {
     Route::post('{entrada}',   [\App\Http\Controllers\DocumentoController::class, 'store'])->name('store');
     Route::delete('{documento}',[\App\Http\Controllers\DocumentoController::class, 'destroy'])->name('destroy');

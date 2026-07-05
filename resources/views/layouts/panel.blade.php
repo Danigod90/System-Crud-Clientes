@@ -537,7 +537,225 @@ setInterval(async function() {
         }
     } catch(e) {}
 }, 30000);
+
+</script>
+{{-- CHAT WIDGET --}}
+<div id="chat-btn" onclick="toggleChat()" style="position:fixed; bottom:24px; right:24px; width:50px; height:50px; border-radius:50%; background:#1e3a5f; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.25); z-index:8000;">
+    <svg width="22" height="22" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+    <span id="chat-badge" style="display:none; position:absolute; top:-3px; right:-3px; background:#e24b4a; color:#fff; font-size:9px; font-weight:600; width:16px; height:16px; border-radius:50%; align-items:center; justify-content:center;">0</span>
+</div>
+
+<div id="chat-panel" style="display:none; position:fixed; bottom:84px; right:24px; width:360px; height:440px; background:#fff; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.18); z-index:8000; display:none; flex-direction:column; overflow:hidden; border:1px solid #e5e7eb;">
+
+    {{-- Header --}}
+    <div style="background:#1e3a5f; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
+        <span style="font-size:13px; font-weight:600; color:#fff; display:flex; align-items:center; gap:6px;">
+            <svg width="14" height="14" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Chat interno
+        </span>
+        <div style="display:flex; gap:6px;">
+            <button onclick="toggleChat()" style="background:rgba(255,255,255,0.15); border:none; border-radius:6px; width:24px; height:24px; cursor:pointer; color:#fff; font-size:14px; display:flex; align-items:center; justify-content:center;">—</button>
+        </div>
+    </div>
+
+    {{-- Body --}}
+    <div style="display:flex; flex:1; overflow:hidden;">
+
+        {{-- Lista conversaciones --}}
+        <div id="chat-convs" style="width:115px; border-right:1px solid #e5e7eb; overflow-y:auto; background:#f8fafc; flex-shrink:0;"></div>
+
+        {{-- Mensajes --}}
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+            <div id="chat-conv-header" style="padding:7px 10px; border-bottom:1px solid #e5e7eb; font-size:11px; font-weight:600; color:#374151; background:#fff; flex-shrink:0; display:flex; align-items:center; gap:6px;">
+                Seleccioná una conversación
+            </div>
+            <div id="chat-msgs" style="flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:5px; background:#f9fafb;"></div>
+            <div id="chat-input-wrap" style="padding:7px; border-top:1px solid #e5e7eb; display:flex; gap:5px; align-items:center; background:#fff; flex-shrink:0;">
+                <label for="chat-file" style="cursor:pointer; color:#9ca3af; display:flex; align-items:center;">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                </label>
+                <input type="file" id="chat-file" style="display:none;" onchange="chatArchivoSeleccionado(this)">
+                <input type="text" id="chat-input" placeholder="Escribí un mensaje..." onkeydown="if(event.key==='Enter')enviarMensaje()"
+                    style="flex:1; border:1px solid #e5e7eb; border-radius:8px; padding:5px 8px; font-size:11px; outline:none; background:#f9fafb;">
+                <button onclick="enviarMensaje()" style="background:#1e3a5f; border:none; border-radius:8px; width:28px; height:28px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                    <svg width="13" height="13" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- Lista usuarios (para nuevo directo) --}}
+    <div id="chat-usuarios-panel" style="display:none; position:absolute; inset:40px 0 0 0; background:#fff; z-index:10; overflow-y:auto; padding:8px;">
+        <div style="display:flex; align-items:center; gap:6px; padding:6px 8px; border-bottom:1px solid #e5e7eb; margin-bottom:6px;">
+            <button onclick="cerrarUsuarios()" style="background:none; border:none; cursor:pointer; color:#6b7280; font-size:18px; line-height:1;">←</button>
+            <span style="font-size:12px; font-weight:600; color:#374151;">Nueva conversación</span>
+        </div>
+        <div id="chat-usuarios-lista"></div>
+    </div>
+</div>
+
+<script>
+let chatAbierto = false;
+let convActualId = null;
+let pollingInterval = null;
+let chatArchivoFile = null;
+
+function toggleChat() {
+    chatAbierto = !chatAbierto;
+    const panel = document.getElementById('chat-panel');
+    panel.style.display = chatAbierto ? 'flex' : 'none';
+    if (chatAbierto) {
+        cargarConversaciones();
+        if (!pollingInterval) pollingInterval = setInterval(chatPolling, 3000);
+    } else {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+    }
+}
+
+function chatPolling() {
+    if (convActualId) cargarMensajes(convActualId, false);
+    actualizarBadge();
+}
+
+async function cargarConversaciones() {
+    const res = await fetch('/chat/conversaciones');
+    const convs = await res.json();
+    const cont = document.getElementById('chat-convs');
+    cont.innerHTML = convs.map(c => `
+        <div onclick="seleccionarConv(${c.id}, '${c.nombre}', '${c.tipo}')"
+            style="padding:8px 10px; cursor:pointer; border-bottom:1px solid #f3f4f6; ${convActualId === c.id ? 'background:#eff6ff;' : ''}">
+            <div style="font-size:11px; font-weight:600; color:#374151; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                ${c.tipo === 'general' ? '👥 ' : c.tipo === 'rol' ? '🔧 ' : '💬 '}${c.nombre}
+            </div>
+            ${c.ultimo ? `<div style="font-size:10px; color:#9ca3af; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px;">${c.ultimo_user ? c.ultimo_user.split(' ')[0]+': ' : ''}${c.ultimo}</div>` : ''}
+            ${c.no_leidos > 0 ? `<span style="background:#e24b4a; color:#fff; font-size:9px; border-radius:20px; padding:1px 5px; font-weight:600;">${c.no_leidos}</span>` : ''}
+        </div>
+    `).join('') + `
+        <div onclick="abrirUsuarios()" style="padding:8px 10px; cursor:pointer; border-top:1px solid #e5e7eb; margin-top:4px; display:flex; align-items:center; gap:4px;">
+            <span style="font-size:14px;">+</span>
+            <span style="font-size:10px; color:#6b7280;">Nuevo chat</span>
+        </div>
+    `;
+}
+
+async function seleccionarConv(id, nombre, tipo) {
+    convActualId = id;
+    document.getElementById('chat-conv-header').textContent = (tipo === 'general' ? '👥 ' : tipo === 'rol' ? '🔧 ' : '💬 ') + nombre;
+    await cargarMensajes(id, true);
+    cargarConversaciones();
+}
+
+async function cargarMensajes(id, scroll) {
+    const res = await fetch(`/chat/mensajes/${id}`);
+    const msgs = await res.json();
+    const cont = document.getElementById('chat-msgs');
+    cont.innerHTML = msgs.map(m => `
+        <div style="display:flex; flex-direction:column; align-items:${m.es_mio ? 'flex-end' : 'flex-start'};">
+            ${!m.es_mio ? `<div style="font-size:9px; color:#9ca3af; margin-bottom:2px;">${m.nombre}</div>` : ''}
+            ${m.mensaje ? `<div style="background:${m.es_mio ? '#dbeafe' : '#fff'}; border:1px solid #e5e7eb; border-radius:8px; padding:5px 8px; font-size:11px; color:#374151; max-width:85%; line-height:1.5;">${m.mensaje}</div>` : ''}
+            ${m.archivo ? `<a href="${m.archivo}" target="_blank" style="display:flex; align-items:center; gap:4px; background:#f3f4f6; border:1px solid #e5e7eb; border-radius:6px; padding:4px 8px; font-size:10px; color:#374151; text-decoration:none; margin-top:2px;">📎 ${m.archivo_nombre}</a>` : ''}
+            <div style="font-size:9px; color:#d1d5db; margin-top:2px;">${m.hora}</div>
+        </div>
+    `).join('');
+    if (scroll) cont.scrollTop = cont.scrollHeight;
+}
+
+async function enviarMensaje() {
+    const input = document.getElementById('chat-input');
+    const mensaje = input.value.trim();
+    if (!mensaje && !chatArchivoFile) return;
+    if (!convActualId) return;
+
+    const formData = new FormData();
+    if (mensaje) formData.append('mensaje', mensaje);
+    if (chatArchivoFile) formData.append('archivo', chatArchivoFile);
+
+    input.value = '';
+    chatArchivoFile = null;
+    document.getElementById('chat-file').value = '';
+
+    await fetch(`/chat/enviar/${convActualId}`, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        body: formData
+    });
+
+    await cargarMensajes(convActualId, true);
+    cargarConversaciones();
+}
+
+function chatArchivoSeleccionado(input) {
+    chatArchivoFile = input.files[0];
+    if (chatArchivoFile) {
+        document.getElementById('chat-input').placeholder = '📎 ' + chatArchivoFile.name;
+    }
+}
+
+async function abrirUsuarios() {
+    document.getElementById('chat-usuarios-panel').style.display = 'block';
+    const res = await fetch('/chat/usuarios');
+    const usuarios = await res.json();
+    document.getElementById('chat-usuarios-lista').innerHTML = usuarios.map(u => `
+        <div onclick="iniciarDirecto(${u.id})" style="padding:8px 10px; cursor:pointer; border-bottom:1px solid #f3f4f6; display:flex; align-items:center; gap:8px;">
+            <span style="width:8px; height:8px; border-radius:50%; background:${u.online ? '#16a34a' : '#d1d5db'}; flex-shrink:0;"></span>
+            <div>
+                <div style="font-size:11px; font-weight:600; color:#374151;">${u.nombre}</div>
+                <div style="font-size:10px; color:#9ca3af;">${u.rol}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function cerrarUsuarios() {
+    document.getElementById('chat-usuarios-panel').style.display = 'none';
+}
+
+async function iniciarDirecto(userId) {
+    const res = await fetch(`/chat/directo/${userId}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            'Content-Type': 'application/json'
+        }
+    });
+    const data = await res.json();
+    cerrarUsuarios();
+    await cargarConversaciones();
+    const res2 = await fetch('/chat/conversaciones');
+    const convs = await res2.json();
+    const conv = convs.find(c => c.id === data.conversacion_id);
+    if (conv) seleccionarConv(conv.id, conv.nombre, conv.tipo);
+}
+
+async function actualizarBadge() {
+    const res = await fetch('/chat/no-leidos');
+    const data = await res.json();
+    const badge = document.getElementById('chat-badge');
+    if (data.total > 0) {
+        badge.textContent = data.total;
+        badge.style.display = 'flex';
+    } else {
+        badge.style.display = 'none';
+    }
+}
+
+// Ping cada 30 segundos para marcar online
+setInterval(() => {
+    fetch('/chat/ping', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+    });
+}, 30000);
+
+// Badge al cargar
+actualizarBadge();
+setInterval(actualizarBadge, 10000);
+
 </script>
 
 </body>
+
 </html>
