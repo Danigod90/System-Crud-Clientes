@@ -603,6 +603,7 @@ let pollingInterval = null;
 let chatArchivoFile = null;
 
 function toggleChat() {
+    iniciarAudio();
     chatAbierto = !chatAbierto;
     const panel = document.getElementById('chat-panel');
     panel.style.display = chatAbierto ? 'flex' : 'none';
@@ -652,6 +653,8 @@ async function cargarMensajes(id, scroll) {
     const res = await fetch(`/chat/mensajes/${id}`);
     const msgs = await res.json();
     const cont = document.getElementById('chat-msgs');
+    const cantAnterior = cont.children.length;
+
     cont.innerHTML = msgs.map(m => `
         <div style="display:flex; flex-direction:column; align-items:${m.es_mio ? 'flex-end' : 'flex-start'};">
             ${!m.es_mio ? `<div style="font-size:9px; color:#9ca3af; margin-bottom:2px;">${m.nombre}</div>` : ''}
@@ -660,7 +663,41 @@ async function cargarMensajes(id, scroll) {
             <div style="font-size:9px; color:#d1d5db; margin-top:2px;">${m.hora}</div>
         </div>
     `).join('');
+
+    // Sonido si hay mensajes nuevos de otros
+    const mensajesNuevos = msgs.filter(m => !m.es_mio);
+    if (cantAnterior > 0 && msgs.length > cantAnterior && mensajesNuevos.length > 0) {
+        reproducirSonido();
+    }
+
     if (scroll) cont.scrollTop = cont.scrollHeight;
+}
+
+let audioCtx = null;
+
+function iniciarAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+}
+
+function reproducirSonido() {
+    try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.frequency.value = 880;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+        osc.start(audioCtx.currentTime);
+        osc.stop(audioCtx.currentTime + 0.3);
+    } catch(e) {
+        console.error('Audio error:', e);
+    }
 }
 
 async function enviarMensaje() {
