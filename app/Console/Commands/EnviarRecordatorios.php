@@ -32,15 +32,15 @@ class EnviarRecordatorios extends Command
             $asesor = Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$entrada->asesor_asignado])->first();
             if (!$asesor || !$asesor->telefono) continue;
 
-            $hora = Carbon::parse($charla->fecha_hora)->format('H:i');
+$fecha = Carbon::parse($charla->fecha_hora)->locale('es')->isoFormat('D [de] MMMM');
 
-            $whatsapp->enviar(
-                $asesor->telefono,
-                "🔔 *Recordatorio de Charla*\n" .
-                "🏢 *Organización:* {$entrada->nombre_organizacion}\n" .
-                "📅 *Mañana* a las {$hora}\n\n" .
-                "_Sistema de Gestión Electoral_"
-            );
+$whatsapp->enviar(
+    $asesor->telefono,
+    "🔔 *Recordatorio de Charla*\n" .
+    "🏢 *Organización:* {$entrada->nombre_organizacion}\n" .
+    "📅 Tenés una charla mañana {$fecha}\n\n" .
+    "_Sistema de Gestión Electoral_"
+);
 
             $this->info("Recordatorio charla enviado: {$entrada->nombre_organizacion}");
         }
@@ -57,13 +57,15 @@ class EnviarRecordatorios extends Command
             $asesor = Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$entrada->asesor_asignado])->first();
             if (!$asesor || !$asesor->telefono) continue;
 
-            $whatsapp->enviar(
-                $asesor->telefono,
-                "👁️ *Recordatorio de Observador*\n" .
-                "🏢 *Organización:* {$entrada->nombre_organizacion}\n" .
-                "📅 *Mañana* es la fecha del observador\n\n" .
-                "_Sistema de Gestión Electoral_"
-            );
+           $fecha = Carbon::parse($entrada->observador->fecha_hora)->locale('es')->isoFormat('D [de] MMMM');
+
+$whatsapp->enviar(
+    $asesor->telefono,
+    "👁️ *Recordatorio de Observador*\n" .
+    "🏢 *Organización:* {$entrada->nombre_organizacion}\n" .
+    "📅 Tenés observador mañana {$fecha}\n\n" .
+    "_Sistema de Gestión Electoral_"
+);
 
             $this->info("Recordatorio observador enviado: {$entrada->nombre_organizacion}");
         }
