@@ -173,3 +173,10 @@ Route::get('/notificaciones/lista', function() {
 })->middleware('auth');
 
 require __DIR__.'/auth.php';
+
+
+Route::get('/test-whatsapp', function() {
+    $whatsapp = new \App\Services\WhatsAppService();
+    $resultado = $whatsapp->enviar('974963771', 'Prueba desde el sistema electoral 🎉');
+    return $resultado ? 'Mensaje enviado!' : 'Error al enviar';
+});

@@ -40,7 +40,15 @@
                         <input type="text" name="cargo" value="{{ old('cargo', $asesor->cargo) }}"
                                class="w-full border rounded px-3 py-2" placeholder="Ej: Asesor Electoral">
                     </div>
-
+<div class="mb-4">
+    <label class="block text-gray-700 font-semibold mb-1">Teléfono WhatsApp</label>
+    <div class="flex items-center gap-2">
+        <span class="bg-gray-100 border rounded px-3 py-2 text-gray-500">+595</span>
+        <input type="text" name="telefono" value="{{ old('telefono', $asesor->telefono) }}"
+               class="w-full border rounded px-3 py-2" placeholder="Ej: 981316645">
+    </div>
+    <p class="text-xs text-gray-400 mt-1">Sin el 0 inicial — solo los 9 dígitos</p>
+</div>
                     <div class="mb-4">
     <label class="flex items-center gap-2">
         <input type="checkbox" name="activo" value="1"

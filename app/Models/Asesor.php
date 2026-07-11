@@ -13,6 +13,7 @@ class Asesor extends Model
     'cargo',
     'activo',
     'user_id',
+    'telefono', // Agregado para permitir la asignación masiva del teléfono
 ];
 
     public function getNombreCompletoAttribute()

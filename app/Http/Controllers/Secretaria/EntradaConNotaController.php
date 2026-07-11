@@ -103,6 +103,26 @@ return view('secretaria.con_nota.index', compact('entradas', 'asesores', 'charla
         'asunto_obs'             => in_array('obs', $request->asunto),
         'direccion'     => $request->direccion,
     ]);
+    // Enviar WhatsApp al asesor asignado
+$asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$request->asesor_asignado])->first();
+if ($asesor && $asesor->telefono) {
+    $whatsapp = new \App\Services\WhatsAppService();
+    $asuntos = collect([
+        in_array('char', $request->asunto) ? 'Charla' : null,
+        in_array('log', $request->asunto)  ? 'Logística' : null,
+        in_array('tec', $request->asunto)  ? 'Técnica' : null,
+        in_array('obs', $request->asunto)  ? 'Observador' : null,
+    ])->filter()->implode(', ');
+
+    $whatsapp->enviar(
+        $asesor->telefono,
+        "📋 *Nueva entrada asignada*\n" .
+        "🏢 *Organización:* {$request->nombre_organizacion}\n" .
+        "📌 *Asunto:* {$asuntos}\n" .
+        "📅 *Fecha elección:* " . ($request->fecha_eleccion ?? 'Sin fecha') . "\n\n" .
+        "_Sistema de Gestión Electoral_"
+    );
+}
 // Notificaciones según rol
 if (auth()->user()->hasRole('Asesor')) {
     $secretarias = \App\Models\User::role('Secretaria Con Nota')->get();

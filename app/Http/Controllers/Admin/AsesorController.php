@@ -57,6 +57,7 @@ class AsesorController extends Controller
     'cargo'    => $request->cargo,
     'activo'   => $request->has('activo'),
     'user_id'  => $request->user_id,
+    'telefono' => $request->telefono, // Agregado para actualizar el teléfono
 ]);
 
         return redirect()->route('admin.asesores.index')
