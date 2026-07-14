@@ -745,7 +745,8 @@ function generarPapeletasTec() {
             const key = `pap_${p}_lista_${l}_nombre`;
             const val = valoresActuales[key] !== undefined ? valoresActuales[key] : (saved.listas?.[l] || '');
             listasHTML += `<input type="text" name="${key}" value="${val}" placeholder="${ordinalLisTec[l-1]} Lista"
-                style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 7px; font-size:12px; color:#111827; background:#fff; box-sizing:border-box; margin-bottom:4px;">`;
+    title="${val}"
+    style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 7px; font-size:12px; color:#111827; background:#fff; box-sizing:border-box; margin-bottom:4px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">`;
         }
         const candKey = `pap_${p}_lista_1_candidatura`;
         const sisKey  = `pap_${p}_sistema_eleccion`;
@@ -755,22 +756,22 @@ function generarPapeletasTec() {
         container.innerHTML += `
         <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:14px; margin-bottom:10px;">
             <p style="font-size:12px; font-weight:700; color:#374151; margin:0 0 10px;">${ordinalPapTec[p-1]} Papeleta</p>
-            <div style="display:flex; gap:8px; align-items:flex-start;">
-                <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
-                    <label style="font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase;">Lista</label>
-                    ${listasHTML}
-                </div>
-                <div style="flex:1;">
-                    <label style="font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; display:block; margin-bottom:4px;">Candidatura</label>
-                    <input type="text" name="${candKey}" value="${candVal}" list="candidaturas-tec-list" placeholder="Candidatura..."
-                        style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 7px; font-size:12px; color:#111827; background:#fff; box-sizing:border-box; margin-top:${marginTop}px;">
-                </div>
-                <div style="flex:1;">
-                    <label style="font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; display:block; margin-bottom:4px;">Sistema de Elección</label>
-                    <input type="text" name="${sisKey}" value="${sisVal}" list="sistemas-tec-list" placeholder="Sistema..."
-                        style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 7px; font-size:12px; color:#111827; background:#fff; box-sizing:border-box; margin-top:${marginTop}px;">
-                </div>
-            </div>
+           <div style="display:grid; grid-template-columns:2fr 1fr 1fr; gap:8px; align-items:flex-start;">
+    <div style="display:flex; flex-direction:column; gap:4px; min-width:0;">
+        <label style="font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase;">Lista</label>
+        ${listasHTML}
+    </div>
+    <div style="min-width:0;">
+        <label style="font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; display:block; margin-bottom:4px;">Candidatura</label>
+        <input type="text" name="${candKey}" value="${candVal}" list="candidaturas-tec-list" placeholder="Candidatura..."
+            style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 7px; font-size:12px; color:#111827; background:#fff; box-sizing:border-box; margin-top:${marginTop}px;">
+    </div>
+    <div style="min-width:0;">
+        <label style="font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; display:block; margin-bottom:4px;">Sistema de Elección</label>
+        <input type="text" name="${sisKey}" value="${sisVal}" list="sistemas-tec-list" placeholder="Sistema..."
+            style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 7px; font-size:12px; color:#111827; background:#fff; box-sizing:border-box; margin-top:${marginTop}px;">
+    </div>
+</div>
         </div>`;
     }
 }
