@@ -138,7 +138,7 @@
                 $candidaturaRO = $entrada->detalleTecnico->{"pap_{$p}_lista_1_candidatura"} ?? '—';
                 $sistemaRO     = $entrada->detalleTecnico->{"pap_{$p}_sistema_eleccion"} ?? '—';
             @endphp
-            <div style="display:flex; align-items:center; gap:12px; padding:8px 12px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; margin-bottom:6px;">
+            <div style="display:grid; grid-template-columns:auto minmax(0,2fr) minmax(0,1fr) minmax(0,1fr); gap:8px; align-items:center; padding:8px 12px; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; margin-bottom:6px;">
     <span style="font-size:12px; font-weight:700; color:#374151; white-space:nowrap;">{{ $ordinalRO[$p-1] }} Papeleta</span>
     @php
         $listaNombres = [];
@@ -148,10 +148,12 @@
         }
     @endphp
     @if(count($listaNombres))
-    <span style="font-size:11px; background:#e5e7eb; color:#374151; padding:2px 8px; border-radius:4px; white-space:nowrap;">Lista {{ implode(', ', $listaNombres) }}</span>
+    <span style="font-size:11px; background:#e5e7eb; color:#374151; padding:2px 8px; border-radius:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="{{ implode(', ', $listaNombres) }}">{{ implode(', ', $listaNombres) }}</span>
+    @else
+    <span></span>
     @endif
-    <span style="font-size:13px; color:#111827; flex:1;">{{ $candidaturaRO }}</span>
-    <span style="font-size:11px; color:#6b7280; white-space:nowrap;">{{ $sistemaRO }}</span>
+    <span style="font-size:13px; color:#111827; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="{{ $candidaturaRO }}">{{ $candidaturaRO }}</span>
+    <span style="font-size:11px; color:#6b7280; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="{{ $sistemaRO }}">{{ $sistemaRO }}</span>
 </div>
             @endfor
         </div>
