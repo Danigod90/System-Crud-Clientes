@@ -55,7 +55,7 @@ $pad = $ent->detalleTecnico?->mat_final_padrones ?? ($mesas > 0 ? $mesas * 3 : '
    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
 
     <a href="{{ route('asesor.mis-organizaciones') }}" style="text-decoration:none;">
-<div class="card-stat" style="background:#f59e0b; border-radius:12px; padding:20px; color:white; cursor:pointer; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+<div class="card-stat" style="background:#eab308; border-radius:12px; padding:20px; color:white; cursor:pointer; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
     <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div>
                 <div style="font-size:13px; font-weight:500; margin-bottom:8px;">Mis organizaciones</div>
@@ -93,18 +93,18 @@ $pad = $ent->detalleTecnico?->mat_final_padrones ?? ($mesas > 0 ? $mesas * 3 : '
     </div>
     </a>
 
-    <a href="{{ route('asesor.borrador.index') }}" style="text-decoration:none;">
-    <div class="card-stat" style="background:#6b7280; border-radius:12px; padding:20px; color:white; cursor:pointer;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
-        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-            <div>
-                <div style="font-size:13px; font-weight:500; margin-bottom:8px;">Borrador privado</div>
-                <div style="font-size:36px; font-weight:700; line-height:1;">{{ $stats['borradores'] }}</div>
-            </div>
-            <svg width="32" height="32" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    <a href="{{ route('asesor.mis-organizaciones') }}?asunto=tec_sin_enviar" style="text-decoration:none;">
+<div class="card-stat" style="background:#d97706; border-radius:12px; padding:20px; color:white; cursor:pointer;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+        <div>
+            <div style="font-size:13px; font-weight:500; margin-bottom:8px;">Sin enviar a técnica</div>
+            <div style="font-size:36px; font-weight:700; line-height:1;">{{ $stats['sin_enviar_tec'] }}</div>
         </div>
-        <span style="display:inline-block; background:rgba(0,0,0,0.15); font-size:11px; padding:2px 10px; border-radius:20px; margin-top:10px;">mis borradores</span>
+        <svg width="32" height="32" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
     </div>
-    </a>
+    <span style="display:inline-block; background:rgba(0,0,0,0.15); font-size:11px; padding:2px 10px; border-radius:20px; margin-top:10px;">se olvidaron de enviar</span>
+</div>
+</a>
 
     <a href="{{ route('asesor.mis-organizaciones') }}?sin_fecha=1" style="text-decoration:none;">
     <div class="card-stat" style="background:#1e3a5f; border-radius:12px; padding:20px; color:white; cursor:pointer;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
@@ -119,8 +119,8 @@ $pad = $ent->detalleTecnico?->mat_final_padrones ?? ($mesas > 0 ? $mesas * 3 : '
     </div>
     </a>
 
-    <a href="{{ route('asesor.mis-organizaciones') }}?asunto=tec" style="text-decoration:none;">
-    <div class="card-stat" style="background:#dc2626; border-radius:12px; padding:20px; color:white; cursor:pointer;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+<a href="{{ route('asesor.mis-organizaciones') }}?asunto=tec_pendiente" style="text-decoration:none;">
+        <div class="card-stat" style="background:#dc2626; border-radius:12px; padding:20px; color:white; cursor:pointer;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div>
                 <div style="font-size:13px; font-weight:500; margin-bottom:8px;">Trabajo técnico pendiente</div>

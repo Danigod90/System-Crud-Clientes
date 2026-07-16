@@ -73,7 +73,12 @@ if ($rol === 'Secretaria Sin Nota') {
             ->whereHas('observador', fn($q) => $q->where('estado', 'pendiente'))
             ->orWhereDoesntHave('observador')
         )->count(),
-    'borradores' => 0,
+    'sin_enviar_tec' => EntradaConNota::where('asesor_asignado', $nombreAsesor)
+    ->where('asunto_tec', true)
+    ->where(fn($q) => $q
+        ->whereDoesntHave('detalleTecnico')
+        ->orWhereHas('detalleTecnico', fn($q) => $q->where('enviado_tecnica', false)->orWhereNull('enviado_tecnica'))
+    )->count(),
 ];
         session(['charlasPendientes' => $charlasPendientes]);
         $prioridades = \App\Models\PrioridadTecnica::with(['entrada.detalleTecnico'])->orderBy('orden')->get();

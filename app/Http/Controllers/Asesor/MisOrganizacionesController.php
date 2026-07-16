@@ -28,25 +28,38 @@ class MisOrganizacionesController extends Controller
             $query->where('asunto_char', true)
                   ->whereHas('charla', fn($q) => $q->where('estado', $estado));
         } elseif ($asunto === 'suspendida') {
-    $query->where('eleccion_suspendida', 1);
-} else {
-    $query->where('asunto_' . $asunto, true);
-}
+            $query->where('eleccion_suspendida', 1);
+        } elseif ($asunto === 'tec_sin_enviar') {
+            $query->where('asunto_tec', true)
+                  ->where(fn($q) => $q
+                      ->whereDoesntHave('detalleTecnico')
+                      ->orWhereHas('detalleTecnico', fn($q) => $q->where('enviado_tecnica', false)->orWhereNull('enviado_tecnica'))
+                  );
+        } elseif ($asunto === 'tec_pendiente') {
+            $query->where('asunto_tec', true)
+                  ->where(fn($q) => $q
+                      ->whereHas('detalleTecnico', fn($q) => $q->where('tec_realizado', false))
+                      ->orWhereDoesntHave('detalleTecnico')
+                  );
+        } else {
+            $query->where('asunto_' . $asunto, true);
+        }
     }
+
     if (request('mes_ingreso')) {
-    $query->whereYear('created_at', substr(request('mes_ingreso'), 0, 4))
-          ->whereMonth('created_at', substr(request('mes_ingreso'), 5, 2));
-}
-if (request('mes_eleccion')) {
-    $query->whereYear('fecha_eleccion', substr(request('mes_eleccion'), 0, 4))
-          ->whereMonth('fecha_eleccion', substr(request('mes_eleccion'), 5, 2));
-}
+        $query->whereYear('created_at', substr(request('mes_ingreso'), 0, 4))
+              ->whereMonth('created_at', substr(request('mes_ingreso'), 5, 2));
+    }
+    if (request('mes_eleccion')) {
+        $query->whereYear('fecha_eleccion', substr(request('mes_eleccion'), 0, 4))
+              ->whereMonth('fecha_eleccion', substr(request('mes_eleccion'), 5, 2));
+    }
     if (request('estado_charla')) {
         $query->whereHas('charla', fn($q) => $q->where('estado', request('estado_charla')));
     }
-if (request('sin_fecha')) {
-    $query->whereNull('fecha_eleccion');
-}
+    if (request('sin_fecha')) {
+        $query->whereNull('fecha_eleccion');
+    }
 
     $charlasPendientes = \App\Models\Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', $nombreAsesor))
         ->where('estado', 'pendiente')
@@ -58,15 +71,14 @@ if (request('sin_fecha')) {
 
     $prioridades = \App\Models\PrioridadAsesor::where('user_id', $user->id)->get();
 
-$prioridadIds = $prioridades->pluck('entrada_con_nota_id')->toArray();
+    $prioridadIds = $prioridades->pluck('entrada_con_nota_id')->toArray();
 
-$entradas = $query->orderByRaw("FIELD(id, " . (count($prioridadIds) ? implode(',', $prioridadIds) : '0') . ") DESC")
-    ->latest()
-    ->paginate(15)->withQueryString();
+    $entradas = $query->orderByRaw("FIELD(id, " . (count($prioridadIds) ? implode(',', $prioridadIds) : '0') . ") DESC")
+        ->latest()
+        ->paginate(15)->withQueryString();
 
-return view('asesor.mis-organizaciones', compact('entradas', 'asesores', 'charlasPendientes', 'prioridades'));
+    return view('asesor.mis-organizaciones', compact('entradas', 'asesores', 'charlasPendientes', 'prioridades'));
 }
-
 public function edit(EntradaConNota $entrada)
 {
     $user = Auth::user();
