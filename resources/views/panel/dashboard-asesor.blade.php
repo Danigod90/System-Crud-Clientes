@@ -52,93 +52,87 @@ $pad = $ent->detalleTecnico?->mat_final_padrones ?? ($mesas > 0 ? $mesas * 3 : '
     @endif
 
     {{-- CARDS --}}
-    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px;">
+   <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;">
 
-        {{-- 1. Organizaciones activas --}}
-        <div class="card-stat"style="background:linear-gradient(135deg,#E8834A,#F5A623); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(232,131,74,0.35);">
-            <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
-                <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
-                    <path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/>
-                </svg>
+    <a href="{{ route('asesor.mis-organizaciones') }}" style="text-decoration:none;">
+<div class="card-stat" style="background:#f59e0b; border-radius:12px; padding:20px; color:white; cursor:pointer; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <div style="font-size:13px; font-weight:500; margin-bottom:8px;">Mis organizaciones</div>
+                <div style="font-size:36px; font-weight:700; line-height:1;">{{ $stats['organizaciones']}}</div>
             </div>
-            <div style="font-size:11px; color:rgba(255,255,255,0.85); margin-bottom:6px; font-weight:500;">Mis organizaciones</div>
-            <div style="font-size:36px; font-weight:700; color:#fff; line-height:1;">{{ $stats['organizaciones'] }}</div>
-            <span style="display:inline-flex; background:rgba(255,255,255,0.22); border-radius:20px; padding:3px 10px; font-size:10px; color:#fff; margin-top:10px;">asignadas</span>
+            <svg width="32" height="32" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         </div>
-
-       {{-- 2. Observadores pendientes --}}
-<div class="card-stat" style="background:linear-gradient(135deg,#4A7C59,#6BAF7A); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(74,124,89,0.35);">
-    <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
-        <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-        </svg>
+        <span style="display:inline-block; background:rgba(0,0,0,0.15); font-size:11px; padding:2px 10px; border-radius:20px; margin-top:10px;">asignadas</span>
     </div>
-    <div style="font-size:11px; color:rgba(255,255,255,0.85); margin-bottom:6px; font-weight:500;">Observadores pendientes</div>
-    <div style="font-size:36px; font-weight:700; color:#fff; line-height:1;">{{ $stats['obs_pendientes'] }}</div>
-    <span style="display:inline-flex; background:rgba(255,255,255,0.22); border-radius:20px; padding:3px 10px; font-size:10px; color:#fff; margin-top:10px;">sin realizar</span>
+    </a>
+
+    <a href="{{ route('asesor.mis-organizaciones') }}?asunto=obs" style="text-decoration:none;">
+    <div class="card-stat" style="background:#16a34a; border-radius:12px; padding:20px; color:white; cursor:pointer; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <div style="font-size:13px; font-weight:500; margin-bottom:8px;">Observadores pendientes</div>
+                <div style="font-size:36px; font-weight:700; line-height:1;">{{ $stats['obs_pendientes'] }}</div>
+            </div>
+            <svg width="32" height="32" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <span style="display:inline-block; background:rgba(0,0,0,0.15); font-size:11px; padding:2px 10px; border-radius:20px; margin-top:10px;">sin realizar</span>
+    </div>
+    </a>
+
+    <a href="{{ route('asesor.mis-organizaciones') }}?asunto=char_pendiente" style="text-decoration:none;">
+    <div class="card-stat" style="background:#60a5fa; border-radius:12px; padding:20px; color:white; cursor:pointer;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <div style="font-size:13px; font-weight:500; margin-bottom:8px;">Charlas pendientes</div>
+                <div style="font-size:36px; font-weight:700; line-height:1;">{{ $stats['charlas_pendientes'] }}</div>
+            </div>
+            <svg width="32" height="32" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <span style="display:inline-block; background:rgba(0,0,0,0.15); font-size:11px; padding:2px 10px; border-radius:20px; margin-top:10px;">sin realizar</span>
+    </div>
+    </a>
+
+    <a href="{{ route('asesor.borrador.index') }}" style="text-decoration:none;">
+    <div class="card-stat" style="background:#6b7280; border-radius:12px; padding:20px; color:white; cursor:pointer;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <div style="font-size:13px; font-weight:500; margin-bottom:8px;">Borrador privado</div>
+                <div style="font-size:36px; font-weight:700; line-height:1;">{{ $stats['borradores'] }}</div>
+            </div>
+            <svg width="32" height="32" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <span style="display:inline-block; background:rgba(0,0,0,0.15); font-size:11px; padding:2px 10px; border-radius:20px; margin-top:10px;">mis borradores</span>
+    </div>
+    </a>
+
+    <a href="{{ route('asesor.mis-organizaciones') }}?sin_fecha=1" style="text-decoration:none;">
+    <div class="card-stat" style="background:#1e3a5f; border-radius:12px; padding:20px; color:white; cursor:pointer;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <div style="font-size:13px; font-weight:500; margin-bottom:8px;">Sin fecha de elección</div>
+                <div style="font-size:36px; font-weight:700; line-height:1;">{{ $stats['sin_fecha'] }}</div>
+            </div>
+            <svg width="32" height="32" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+        <span style="display:inline-block; background:rgba(0,0,0,0.15); font-size:11px; padding:2px 10px; border-radius:20px; margin-top:10px;">requieren fecha</span>
+    </div>
+    </a>
+
+    <a href="{{ route('asesor.mis-organizaciones') }}?asunto=tec" style="text-decoration:none;">
+    <div class="card-stat" style="background:#dc2626; border-radius:12px; padding:20px; color:white; cursor:pointer;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div>
+                <div style="font-size:13px; font-weight:500; margin-bottom:8px;">Trabajo técnico pendiente</div>
+                <div style="font-size:36px; font-weight:700; line-height:1;">{{ $stats['tec_pendientes'] }}</div>
+            </div>
+            <svg width="32" height="32" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        </div>
+        <span style="display:inline-block; background:rgba(0,0,0,0.15); font-size:11px; padding:2px 10px; border-radius:20px; margin-top:10px;">por resolver</span>
+    </div>
+    </a>
+
 </div>
-
-        {{-- 3. Charlas pendientes --}}
-        <div class="card-stat" style="background:linear-gradient(135deg,#5B9EC9,#7BBDE0);; border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(196,112,74,0.35);">
-            <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
-                <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="10"/>
-                    <polyline points="12 6 12 12 16 14"/>
-                </svg>
-            </div>
-            <div style="font-size:11px; color:rgba(255,255,255,0.85); margin-bottom:6px; font-weight:500;">Charlas pendientes</div>
-            <div style="font-size:36px; font-weight:700; color:#fff; line-height:1;">{{ $stats['charlas_pendientes'] }}</div>
-            <span style="display:inline-flex; background:rgba(255,255,255,0.22); border-radius:20px; padding:3px 10px; font-size:10px; color:#fff; margin-top:10px;">sin realizar</span>
-        </div>
-
-        {{-- 4. Borrador privado --}}
-        <div class="card-stat" style="background:linear-gradient(135deg,#7A8A95,#9BAAB5); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(46,107,138,0.35);">
-            <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
-                <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                    <line x1="16" y1="13" x2="8" y2="13"/>
-                    <line x1="16" y1="17" x2="8" y2="17"/>
-                    <polyline points="10 9 9 9 8 9"/>
-                </svg>
-            </div>
-            <div style="font-size:11px; color:rgba(255,255,255,0.85); margin-bottom:6px; font-weight:500;">Borrador privado</div>
-            <div style="font-size:36px; font-weight:700; color:#fff; line-height:1;">{{ $stats['borradores'] }}</div>
-            <span style="display:inline-flex; background:rgba(255,255,255,0.22); border-radius:20px; padding:3px 10px; font-size:10px; color:#fff; margin-top:10px;">mis borradores</span>
-        </div>
-
-        {{-- 5. Sin fecha de eleccion --}}
-        <div class="card-stat" style="background:linear-gradient(135deg,#1A3A5C,#2E5F8A); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(138,107,46,0.35);">
-            <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
-                <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
-                    <rect x="3" y="4" width="18" height="18" rx="2"/>
-                    <line x1="16" y1="2" x2="16" y2="6"/>
-                    <line x1="8" y1="2" x2="8" y2="6"/>
-                    <line x1="3" y1="10" x2="21" y2="10"/>
-                    <line x1="9" y1="15" x2="15" y2="15"/>
-                </svg>
-            </div>
-            <div style="font-size:11px; color:rgba(255,255,255,0.85); margin-bottom:6px; font-weight:500;">Sin fecha de elección</div>
-            <div style="font-size:36px; font-weight:700; color:#fff; line-height:1;">{{ $stats['sin_fecha'] }}</div>
-            <span style="display:inline-flex; background:rgba(255,255,255,0.22); border-radius:20px; padding:3px 10px; font-size:10px; color:#fff; margin-top:10px;">requieren fecha</span>
-        </div>
-
-        {{-- 6. Trabajo tecnico pendiente --}}
-        <div class="card-stat" style="background:linear-gradient(135deg,#8B1A2A,#B5263A); border-radius:14px; padding:18px 20px; position:relative; overflow:hidden; box-shadow:0 4px 12px rgba(122,74,46,0.35);">
-            <div style="position:absolute;top:14px;right:16px;opacity:0.55;">
-                <svg width="36" height="36" fill="none" stroke="#fff" stroke-width="1.5" viewBox="0 0 24 24">
-                    <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
-                </svg>
-            </div>
-            <div style="font-size:11px; color:rgba(255,255,255,0.85); margin-bottom:6px; font-weight:500;">Trabajo técnico pendiente</div>
-            <div style="font-size:36px; font-weight:700; color:#fff; line-height:1;">{{ $stats['tec_pendientes'] }}</div>
-            <span style="display:inline-flex; background:rgba(255,255,255,0.22); border-radius:20px; padding:3px 10px; font-size:10px; color:#fff; margin-top:10px;">por resolver</span>
-        </div>
-
-    </div>
 
     {{-- HEADER TABLA FIJO --}}
     <div style="background:rgba(255,255,255,0.95); border-radius:16px 16px 0 0; border:1px solid rgba(255,255,255,0.9); border-bottom:none;">

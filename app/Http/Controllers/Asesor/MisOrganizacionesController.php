@@ -44,7 +44,9 @@ if (request('mes_eleccion')) {
     if (request('estado_charla')) {
         $query->whereHas('charla', fn($q) => $q->where('estado', request('estado_charla')));
     }
-
+if (request('sin_fecha')) {
+    $query->whereNull('fecha_eleccion');
+}
 
     $charlasPendientes = \App\Models\Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', $nombreAsesor))
         ->where('estado', 'pendiente')
