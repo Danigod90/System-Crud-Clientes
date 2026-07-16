@@ -10,58 +10,77 @@ use Illuminate\Http\Request;
 class EntradaConNotaController extends Controller
 {
     public function index(Request $request)
-    {
-        $asesores = Asesor::orderBy('nombre')->get();
+{
+    $asesores = Asesor::orderBy('nombre')->get();
 
-        $entradas = EntradaConNota::with(['user', 'charla'])
-            ->when($request->organizacion, fn($q) =>
-                $q->where('nombre_organizacion', 'like', '%' . $request->organizacion . '%')
-            )
-            ->when($request->asesor, fn($q) =>
-                $q->where('asesor_asignado', $request->asesor)
-            )
-            ->when($request->asunto, function($q) use ($request) {
-    $asunto = $request->asunto;
-    if (in_array($asunto, ['char_realizada', 'char_pendiente', 'char_suspendida', 'char_cancelada'])) {
-        $estado = str_replace('char_', '', $asunto);
-        $q->where('asunto_char', true)
-          ->whereHas('charla', fn($q) => $q->where('estado', $estado));
-    } elseif ($asunto === 'char') {
-        $q->where('asunto_char', true);
-    } elseif ($asunto === 'log') {
-        $q->where('asunto_log', true);
-    } elseif ($asunto === 'tec') {
-        $q->where('asunto_tec', true);
-    } elseif ($asunto === 'obs') {
-        $q->where('asunto_obs', true);
-    } elseif ($asunto === 'suspendida') {
-        $q->where('eleccion_suspendida', 1);
-    }
-})
+    $entradas = EntradaConNota::with(['user', 'charla'])
+        ->when($request->organizacion, fn($q) =>
+            $q->where('nombre_organizacion', 'like', '%' . $request->organizacion . '%')
+        )
+        ->when($request->asesor, fn($q) =>
+            $q->where('asesor_asignado', $request->asesor)
+        )
+        ->when($request->asunto, function($q) use ($request) {
+            $asunto = $request->asunto;
+            if (in_array($asunto, ['char_realizada', 'char_pendiente', 'char_suspendida', 'char_cancelada'])) {
+                $estado = str_replace('char_', '', $asunto);
+                $q->where('asunto_char', true)
+                  ->whereHas('charla', fn($q) => $q->where('estado', $estado));
+            } elseif ($asunto === 'char') {
+                $q->where('asunto_char', true);
+            } elseif ($asunto === 'log') {
+                $q->where('asunto_log', true);
+            } elseif ($asunto === 'tec') {
+                $q->where('asunto_tec', true);
+            } elseif ($asunto === 'tec_pendiente') {
+                $q->where('asunto_tec', true)
+                  ->where(fn($q) => $q
+                      ->whereHas('detalleTecnico', fn($q) => $q->where('tec_realizado', false))
+                      ->orWhereDoesntHave('detalleTecnico')
+                  );
+            } elseif ($asunto === 'obs') {
+                $q->where('asunto_obs', true);
+            } elseif ($asunto === 'obs_pendiente') {
+                $q->where('asunto_obs', true)
+                  ->where(fn($q) => $q
+                      ->whereHas('observador', fn($q) => $q->where('estado', 'pendiente'))
+                      ->orWhereDoesntHave('observador')
+                  );
+            } elseif ($asunto === 'suspendida') {
+                $q->where('eleccion_suspendida', 1);
+            }
+        })
+        ->when($request->eleccion, function($q) use ($request) {
+            if ($request->eleccion === 'proxima') {
+                $q->whereNotNull('fecha_eleccion')
+                  ->where('fecha_eleccion', '>=', now())
+                  ->where('fecha_eleccion', '<=', now()->addDays(30))
+                  ->where('mostrar_en_ticker', true);
+            } elseif ($request->eleccion === 'sin_fecha') {
+                $q->whereNull('fecha_eleccion');
+            }
+        })
+        ->when($request->mes_ingreso, fn($q) =>
+            $q->whereYear('created_at', substr($request->mes_ingreso, 0, 4))
+              ->whereMonth('created_at', substr($request->mes_ingreso, 5, 2))
+        )
+        ->when($request->mes_eleccion, fn($q) =>
+            $q->whereYear('fecha_eleccion', substr($request->mes_eleccion, 0, 4))
+              ->whereMonth('fecha_eleccion', substr($request->mes_eleccion, 5, 2))
+        )
+        ->latest()
+        ->paginate(10)->withQueryString();
 
+    $charlasPendientes = \App\Models\Charla::with('entrada')
+        ->where('estado', 'pendiente')
+        ->whereNotNull('fecha_hora')
+        ->where('fecha_hora', '>=', now())
+        ->orderBy('fecha_hora')
+        ->take(5)
+        ->get();
 
-            ->when($request->mes_ingreso, fn($q) =>
-                $q->whereYear('created_at', substr($request->mes_ingreso, 0, 4))
-                  ->whereMonth('created_at', substr($request->mes_ingreso, 5, 2))
-            )
-            ->when($request->mes_eleccion, fn($q) =>
-                $q->whereYear('fecha_eleccion', substr($request->mes_eleccion, 0, 4))
-                  ->whereMonth('fecha_eleccion', substr($request->mes_eleccion, 5, 2))
-            )
-            ->latest()
-->paginate(10)->withQueryString();
-
-$charlasPendientes = \App\Models\Charla::with('entrada')
-    ->where('estado', 'pendiente')
-    ->whereNotNull('fecha_hora')
-    ->where('fecha_hora', '>=', now())
-    ->orderBy('fecha_hora')
-    ->take(5)
-    ->get();
-
-return view('secretaria.con_nota.index', compact('entradas', 'asesores', 'charlasPendientes'));
-
-    }
+    return view('secretaria.con_nota.index', compact('entradas', 'asesores', 'charlasPendientes'));
+}
 
     public function create()
     {
