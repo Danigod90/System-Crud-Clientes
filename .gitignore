@@ -26,3 +26,5 @@ Thumbs.db
 
 crud_clientes.sql
 crud_clientes_clean.sql
+
+backup.ps1
