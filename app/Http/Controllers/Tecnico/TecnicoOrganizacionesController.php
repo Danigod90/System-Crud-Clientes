@@ -25,26 +25,32 @@ class TecnicoOrganizacionesController extends Controller
         if ($request->estado === 'enviado') {
             $query->whereHas('detalleTecnico', fn($q) => $q->where('enviado_tecnica', true));
         } elseif ($request->estado === 'pendiente') {
-    $query->whereHas('detalleTecnico', fn($q) => $q->where('tec_realizado', false)->orWhereNull('tec_realizado'));
-} elseif ($request->estado === 'impreso') {
+            $query->where(fn($q) => $q
+                ->whereHas('detalleTecnico', fn($q) => $q->where('tec_realizado', false))
+                ->orWhereDoesntHave('detalleTecnico')
+            );
+        } elseif ($request->estado === 'impreso') {
             $query->whereHas('detalleTecnico', fn($q) => $q->where('impreso', true));
+        } elseif ($request->estado === 'por_imprimir') {
+            $query->whereHas('detalleTecnico', fn($q) => $q->where('enviado_tecnica', true)->where('impreso', false));
+        } elseif ($request->estado === 'sin_fecha') {
+            $query->whereNull('fecha_eleccion');
         }
-
     }
 
     if ($request->filled('mes_ingreso')) {
         $query->whereRaw("DATE_FORMAT(created_at, '%Y-%m') = ?", [$request->mes_ingreso]);
     }
 
-   $prioridadIds = \App\Models\PrioridadTecnica::orderBy('orden')->pluck('entrada_con_nota_id')->toArray();
+    $prioridadIds = \App\Models\PrioridadTecnica::orderBy('orden')->pluck('entrada_con_nota_id')->toArray();
 
-$entradas = $query->orderByRaw("FIELD(id, " . (count($prioridadIds) ? implode(',', $prioridadIds) : '0') . ") DESC")
-    ->latest()
-    ->paginate(20)->withQueryString();
+    $entradas = $query->orderByRaw("FIELD(id, " . (count($prioridadIds) ? implode(',', $prioridadIds) : '0') . ") DESC")
+        ->latest()
+        ->paginate(20)->withQueryString();
     $asesores = \App\Models\Asesor::orderBy('nombre')->get();
 
     $prioridades = \App\Models\PrioridadTecnica::all();
-return view('tecnico.organizaciones_tecnico', compact('entradas', 'asesores', 'prioridades'));
+    return view('tecnico.organizaciones_tecnico', compact('entradas', 'asesores', 'prioridades'));
 }
 
 public function edit($entrada_id)
