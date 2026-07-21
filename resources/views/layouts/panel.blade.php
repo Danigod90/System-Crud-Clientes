@@ -517,7 +517,7 @@ document.addEventListener('click', function(e) {
     }
 });
 
-setInterval(async function() {
+async function actualizarNotificaciones() {
     try {
         const r = await fetch('/notificaciones/count');
         const d = await r.json();
@@ -536,7 +536,8 @@ setInterval(async function() {
             if (badge) badge.remove();
         }
     } catch(e) {}
-}, 30000);
+}
+let notifInterval = setInterval(actualizarNotificaciones, 30000);
 
 </script>
 {{-- CHAT WIDGET --}}
@@ -597,11 +598,13 @@ setInterval(async function() {
 </div>
 
 <script>
-let cantidadMensajesPorConv = {};
+
 let chatAbierto = false;
 let convActualId = null;
 let pollingInterval = null;
 let chatArchivoFile = null;
+let pingInterval = null;
+let badgeInterval = null;
 
 function toggleChat() {
     iniciarAudio();
@@ -785,17 +788,40 @@ async function actualizarBadge() {
     }
 }
 
-// Ping cada 30 segundos para marcar online
-setInterval(() => {
+function pingOnline() {
     fetch('/chat/ping', {
         method: 'POST',
         headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
     });
-}, 30000);
+}
 
-// Badge al cargar
 actualizarBadge();
-setInterval(actualizarBadge, 10000);
+pingInterval = setInterval(pingOnline, 30000);
+badgeInterval = setInterval(actualizarBadge, 10000);
+
+// Pausar todo el polling cuando la pestaña no está activa, y reanudar al volver
+document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') {
+        clearInterval(notifInterval);
+        clearInterval(pingInterval);
+        clearInterval(badgeInterval);
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+            pollingInterval = null;
+        }
+    } else {
+        actualizarNotificaciones();
+        actualizarBadge();
+        pingOnline();
+        notifInterval = setInterval(actualizarNotificaciones, 30000);
+        pingInterval = setInterval(pingOnline, 30000);
+        badgeInterval = setInterval(actualizarBadge, 10000);
+        if (chatAbierto && convActualId) {
+            pollingInterval = setInterval(chatPolling, 3000);
+            cargarMensajes(convActualId, false);
+        }
+    }
+});
 
 </script>
 
