@@ -9,19 +9,32 @@ use Carbon\Carbon;
 
 class PedirConfirmacion extends Command
 {
-    protected $signature   = 'recordatorios:confirmacion';
-    protected $description = 'Pide a los asesores que confirmen con OK cada 3 días para mantener activa la conversación de WhatsApp';
+    protected $signature   = 'recordatorios:confirmacion {asesor_id?}';
+    protected $description = 'Pide a los asesores que confirmen con OK cada 3 días. Opcionalmente, a uno solo pasando su ID.';
 
     public function handle()
     {
         $whatsapp = new WhatsAppService();
         $limite   = Carbon::now()->subDays(3);
+        $asesorId = $this->argument('asesor_id');
 
-        $asesores = Asesor::whereNotNull('telefono')
-            ->where(function ($q) use ($limite) {
+        $query = Asesor::whereNotNull('telefono');
+
+        if ($asesorId) {
+            $query->where('id', $asesorId);
+        } else {
+            $query->where(function ($q) use ($limite) {
                 $q->whereNull('ultima_confirmacion_at')
                   ->orWhere('ultima_confirmacion_at', '<=', $limite);
-            })->get();
+            });
+        }
+
+        $asesores = $query->get();
+
+        if ($asesores->isEmpty()) {
+            $this->info('No hay asesores que necesiten confirmación en este momento.');
+            return;
+        }
 
         foreach ($asesores as $asesor) {
             $enviado = $whatsapp->enviar(
