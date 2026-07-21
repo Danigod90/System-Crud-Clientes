@@ -597,6 +597,7 @@ setInterval(async function() {
 </div>
 
 <script>
+let cantidadMensajesPorConv = {};
 let chatAbierto = false;
 let convActualId = null;
 let pollingInterval = null;
@@ -649,11 +650,13 @@ async function seleccionarConv(id, nombre, tipo) {
     cargarConversaciones();
 }
 
+let cantidadMensajesPorConv = {};
+
 async function cargarMensajes(id, scroll) {
     const res = await fetch(`/chat/mensajes/${id}`);
     const msgs = await res.json();
     const cont = document.getElementById('chat-msgs');
-    const cantAnterior = cont.children.length;
+    const cantAnterior = cantidadMensajesPorConv[id] ?? null;
 
     cont.innerHTML = msgs.map(m => `
         <div style="display:flex; flex-direction:column; align-items:${m.es_mio ? 'flex-end' : 'flex-start'};">
@@ -664,11 +667,14 @@ async function cargarMensajes(id, scroll) {
         </div>
     `).join('');
 
-    // Sonido si hay mensajes nuevos de otros
-    const mensajesNuevos = msgs.filter(m => !m.es_mio);
-    if (cantAnterior > 0 && msgs.length > cantAnterior && mensajesNuevos.length > 0) {
-        reproducirSonido();
+    // Sonido solo si esta MISMA conversación tiene mensajes nuevos de otra persona
+    if (cantAnterior !== null && msgs.length > cantAnterior) {
+        const mensajesNuevos = msgs.slice(cantAnterior);
+        const nuevosDeOtros = mensajesNuevos.filter(m => !m.es_mio);
+        if (nuevosDeOtros.length > 0) reproducirSonido();
     }
+
+    cantidadMensajesPorConv[id] = msgs.length;
 
     if (scroll) cont.scrollTop = cont.scrollHeight;
 }
