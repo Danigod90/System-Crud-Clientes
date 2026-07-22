@@ -604,7 +604,7 @@
     </div>
 
     {{-- VISTA SOLO LECTURA --}}
-    <div id="tec-readonly" style="display:{{ $entrada->detalleTecnico ? 'block' : 'none' }};">
+    <div id="tec-readonly" style="display:{{ ($entrada->detalleTecnico && !$errors->hasAny(['mat_final_papeletas_formato', 'mat_final_actas_formato', 'mat_final_padrones_formato'])) ? 'block' : 'none' }};">
     <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
         <div>
             <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Órgano Electoral</label>
@@ -726,8 +726,8 @@ $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->de
 </div>
 
     {{-- FORMULARIO EDITABLE --}}
-    <form id="tec-form" method="POST" action="{{ route('asesor.detalle_tecnico.saveAsesor', $entrada->id) }}"
-          style="display:{{ $entrada->detalleTecnico ? 'none' : 'block' }};">
+   <form id="tec-form" method="POST" action="{{ route('asesor.detalle_tecnico.saveAsesor', $entrada->id) }}"
+      style="display:{{ ($entrada->detalleTecnico && !$errors->hasAny(['mat_final_papeletas_formato', 'mat_final_actas_formato', 'mat_final_padrones_formato'])) ? 'none' : 'block' }};">
         @csrf
 
         <div style="margin-bottom:14px;">
@@ -778,7 +778,19 @@ $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->de
                 }
             }
         @endphp
+@if($errors->hasAny(['mat_final_papeletas_formato', 'mat_final_actas_formato', 'mat_final_padrones_formato']))
+<div style="background:#fee2e2; border:1px solid #fecaca; color:#991b1b; padding:12px 16px; border-radius:10px; margin-bottom:14px; font-size:13px;">
+    <ul style="margin:0; padding-left:18px;">
+        @foreach($errors->all() as $error)
+            <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
 
+<div style="margin-bottom:14px;">
+    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Papeletas</label>
+    <div id="papeletas-container"></div>
         <div style="margin-bottom:14px;">
             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Papeletas</label>
             <div id="papeletas-container"></div>
@@ -1120,6 +1132,31 @@ function cancelarEdicionTec() {
     document.getElementById('tec-form').style.display = 'none';
     document.getElementById('btn-editar-tec').style.display = 'inline-flex';
 }
+
+document.getElementById('tec-form')?.addEventListener('submit', function(e) {
+    function faltaFormato(cantidadId, selectName) {
+        const cantidad = parseInt(document.getElementById(cantidadId)?.value || 0);
+        const select = document.querySelector(`select[name="${selectName}"]`);
+        return cantidad > 0 && select && select.value === '';
+    }
+
+    if (faltaFormato('asesor_mat_papeletas', 'mat_final_papeletas_formato')) {
+        alert('No seleccionaste el formato de Papeletas (Impreso o Digital).');
+        e.preventDefault();
+        return;
+    }
+    if (faltaFormato('asesor_mat_actas', 'mat_final_actas_formato')) {
+        alert('No seleccionaste el formato de Actas (Impreso o Digital).');
+        e.preventDefault();
+        return;
+    }
+    if (faltaFormato('asesor_mat_padrones', 'mat_final_padrones_formato')) {
+        alert('No seleccionaste el formato de Padrones (Impreso o Digital).');
+        e.preventDefault();
+        return;
+    }
+});
+
 const ordinalListas = ['Primera','Segunda','Tercera','Cuarta','Quinta'];
 
 const ordinalPapJS = ['Primera','Segunda','Tercera','Cuarta','Quinta','Sexta','Séptima','Octava','Novena','Décima'];
