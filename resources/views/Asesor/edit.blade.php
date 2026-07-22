@@ -12,6 +12,13 @@
 <div class="px-2 py-2">
     <div style="max-width:760px; margin:0 auto;">
 
+
+@if(session('error'))
+<div style="background:#fee2e2; border:1px solid #fecaca; color:#991b1b; padding:12px 16px; border-radius:10px; margin-bottom:14px; font-size:13px;">
+    {{ session('error') }}
+</div>
+
+@endif
         @if(session('success'))
         <div style="display:flex; align-items:center; gap:10px; background:#d1fae5; color:#065f46; padding:12px 16px; border-radius:10px; margin-bottom:14px; font-size:13px; border-left:4px solid #16a34a; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <svg width="18" height="18" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;">
@@ -915,7 +922,7 @@ $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->de
 
     {{-- BOTÓN ENVIAR A TÉCNICA --}}
     @if($entrada->detalleTecnico && !$entrada->detalleTecnico->enviado_tecnica)
-    <div style="border-top:1px solid #f3f4f6; margin-top:16px; padding-top:16px;">
+    <div id="wrap-enviar-tecnica" style="display:{{ (($entrada->detalleTecnico->mat_final_papeletas ?? 0) > 0 || ($entrada->detalleTecnico->mat_final_actas ?? 0) > 0 || ($entrada->detalleTecnico->mat_final_padrones ?? 0) > 0) ? 'block' : 'none' }}; border-top:1px solid #f3f4f6; margin-top:16px; padding-top:16px;">
         <form method="POST" action="{{ route('asesor.detalle_tecnico.enviarTecnica', $entrada->id) }}">
             @csrf
             <button type="submit" onclick="return confirm('¿Enviar datos a Técnica?')"
@@ -1280,6 +1287,18 @@ function mostrarFormNuevaCharla() {
 function toggleDireccionNueva(val) {
     document.getElementById('nueva-direccion').style.display = val === 'presencial_externa' ? 'block' : 'none';
 }
+function actualizarVisibilidadEnviarTecnica() {
+    const wrap = document.getElementById('wrap-enviar-tecnica');
+    if (!wrap) return;
+    const papeletas = parseInt(document.getElementById('asesor_mat_papeletas')?.value || 0);
+    const actas     = parseInt(document.getElementById('asesor_mat_actas')?.value || 0);
+    const padrones  = parseInt(document.getElementById('asesor_mat_padrones')?.value || 0);
+    wrap.style.display = (papeletas > 0 || actas > 0 || padrones > 0) ? 'block' : 'none';
+}
+
+document.getElementById('asesor_mat_papeletas')?.addEventListener('input', actualizarVisibilidadEnviarTecnica);
+document.getElementById('asesor_mat_actas')?.addEventListener('input', actualizarVisibilidadEnviarTecnica);
+document.getElementById('asesor_mat_padrones')?.addEventListener('input', actualizarVisibilidadEnviarTecnica);
 
 function toggleEditarCharla(id) {
     const edit = document.getElementById('edit-' + id);
@@ -1293,4 +1312,5 @@ function toggleEditarCharla(id) {
 const esNuevo = {{ $entrada->detalleTecnico ? 'false' : 'true' }};
 if (esNuevo) calcularMaterialesAsesor();
 </script>
+
 </x-panel-layout>
