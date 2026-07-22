@@ -675,7 +675,14 @@ $urnas    = $entrada->detalleTecnico->mat_final_urnas    !== null ? $entrada->de
 $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->detalleTecnico->mat_final_tintas   : $mesas;
    @endphp
 <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px;">
-    <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar</p>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin:0 0 10px;">
+        <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0;">Materiales a Entregar</p>
+        @if($entrada->detalleTecnico->enviado_tecnica)
+        <span style="font-size:11px; font-weight:600; color:#166534; background:#bbf7d0; padding:2px 8px; border-radius:6px;">✓ Enviado a Técnica</span>
+        @else
+        <span style="font-size:11px; font-weight:600; color:#92400e; background:#fef3c7; padding:2px 8px; border-radius:6px;">Aún no enviado a Técnica</span>
+        @endif
+    </div>
     <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:8px;">
         <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Papeletas</p>
