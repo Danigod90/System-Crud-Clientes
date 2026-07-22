@@ -75,12 +75,47 @@ if ($request->has('nota_asesor')) $detalle->nota_asesor = $request->nota_asesor;
  $detalle->tecnico_updated_at = now();
     $detalle->save();
 
+    // Si cargó alguna cantidad, enviar a técnica automáticamente (solo la primera vez)
+    $tieneCantidad = (int) $request->mat_final_papeletas > 0
+        || (int) $request->mat_final_actas > 0
+        || (int) $request->mat_final_padrones > 0;
+
+    if ($tieneCantidad && !$detalle->enviado_tecnica) {
+        $detalle->enviado_tecnica    = true;
+        $detalle->enviado_tecnica_at = now();
+        $detalle->save();
+
+        $entrada  = EntradaConNota::findOrFail($entrada_id);
+        $tecnicos = \App\Models\User::role('Tecnico')->get();
+        foreach ($tecnicos as $tecnico) {
+            $tecnico->notify(new \App\Notifications\TrabajoPendienteNotification(
+                'Nuevo trabajo: ' . $entrada->nombre_organizacion . ' enviado a técnica por ' . $entrada->asesor_asignado,
+                'Panel Técnico',
+                $entrada->id
+            ));
+            if ($tecnico->notifications()->count() > 8) {
+                $tecnico->notifications()->latest()->skip(8)->take(100)->delete();
+            }
+        }
+
+        return redirect()->back()->with('success', 'Datos técnicos guardados y enviados a técnica correctamente.');
+    }
+
     return redirect()->back()->with('success', 'Datos técnicos guardados correctamente.');
 }
 
    public function enviarTecnica($entrada_id)
 {
     $detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();
+
+    $tieneCantidad = (int) $detalle->mat_final_papeletas > 0
+        || (int) $detalle->mat_final_actas > 0
+        || (int) $detalle->mat_final_padrones > 0;
+
+    if (!$tieneCantidad) {
+        return redirect()->back()->with('error', 'No podés enviar a técnica sin cargar al menos un material (Papeletas, Actas o Padrones) con su formato.');
+    }
+
     $detalle->enviado_tecnica    = true;
     $detalle->enviado_tecnica_at = now();
     $detalle->asesor_updated_at = now();
