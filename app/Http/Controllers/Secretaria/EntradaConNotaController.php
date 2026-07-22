@@ -211,46 +211,71 @@ if (auth()->user()->hasRole('Asesor')) {
     }
 
     public function update(Request $request, EntradaConNota $conNota)
-    {
-        $request->validate([
-            'nombre_organizacion'    => 'required|string|max:255',
-            'tipo_organizacion'      => 'required|string|max:255',
-            'nombre_representante'   => 'required|string|max:255',
-            'telefono_representante' => 'nullable|string|max:50',
-            'fecha_eleccion'         => 'nullable|date',
-            'asesor_asignado'        => 'required|string|max:255',
-            'via_ingreso'            => 'required|in:correo,presencial',
-            'asunto'                 => 'required|array|min:1',
-            'asunto.*'               => 'in:char,log,tec,obs',
-            'direccion' => 'nullable|string|max:255',
-        ]);
+{
+    $request->validate([
+        'nombre_organizacion'    => 'required|string|max:255',
+        'tipo_organizacion'      => 'required|string|max:255',
+        'nombre_representante'   => 'required|string|max:255',
+        'telefono_representante' => 'nullable|string|max:50',
+        'fecha_eleccion'         => 'nullable|date',
+        'asesor_asignado'        => 'required|string|max:255',
+        'via_ingreso'            => 'required|in:correo,presencial',
+        'asunto'                 => 'required|array|min:1',
+        'asunto.*'               => 'in:char,log,tec,obs',
+        'direccion' => 'nullable|string|max:255',
+    ]);
 
-        $conNota->update([
-            'nombre_organizacion'    => $request->nombre_organizacion,
-            'tipo_organizacion'      => $request->tipo_organizacion,
-            'nombre_representante'   => $request->nombre_representante,
-            'telefono_representante' => $request->telefono_representante,
-            'fecha_eleccion'         => $request->fecha_eleccion,
-            'asesor_asignado'        => $request->asesor_asignado,
-            'via_ingreso'            => $request->via_ingreso,
-            'asunto_char'            => in_array('char', $request->asunto ?? []),
-            'asunto_log'             => in_array('log', $request->asunto ?? []),
-            'asunto_tec'             => in_array('tec', $request->asunto ?? []),
-            'log_urnas'              => in_array('log', $request->asunto ?? []) ? (int)$request->log_urnas : 0,
-            'log_cuartos'            => in_array('log', $request->asunto ?? []) ? (int)$request->log_cuartos : 0,
-            'log_tintas'             => in_array('log', $request->asunto ?? []) ? (int)$request->log_tintas : 0,
-            'asunto_obs'             => in_array('obs', $request->asunto ?? []),
-            'direccion'             => $request->direccion,
-        ]);
+    $asesorAnterior = $conNota->asesor_asignado;
 
-       if ($request->from === 'asesor') {
-    return redirect()->route('asesor.organizacion.edit', $conNota->id)
-        ->with('success', 'Entrada actualizada correctamente.');
-}
+    $conNota->update([
+        'nombre_organizacion'    => $request->nombre_organizacion,
+        'tipo_organizacion'      => $request->tipo_organizacion,
+        'nombre_representante'   => $request->nombre_representante,
+        'telefono_representante' => $request->telefono_representante,
+        'fecha_eleccion'         => $request->fecha_eleccion,
+        'asesor_asignado'        => $request->asesor_asignado,
+        'via_ingreso'            => $request->via_ingreso,
+        'asunto_char'            => in_array('char', $request->asunto ?? []),
+        'asunto_log'             => in_array('log', $request->asunto ?? []),
+        'asunto_tec'             => in_array('tec', $request->asunto ?? []),
+        'log_urnas'              => in_array('log', $request->asunto ?? []) ? (int)$request->log_urnas : 0,
+        'log_cuartos'            => in_array('log', $request->asunto ?? []) ? (int)$request->log_cuartos : 0,
+        'log_tintas'             => in_array('log', $request->asunto ?? []) ? (int)$request->log_tintas : 0,
+        'asunto_obs'             => in_array('obs', $request->asunto ?? []),
+        'direccion'             => $request->direccion,
+    ]);
 
-        return redirect()->route('secretaria.con-nota.show', $conNota)
+    // Avisar por WhatsApp solo si el asesor asignado cambió
+    if ($asesorAnterior !== $request->asesor_asignado) {
+        $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$request->asesor_asignado])->first();
+        if ($asesor && $asesor->telefono) {
+            $whatsapp = new \App\Services\WhatsAppService();
+            $asuntos = collect([
+                in_array('char', $request->asunto ?? []) ? 'Charla' : null,
+                in_array('log', $request->asunto ?? [])  ? 'Logística' : null,
+                in_array('tec', $request->asunto ?? [])  ? 'Técnica' : null,
+                in_array('obs', $request->asunto ?? [])  ? 'Observador' : null,
+            ])->filter()->implode(', ');
+
+            $whatsapp->enviar(
+                $asesor->telefono,
+                "📋 *Organización reasignada a vos*\n" .
+                "🏢 *Organización:* {$request->nombre_organizacion}\n" .
+                "📌 *Asunto:* {$asuntos}\n" .
+                "📅 *Fecha elección:* " . ($request->fecha_eleccion ?? 'Sin fecha') . "\n\n" .
+                "_Sistema de Gestión Electoral_"
+            );
+        }
+    }
+
+    if ($request->from === 'asesor') {
+        return redirect()->route('asesor.organizacion.edit', $conNota->id)
             ->with('success', 'Entrada actualizada correctamente.');
     }
+
+    return redirect()->route('secretaria.con-nota.show', $conNota)
+        ->with('success', 'Entrada actualizada correctamente.');
+}
 
     public function destroy(EntradaConNota $conNota)
     {
