@@ -51,8 +51,8 @@
                         Imprimir Nota
                     </a>
                     @endif
-                    @if($entrada->asunto_log)
-                    <a href="{{ route('secretaria.con-nota.recibo-logistica', $entrada->id) }}" target="_blank"
+                    @if($entrada->asunto_log && !$entrada->asunto_tec)
+<a href="{{ route('secretaria.con-nota.recibo-logistica', $entrada->id) }}" target="_blank"
                        style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
