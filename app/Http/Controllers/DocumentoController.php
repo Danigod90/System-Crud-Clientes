@@ -12,7 +12,7 @@ class DocumentoController extends Controller
     public function store(Request $request, $entradaId)
 {
     $request->validate([
-        'archivo' => 'required|file|max:10240|mimes:pdf,doc,docx,jpg,jpeg,png,gif,xls,xlsx',
+        'archivo' => 'required|file|max:10240|extensions:pdf,doc,docx,jpg,jpeg,png,gif,xls,xlsx',
         'nombre'  => 'nullable|string|max:255',
     ]);
 
@@ -22,7 +22,14 @@ class DocumentoController extends Controller
     $nombre = $request->nombre ?: $archivo->getClientOriginalName();
 
     $nombreArchivo = uniqid() . '_' . time() . '.' . $extension;
-    $ruta = $archivo->storeAs("documentos/{$entradaId}", $nombreArchivo, 'public');
+    $carpeta = storage_path("app/public/documentos/{$entradaId}");
+
+    if (!file_exists($carpeta)) {
+        mkdir($carpeta, 0755, true);
+    }
+
+    $archivo->move($carpeta, $nombreArchivo);
+    $ruta = "documentos/{$entradaId}/{$nombreArchivo}";
 
     Documento::create([
         'entrada_con_nota_id' => $entradaId,
