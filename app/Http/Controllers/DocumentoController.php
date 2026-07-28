@@ -10,45 +10,62 @@ use Illuminate\Support\Facades\Storage;
 class DocumentoController extends Controller
 {
     public function store(Request $request, $entradaId)
-    {
-        $request->validate([
-            'archivo' => 'required|file|max:10240|mimes:pdf,doc,docx,jpg,jpeg,png,gif,xls,xlsx',
-            'nombre'  => 'nullable|string|max:255',
-        ]);
+{
+    $request->validate([
+        'archivo' => 'required|file|max:10240|mimes:pdf,doc,docx,jpg,jpeg,png,gif,xls,xlsx',
+        'nombre'  => 'nullable|string|max:255',
+    ]);
 
-        $entrada = EntradaConNota::findOrFail($entradaId);
-        $archivo = $request->file('archivo');
-        $extension = $archivo->getClientOriginalExtension();
-        $nombre = $request->nombre ?: $archivo->getClientOriginalName();
-        $ruta = $archivo->store("documentos/{$entradaId}", 'public');
+    $entrada = EntradaConNota::findOrFail($entradaId);
+    $archivo = $request->file('archivo');
+    $extension = strtolower($archivo->getClientOriginalExtension());
+    $nombre = $request->nombre ?: $archivo->getClientOriginalName();
 
-        Documento::create([
-            'entrada_con_nota_id' => $entradaId,
-            'nombre'              => $nombre,
-            'ruta'                => $ruta,
-            'tipo'                => $archivo->getMimeType(),
-            'extension'           => $extension,
-            'tamanio'             => $archivo->getSize(),
-            'user_id'             => auth()->id(),
-        ]);
+    $nombreArchivo = uniqid() . '_' . time() . '.' . $extension;
+    $ruta = $archivo->storeAs("documentos/{$entradaId}", $nombreArchivo, 'public');
 
-        return redirect()->back()->with('success', 'Documento subido correctamente.');
+    Documento::create([
+        'entrada_con_nota_id' => $entradaId,
+        'nombre'              => $nombre,
+        'ruta'                => $ruta,
+        'tipo'                => $archivo->getMimeType(),
+        'extension'           => $extension,
+        'tamanio'             => $archivo->getSize(),
+        'user_id'             => auth()->id(),
+    ]);
+
+    return redirect()->back()->with('success', 'Documento subido correctamente.');
+}
+
+public function destroy($id)
+{
+    $documento = Documento::findOrFail($id);
+    Storage::disk('public')->delete($documento->ruta);
+    $documento->delete();
+    return redirect()->back()->with('success', 'Documento eliminado correctamente.');
+}
+
+public function show($id)
+{
+    $documento = Documento::findOrFail($id);
+    $path = Storage::disk('public')->path($documento->ruta);
+
+    $mimes = [
+        'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'xls'  => 'application/vnd.ms-excel',
+        'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'doc'  => 'application/msword',
+        'pdf'  => 'application/pdf',
+    ];
+    $contentType = $mimes[$documento->extension] ?? $documento->tipo;
+
+    $nombreDescarga = $documento->nombre;
+    if (!str_ends_with(strtolower($nombreDescarga), '.' . strtolower($documento->extension))) {
+        $nombreDescarga .= '.' . $documento->extension;
     }
 
-    public function destroy($id)
-    {
-        $documento = Documento::findOrFail($id);
-        Storage::disk('public')->delete($documento->ruta);
-        $documento->delete();
-        return redirect()->back()->with('success', 'Documento eliminado correctamente.');
-    }
-
-    public function show($id)
-    {
-        $documento = Documento::findOrFail($id);
-        $path = Storage::disk('public')->path($documento->ruta);
-        return response()->file($path, [
-            'Content-Type' => $documento->tipo,
-        ]);
-    }
+    return response()->download($path, $nombreDescarga, [
+        'Content-Type' => $contentType,
+    ]);
+}
 }
