@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 class DocumentoController extends Controller
 {
-    public function store(Request $request, $entradaId)
+ public function store(Request $request, $entradaId)
 {
     $request->validate([
         'archivo' => 'required|file|max:10240|extensions:pdf,doc,docx,jpg,jpeg,png,gif,xls,xlsx',
@@ -20,6 +20,8 @@ class DocumentoController extends Controller
     $archivo = $request->file('archivo');
     $extension = strtolower($archivo->getClientOriginalExtension());
     $nombre = $request->nombre ?: $archivo->getClientOriginalName();
+    $mimeType = $archivo->getMimeType();
+    $tamanio = $archivo->getSize();
 
     $nombreArchivo = uniqid() . '_' . time() . '.' . $extension;
     $carpeta = storage_path("app/public/documentos/{$entradaId}");
@@ -35,21 +37,13 @@ class DocumentoController extends Controller
         'entrada_con_nota_id' => $entradaId,
         'nombre'              => $nombre,
         'ruta'                => $ruta,
-        'tipo'                => $archivo->getMimeType(),
+        'tipo'                => $mimeType,
         'extension'           => $extension,
-        'tamanio'             => $archivo->getSize(),
+        'tamanio'             => $tamanio,
         'user_id'             => auth()->id(),
     ]);
 
     return redirect()->back()->with('success', 'Documento subido correctamente.');
-}
-
-public function destroy($id)
-{
-    $documento = Documento::findOrFail($id);
-    Storage::disk('public')->delete($documento->ruta);
-    $documento->delete();
-    return redirect()->back()->with('success', 'Documento eliminado correctamente.');
 }
 
 public function show($id)
