@@ -59,6 +59,10 @@ public function show($id)
     $documento = Documento::findOrFail($id);
     $path = Storage::disk('public')->path($documento->ruta);
 
+    if (!file_exists($path)) {
+        abort(404, 'Archivo no encontrado.');
+    }
+
     $mimes = [
         'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         'xls'  => 'application/vnd.ms-excel',
@@ -73,8 +77,11 @@ public function show($id)
         $nombreDescarga .= '.' . $documento->extension;
     }
 
-    return response()->download($path, $nombreDescarga, [
-        'Content-Type' => $contentType,
-    ]);
+    $contenido = file_get_contents($path);
+
+    return response($contenido, 200)
+        ->header('Content-Type', $contentType)
+        ->header('Content-Length', strlen($contenido))
+        ->header('Content-Disposition', 'attachment; filename="' . $nombreDescarga . '"');
 }
 }
