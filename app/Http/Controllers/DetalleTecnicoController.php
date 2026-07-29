@@ -261,11 +261,11 @@ $detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();
 
     // Materiales técnicos
 $matMesas    = $detalle->mat_mesas ?? $mesas;
-$matActas    = !is_null($detalle->mat_actas_electorales) ? $detalle->mat_actas_electorales : (!is_null($detalle->mat_final_actas) ? $detalle->mat_final_actas : ($mesas * 3));
+$matActas    = !is_null($detalle->mat_final_actas) ? $detalle->mat_final_actas : (!is_null($detalle->mat_actas_electorales) ? $detalle->mat_actas_electorales : ($mesas * 3));
 $matActasFmt = $detalle->mat_final_actas_formato ? ucfirst($detalle->mat_final_actas_formato) : ($detalle->mat_actas_electorales_formato ? ucfirst($detalle->mat_actas_electorales_formato) : '');
-$matPadron   = !is_null($detalle->mat_padron) ? $detalle->mat_padron : (!is_null($detalle->mat_final_padrones) ? $detalle->mat_final_padrones : ($mesas * 3));
+$matPadron   = !is_null($detalle->mat_final_padrones) ? $detalle->mat_final_padrones : (!is_null($detalle->mat_padron) ? $detalle->mat_padron : ($mesas * 3));
 $matPadronFmt = $detalle->mat_final_padrones_formato ? ucfirst($detalle->mat_final_padrones_formato) : ($detalle->mat_padron_formato ? ucfirst($detalle->mat_padron_formato) : '');
-$matBoletin  = !is_null($detalle->mat_matriz_boletin) ? $detalle->mat_matriz_boletin : (!is_null($detalle->mat_final_papeletas) ? $detalle->mat_final_papeletas : $papeletas);
+$matBoletin  = !is_null($detalle->mat_final_papeletas) ? $detalle->mat_final_papeletas : (!is_null($detalle->mat_matriz_boletin) ? $detalle->mat_matriz_boletin : $papeletas);
 $matBoletinFmt = $detalle->mat_final_papeletas_formato ? ucfirst($detalle->mat_final_papeletas_formato) : ($detalle->mat_matriz_boletin_formato ? ucfirst($detalle->mat_matriz_boletin_formato) : '');
 $matProclamacion = $detalle->mat_actas_proclamacion ?? 3;
 $matCertificados = !is_null($detalle->mat_certificados) ? $detalle->mat_certificados : 1;
