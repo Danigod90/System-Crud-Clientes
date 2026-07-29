@@ -224,8 +224,8 @@ if (auth()->user()->hasRole('Asesor')) {
         'asesor_asignado'        => 'required|string|max:255',
         'via_ingreso'            => 'required|in:correo,presencial',
         'asunto'                 => 'required|array|min:1',
-        'asunto.*'               => 'in:char,log,tec,obs',
-        'direccion' => 'nullable|string|max:255',
+        'asunto.*'               => 'in:char,log,tec,obs,inf',
+        'direccion'              => 'nullable|string|max:255',
     ]);
 
     $asesorAnterior = $conNota->asesor_asignado;
