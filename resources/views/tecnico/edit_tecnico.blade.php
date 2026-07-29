@@ -661,6 +661,7 @@ $defaultBoletin = is_null($entrada->detalleTecnico?->mat_final_papeletas) ? ($en
 
 {{-- BOTONES EXTERNOS --}}
 <div style="display:flex; gap:10px; margin-top:16px; padding-top:16px; border-top:1px solid #f3f4f6;">
+    @if($entrada->detalleTecnico && $entrada->detalleTecnico->enviado_tecnica)
     <button type="button" onclick="abrirModalImprimir()"
         style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:10px 20px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -670,27 +671,46 @@ $defaultBoletin = is_null($entrada->detalleTecnico?->mat_final_papeletas) ? ($en
         </svg>
         Imprimir Logística
     </button>
+@else
+    <button type="button" disabled title="El asesor todavía no envió los recursos"
+        style="display:inline-flex; align-items:center; gap:6px; background:#e5e7eb; color:#9ca3af; padding:10px 20px; border-radius:8px; font-size:13px; border:none; cursor:not-allowed; font-weight:500;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="6 9 6 2 18 2 18 9"/>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        El asesor no ha mandado recursos para imprimir
+    </button>
+@endif
 
-                @if(!$entrada->detalleTecnico?->tec_realizado)
-                <form method="POST" action="{{ route('tecnico.detalle_tecnico.realizado', $entrada->id) }}">
-                    @csrf @method('PATCH')
-                    <button type="submit" onclick="return confirm('¿Marcar trabajo técnico como realizado?')"
-                        style="display:inline-flex; align-items:center; gap:6px; background:#16a34a; color:white; padding:10px 20px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
-                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <polyline points="20 6 9 17 4 12"/>
-                        </svg>
-                        Marcar como Realizado
-                    </button>
-                </form>
-                @else
-                <span style="display:inline-flex; align-items:center; gap:6px; background:#bbf7d0; color:#166534; padding:10px 20px; border-radius:8px; font-size:13px; font-weight:500;">
-                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                    Realizado
-                </span>
-                @endif
-            </div>
+               @if($entrada->detalleTecnico?->tec_realizado)
+<span style="display:inline-flex; align-items:center; gap:6px; background:#bbf7d0; color:#166534; padding:10px 20px; border-radius:8px; font-size:13px; font-weight:500;">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <polyline points="20 6 9 17 4 12"/>
+    </svg>
+    Realizado
+</span>
+@elseif($entrada->detalleTecnico && $entrada->detalleTecnico->enviado_tecnica)
+<form method="POST" action="{{ route('tecnico.detalle_tecnico.realizado', $entrada->id) }}">
+    @csrf @method('PATCH')
+    <button type="submit" onclick="return confirm('¿Marcar trabajo técnico como realizado?')"
+        style="display:inline-flex; align-items:center; gap:6px; background:#16a34a; color:white; padding:10px 20px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        Marcar como Realizado
+    </button>
+</form>
+@else
+<button type="button" disabled title="El asesor todavía no envió los recursos"
+    style="display:inline-flex; align-items:center; gap:6px; background:#e5e7eb; color:#9ca3af; padding:10px 20px; border-radius:8px; font-size:13px; border:none; cursor:not-allowed; font-weight:500;">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <polyline points="20 6 9 17 4 12"/>
+    </svg>
+    El asesor no ha mandado recursos
+</button>
+@endif
+</div>
         </div>
 
 
