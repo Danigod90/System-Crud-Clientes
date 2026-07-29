@@ -135,10 +135,10 @@
                             {{ $entrada->created_at?->format('d/m/Y H:i') ?? '-' }}
                         </td>
                         <td class="border border-gray-200 px-2 py-2" style="white-space:nowrap;">
-                           @if($entrada->eleccion_suspendida)
-    <span style="display:inline-flex; align-items:center; gap:4px; background:#fee2e2; color:#dc2626; font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px;">
-        Susp.
-        <span style="width:7px; height:7px; border-radius:50%; background:#dc2626; display:inline-block;"></span>
+                          @if($entrada->eleccion_suspendida)
+    <span style="display:inline-flex; align-items:center; gap:4px;">
+        <span style="font-size:11px; color:#dc2626; font-weight:600;">Suspendido</span>
+        <span style="width:9px; height:9px; border-radius:50%; background:#dc2626; display:inline-block;"></span>
     </span>
 @else
     @if($entrada->asunto_char)
