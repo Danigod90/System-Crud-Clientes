@@ -60,6 +60,7 @@
     <option value="char_suspendida" {{ request('asunto') == 'char_suspendida' ? 'selected' : '' }}>Char — Suspendida</option>
     <option value="char_cancelada" {{ request('asunto') == 'char_cancelada' ? 'selected' : '' }}>Char — Cancelada</option>
     <option value="suspendida" {{ request('asunto') == 'suspendida' ? 'selected' : '' }}>Susp — Suspendida</option>
+    <option value="inf" {{ request('asunto') == 'inf' ? 'selected' : '' }}>Inf — Informativo</option>
 </select>
                         </div>
                         <div>
@@ -117,7 +118,7 @@
                         <td class="border border-gray-200 px-2 py-2" style="font-size:11px; font-weight:500;">
                             {{ $entrada->nombre_organizacion }}
                         </td>
-                        <td class="border border-gray-200 px-2 py-2">
+                        <td class="border border-gray-200 px-2 py-2" style="text-align:center;">
                             <span class="font-mono font-semibold text-gray-800">{{ $entrada->asunto_texto }}</span>
                         </td>
                         <td class="border border-gray-200 px-2 py-2 capitalize">
@@ -176,6 +177,13 @@
             <span style="width:9px; height:9px; border-radius:50%; background:{{ $obsDot }}; display:inline-block;"></span>
         </span>
     @endif
+    @if($entrada->asunto_inf)
+        <span style="display:inline-flex; align-items:center; gap:3px;">
+            <span style="font-size:11px; color:#6b7280;">Informativo</span>
+            <span style="width:9px; height:9px; border-radius:50%; background:#9ca3af; display:inline-block;"></span>
+        </span>
+    @endif
+
 @endif                  </td>
                         <td class="border border-gray-200 px-2 py-2" style="width:90px;">
                             <div style="display:flex; gap:4px; align-items:center; justify-content:center;">

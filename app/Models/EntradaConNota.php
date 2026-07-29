@@ -28,6 +28,7 @@ class EntradaConNota extends Model
         'log_estado',
         'mostrar_en_ticker',
         'asunto_obs',
+        'asunto_inf',
         'log_impreso_at',
         'supervisor_cargado',
         'supervisor_cargado_at',
@@ -45,8 +46,9 @@ class EntradaConNota extends Model
         'asunto_tec'         => 'boolean',
         'mostrar_en_ticker'  => 'boolean',
         'asunto_obs'         => 'boolean',
+        'asunto_inf'         => 'boolean',
         'log_impreso_at'     => 'datetime',
-        'fecha_entrega'      => 'datetime', // nuevo
+        'fecha_entrega'      => 'datetime', //
     ];
 
     public function user()
@@ -96,14 +98,15 @@ class EntradaConNota extends Model
     }
 
     public function getAsuntoTextoAttribute(): string
-    {
-        $partes = [];
-        if ($this->asunto_char) $partes[] = 'Char';
-        if ($this->asunto_log)  $partes[] = 'Log';
-        if ($this->asunto_tec)  $partes[] = 'Tec';
-        if ($this->asunto_obs)  $partes[] = 'Obs';
-        return implode(' · ', $partes) ?: '—';
-    }
+{
+    $partes = [];
+    if ($this->asunto_char) $partes[] = 'Char';
+    if ($this->asunto_log)  $partes[] = 'Log';
+    if ($this->asunto_tec)  $partes[] = 'Tec';
+    if ($this->asunto_obs)  $partes[] = 'Obs';
+    if ($this->asunto_inf)  $partes[] = 'Inf';
+    return implode(' · ', $partes) ?: '—';
+}
 
     public function logDevolucion()
     {

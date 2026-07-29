@@ -90,6 +90,7 @@
     <option value="char_suspendida" {{ request('asunto') == 'char_suspendida' ? 'selected' : '' }}>Char — Suspendida</option>
     <option value="char_cancelada" {{ request('asunto') == 'char_cancelada' ? 'selected' : '' }}>Char — Cancelada</option>
     <option value="suspendida" {{ request('asunto') == 'suspendida' ? 'selected' : '' }}>Susp — Suspendida</option>
+    <option value="inf" {{ request('asunto') == 'inf' ? 'selected' : '' }}>Inf — Informativo</option>
 </select>
                         </div>
                         <div>
@@ -182,10 +183,10 @@
                         </td>
                         <td class="border border-gray-200 px-2 py-2" style="width:120px; white-space:nowrap;">
                            @if($entrada->eleccion_suspendida)
-    <span style="display:inline-flex; align-items:center; gap:4px; background:#fee2e2; color:#dc2626; font-size:10px; font-weight:600; padding:2px 8px; border-radius:20px;">
-        Susp.
-        <span style="width:7px; height:7px; border-radius:50%; background:#dc2626; display:inline-block;"></span>
-    </span>
+   <span style="display:inline-flex; align-items:center; gap:4px;">
+    <span style="font-size:11px; color:#dc2626; font-weight:600;">Suspendido</span>
+    <span style="width:9px; height:9px; border-radius:50%; background:#dc2626; display:inline-block;"></span>
+</span>
 @else
     @if($entrada->asunto_char)
         <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
@@ -221,6 +222,13 @@
             <span style="width:9px; height:9px; border-radius:50%; background:{{ $obsDot }}; display:inline-block;"></span>
         </span>
     @endif
+    @if($entrada->asunto_inf)
+        <span style="display:inline-flex; align-items:center; gap:3px;">
+            <span style="font-size:11px; color:#6b7280;">Informativo</span>
+            <span style="width:9px; height:9px; border-radius:50%; background:#9ca3af; display:inline-block;"></span>
+        </span>
+    @endif
+
 @endif
                         </td>
                         <td class="border border-gray-200 px-2 py-2" style="width:110px;">

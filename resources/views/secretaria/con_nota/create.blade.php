@@ -107,7 +107,7 @@
 
                 @error('asunto')<p style="color:#ef4444; font-size:11px; margin-bottom:10px;">{{ $message }}</p>@enderror
 
-                <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;">
+                <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px;">
                     <label style="display:flex; align-items:center; gap:10px; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; cursor:pointer;">
                         <input type="checkbox" name="asunto[]" value="char"
                                {{ is_array(old('asunto')) && in_array('char', old('asunto')) ? 'checked' : '' }}
@@ -144,6 +144,15 @@
                             <p style="font-size:11px; color:#9ca3af; margin:0;">Observadores</p>
                         </div>
                     </label>
+                    <label style="display:flex; align-items:center; gap:10px; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; cursor:pointer;">
+    <input type="checkbox" name="asunto[]" value="inf"
+           {{ is_array(old('asunto')) && in_array('inf', old('asunto')) ? 'checked' : '' }}
+           style="width:15px; height:15px; accent-color:#2563eb;">
+    <div>
+        <span style="font-size:13px; font-weight:600; color:#1f2937;">Inf</span>
+        <p style="font-size:11px; color:#9ca3af; margin:0;">Informativo</p>
+    </div>
+</label>
                 </div>
             </div>
 

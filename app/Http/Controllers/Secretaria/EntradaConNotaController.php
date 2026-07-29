@@ -46,6 +46,8 @@ class EntradaConNotaController extends Controller
                       ->whereHas('observador', fn($q) => $q->where('estado', 'pendiente'))
                       ->orWhereDoesntHave('observador')
                   );
+                  } elseif ($asunto === 'inf') {
+    $q->where('asunto_inf', true);
             } elseif ($asunto === 'suspendida') {
                 $q->where('eleccion_suspendida', 1);
             }
@@ -99,8 +101,7 @@ class EntradaConNotaController extends Controller
     'fecha_eleccion'         => 'nullable|date',
     'asesor_asignado'        => 'required|string|max:255',
     'via_ingreso'            => 'required|in:correo,presencial',
-    'asunto'                 => 'required|array|min:1',
-    'asunto.*'               => 'in:char,log,tec,obs',
+    'asunto.*'               => 'in:char,log,tec,obs,inf',
     'direccion'              => 'nullable|string|max:255',
 ]);
 
@@ -120,7 +121,8 @@ class EntradaConNotaController extends Controller
         'log_tintas'             => in_array('log', $request->asunto) ? (int)$request->log_tintas : 0,
         'user_id'                => auth()->id(),
         'asunto_obs'             => in_array('obs', $request->asunto),
-        'direccion'     => $request->direccion,
+        'asunto_inf'             => in_array('inf', $request->asunto),
+        'direccion'              => $request->direccion,
     ]);
     // Enviar WhatsApp al asesor asignado
 $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$request->asesor_asignado])->first();
@@ -131,6 +133,7 @@ if ($asesor && $asesor->telefono) {
         in_array('log', $request->asunto)  ? 'Logística' : null,
         in_array('tec', $request->asunto)  ? 'Técnica' : null,
         in_array('obs', $request->asunto)  ? 'Observador' : null,
+        in_array('inf', $request->asunto)  ? 'Informativo' : null,
     ])->filter()->implode(', ');
 
     $whatsapp->enviar(
@@ -242,6 +245,7 @@ if (auth()->user()->hasRole('Asesor')) {
         'log_cuartos'            => in_array('log', $request->asunto ?? []) ? (int)$request->log_cuartos : 0,
         'log_tintas'             => in_array('log', $request->asunto ?? []) ? (int)$request->log_tintas : 0,
         'asunto_obs'             => in_array('obs', $request->asunto ?? []),
+        'asunto_inf'             => in_array('inf', $request->asunto ?? []),
         'direccion'             => $request->direccion,
     ]);
 
