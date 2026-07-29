@@ -49,20 +49,28 @@ class DocumentoController extends Controller
         return redirect()->back()->with('success', 'Documento eliminado correctamente.');
     }
 
-    public function show($id)
-    {
-        $documento = Documento::findOrFail($id);
-        $path = Storage::disk('public')->path($documento->ruta);
+   public function show($id)
+{
+    $documento = Documento::findOrFail($id);
+    $path = Storage::disk('public')->path($documento->ruta);
 
-        if (!file_exists($path)) {
-            abort(404, 'Archivo no encontrado.');
-        }
-
-        $nombreDescarga = $documento->nombre;
-        if (!str_ends_with(strtolower($nombreDescarga), '.' . strtolower($documento->extension))) {
-            $nombreDescarga .= '.' . $documento->extension;
-        }
-
-        return response()->download($path, $nombreDescarga);
+    if (!file_exists($path)) {
+        abort(404, 'Archivo no encontrado.');
     }
+
+    $nombreDescarga = $documento->nombre;
+    if (!str_ends_with(strtolower($nombreDescarga), '.' . strtolower($documento->extension))) {
+        $nombreDescarga .= '.' . $documento->extension;
+    }
+
+    // PRUEBA DIAGNOSTICA: empaquetar en zip para esquivar el filtro
+    $zipPath = storage_path('app/temp_' . uniqid() . '.zip');
+    $zip = new \ZipArchive();
+    $zip->open($zipPath, \ZipArchive::CREATE);
+    $zip->addFile($path, $nombreDescarga);
+    $zip->close();
+
+    return response()->download($zipPath, pathinfo($nombreDescarga, PATHINFO_FILENAME) . '.zip')
+        ->deleteFileAfterSend(true);
+}
 }
