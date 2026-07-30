@@ -165,7 +165,7 @@
             <p style="font-size:12px; color:#9ca3af; margin:0 0 12px;">No hay documentos cargados aún.</p>
             @endforelse
 
-            {{-- FORM SUBIR }}
+            {{-- FORM SUBIR --}}
             <form method="POST" action="{{ route('documentos.store', $entrada->id) }}" enctype="multipart/form-data" style="margin-top:12px; border-top:1px solid #f3f4f6; padding-top:12px;">
                 @csrf
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
