@@ -148,7 +148,7 @@
                     <p style="font-size:10px; color:#9ca3af; margin:0;">{{ strtoupper($doc->extension) }} · {{ number_format($doc->tamanio / 1024, 1) }} KB · {{ $doc->user->name ?? '—' }} · {{ $doc->created_at->format('d/m/Y') }}</p>
                 </div>
                 <div style="display:flex; gap:6px; flex-shrink:0;">
-                    <a href="{{ route('documentos.show', $doc->id) }}" target="_blank"
+                    <a href="{{ Storage::disk('public')->url($doc->ruta) }}" download="{{ $doc->nombre }}"
                        style="display:inline-flex; align-items:center; gap:4px; background:#eff6ff; color:#2563eb; padding:4px 10px; border-radius:6px; font-size:11px; text-decoration:none; font-weight:500;">
                         Ver
                     </a>
@@ -165,7 +165,7 @@
             <p style="font-size:12px; color:#9ca3af; margin:0 0 12px;">No hay documentos cargados aún.</p>
             @endforelse
 
-            {{-- FORM SUBIR --}}
+            {{-- FORM SUBIR }}
             <form method="POST" action="{{ route('documentos.store', $entrada->id) }}" enctype="multipart/form-data" style="margin-top:12px; border-top:1px solid #f3f4f6; padding-top:12px;">
                 @csrf
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
@@ -805,9 +805,7 @@ $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->de
 <div style="margin-bottom:14px;">
     <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Papeletas</label>
     <div id="papeletas-container"></div>
-        <div style="margin-bottom:14px;">
-            <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Papeletas</label>
-            <div id="papeletas-container"></div>
+
             <datalist id="candidaturas-asesor-list">
                 <option value="Presidente y Vicepresidentes">
                 <option value="Presidente y Vicepresidente">
