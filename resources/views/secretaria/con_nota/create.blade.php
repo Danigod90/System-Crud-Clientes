@@ -231,21 +231,30 @@ checkLog.addEventListener('change', toggleLogistica);
 document.querySelector('input[name="asunto[]"][value="tec"]')?.addEventListener('change', toggleLogistica);
 toggleLogistica();
 
-    const form = document.getElementById('form-entrada');
-    const btnGuardar = document.getElementById('btn-guardar');
-    const modal = document.getElementById('modal-sin-fecha');
-    const btnSi = document.getElementById('btn-modal-si');
-    const btnNo = document.getElementById('btn-modal-no');
-    const inputFecha = document.getElementById('fecha_eleccion');
-    let confirmado = false;
+   const form = document.getElementById('form-entrada');
+const btnGuardar = document.getElementById('btn-guardar');
+const modal = document.getElementById('modal-sin-fecha');
+const btnSi = document.getElementById('btn-modal-si');
+const btnNo = document.getElementById('btn-modal-no');
+const inputFecha = document.getElementById('fecha_eleccion');
+let confirmado = false;
+let enviando = false;
 
-    btnGuardar.addEventListener('click', function() {
-        if (!inputFecha.value && !confirmado) { modal.style.display = 'flex'; }
-        else { form.submit(); }
-    });
-    btnSi.addEventListener('click', function() { confirmado = true; modal.style.display = 'none'; form.submit(); });
-    btnNo.addEventListener('click', function() { modal.style.display = 'none'; });
-    modal.addEventListener('click', function(e) { if (e.target === modal) modal.style.display = 'none'; });
+function enviarFormulario() {
+    if (enviando) return;
+    enviando = true;
+    btnGuardar.disabled = true;
+    btnGuardar.innerHTML = 'Guardando...';
+    form.submit();
+}
+
+btnGuardar.addEventListener('click', function() {
+    if (!inputFecha.value && !confirmado) { modal.style.display = 'flex'; }
+    else { enviarFormulario(); }
+});
+btnSi.addEventListener('click', function() { confirmado = true; modal.style.display = 'none'; enviarFormulario(); });
+btnNo.addEventListener('click', function() { modal.style.display = 'none'; });
+modal.addEventListener('click', function(e) { if (e.target === modal) modal.style.display = 'none'; });
 </script>
 
 </x-panel-layout>
