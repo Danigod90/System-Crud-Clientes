@@ -187,14 +187,14 @@
 @endif                  </td>
                         <td class="border border-gray-200 px-2 py-2" style="width:90px;">
                             <div style="display:flex; gap:4px; align-items:center; justify-content:center;">
-                                <a href="{{ route('secretaria.con-nota.show', $entrada) . '?from=asesor' }}"
-                                   style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; background:#e0f2fe; border-radius:8px; color:#0369a1; text-decoration:none; flex-shrink:0;"
-                                   title="Ver">
-                                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                        <circle cx="12" cy="12" r="3"/>
-                                    </svg>
-                                </a>
+                                <a href="{{ route('secretaria.con-nota.show', $entrada) }}?{{ http_build_query(['from' => 'asesor', 'volver' => request()->fullUrl()]) }}"
+   style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; background:#e0f2fe; border-radius:8px; color:#0369a1; text-decoration:none; flex-shrink:0;"
+   title="Ver">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+    </svg>
+</a>
                         <a href="{{ route('asesor.organizacion.edit', $entrada) }}"
  style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; background:#fef9c3; border-radius:8px; color:#854d0e; text-decoration:none; flex-shrink:0;"
     title="Editar">

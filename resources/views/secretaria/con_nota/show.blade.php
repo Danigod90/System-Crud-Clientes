@@ -97,12 +97,13 @@
     </svg>
     <span id="btn-suspender-texto">{{ $conNota->eleccion_suspendida ? 'Suspendido' : 'Suspender' }}</span>
 </button>
-                    <a href="{{ request('from') == 'asesor' ? route('asesor.mis-organizaciones') : route('secretaria.con-nota.index') }}"
-                       style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 14px; border-radius:8px; font-size:13px; text-decoration:none;">
-                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <polyline points="15 18 9 12 15 6"/>
-                        </svg>
-                        Volver
+                   <a href="{{ request('volver') ?: (request('from') == 'asesor' ? route('asesor.mis-organizaciones') : route('secretaria.con-nota.index')) }}"
+   style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 14px; border-radius:8px; font-size:13px; text-decoration:none;">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <polyline points="15 18 9 12 15 6"/>
+    </svg>
+    Volver
+</a>
                     </a>
                 </div>
             </div>

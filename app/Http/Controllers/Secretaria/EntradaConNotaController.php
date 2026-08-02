@@ -272,13 +272,13 @@ if (auth()->user()->hasRole('Asesor')) {
         }
     }
 
-    if ($request->from === 'asesor') {
-        return redirect()->route('asesor.organizacion.edit', $conNota->id)
-            ->with('success', 'Entrada actualizada correctamente.');
-    }
-
-    return redirect()->route('secretaria.con-nota.show', $conNota)
+   if ($request->from === 'asesor') {
+    return redirect()->route('asesor.organizacion.edit', $conNota->id)
         ->with('success', 'Entrada actualizada correctamente.');
+}
+
+return redirect()->route('secretaria.con-nota.show', ['conNota' => $conNota, 'volver' => $request->volver])
+    ->with('success', 'Entrada actualizada correctamente.');
 }
 
     public function destroy(EntradaConNota $conNota)

@@ -13,10 +13,11 @@
 @endif
 
         <form id="form-principal" method="POST" action="{{ route('secretaria.con-nota.update', $conNota) }}">
-            @csrf
-            @method('PUT')
-<input type="hidden" name="from" value="{{ request('from') }}">
-<input type="hidden" name="entrada_id" value="{{ request('entrada_id', $conNota->id) }}">
+    @csrf
+    @method('PUT')
+    <input type="hidden" name="from" value="{{ request('from') }}">
+    <input type="hidden" name="entrada_id" value="{{ request('entrada_id', $conNota->id) }}">
+    <input type="hidden" name="volver" value="{{ request('volver') }}">
             {{-- DATOS DE LA ORGANIZACIÓN --}}
             <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
                 <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px;">Datos de la organización</h3>
@@ -252,13 +253,13 @@
         </div>
 
     <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:14px;">
-            <a href="{{ request('from') == 'asesor' ? route('asesor.organizacion.edit', $conNota->id) : route('secretaria.con-nota.show', $conNota) }}"
-               style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; text-decoration:none;">
-                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-                Cancelar
-            </a>
+           <a href="{{ request('from') == 'asesor' ? route('asesor.organizacion.edit', $conNota->id) : route('secretaria.con-nota.show', $conNota) . (request('volver') ? '?' . http_build_query(['volver' => request('volver')]) : '') }}"
+   style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; text-decoration:none;">
+    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+    </svg>
+    Cancelar
+</a>
             <button form="form-principal" type="submit"
                     style="display:inline-flex; align-items:center; gap:6px; background:#2563eb; color:white; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
