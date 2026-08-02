@@ -1,4 +1,9 @@
 <x-panel-layout title="Editar Organización — {{ $entrada->codigo_org }}" :charlasPendientes="$charlasPendientes">
+    @php
+if (request()->has('volver')) {
+    session(['volver_organizacion' => request('volver')]);
+}
+@endphp
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.6.13/flatpickr.min.js"></script>
@@ -1031,14 +1036,14 @@ $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->de
 
         {{-- BOTONES --}}
         <div style="display:flex; justify-content:flex-end; gap:10px;">
-            <a href="{{ route('asesor.mis-organizaciones') }}"
-               style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:10px 20px; border-radius:8px; font-size:14px; text-decoration:none; font-weight:500;">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <polyline points="15 18 9 12 15 6"/>
-                </svg>
-                Volver a mis organizaciones
-            </a>
-        </div>
+    <a href="{{ session('volver_organizacion', route('asesor.mis-organizaciones')) }}"
+       style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:10px 20px; border-radius:8px; font-size:14px; text-decoration:none; font-weight:500;">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        Volver a mis organizaciones
+    </a>
+</div>
 
     </div>
 </div>

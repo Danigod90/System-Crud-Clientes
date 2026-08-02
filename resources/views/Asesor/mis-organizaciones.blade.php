@@ -195,7 +195,7 @@
         <circle cx="12" cy="12" r="3"/>
     </svg>
 </a>
-                        <a href="{{ route('asesor.organizacion.edit', $entrada) }}"
+                        <a href="{{ route('asesor.organizacion.edit', $entrada) }}?{{ http_build_query(['volver' => request()->fullUrl()]) }}"
  style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; background:#fef9c3; border-radius:8px; color:#854d0e; text-decoration:none; flex-shrink:0;"
     title="Editar">
    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
