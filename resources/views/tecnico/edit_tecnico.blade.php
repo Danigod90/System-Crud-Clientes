@@ -72,10 +72,11 @@
                     <p style="font-size:12px; font-weight:600; color:#111827; margin:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $doc->nombre }}</p>
                     <p style="font-size:10px; color:#9ca3af; margin:0;">{{ strtoupper($doc->extension) }} · {{ number_format($doc->tamanio / 1024, 1) }} KB · {{ $doc->user->name ?? '—' }} · {{ $doc->created_at->format('d/m/Y') }}</p>
                 </div>
-                <a href="{{ route('documentos.show', $doc->id) }}" target="_blank"
-                   style="display:inline-flex; align-items:center; gap:4px; background:#eff6ff; color:#2563eb; padding:4px 10px; border-radius:6px; font-size:11px; text-decoration:none; font-weight:500; flex-shrink:0;">
-                    Ver
-                </a>
+               <a href="{{ Storage::disk('public')->url($doc->ruta) }}"
+   download="{{ str_ends_with(strtolower($doc->nombre), '.' . strtolower($doc->extension)) ? $doc->nombre : $doc->nombre . '.' . $doc->extension }}"
+   style="display:inline-flex; align-items:center; gap:4px; background:#eff6ff; color:#2563eb; padding:4px 10px; border-radius:6px; font-size:11px; text-decoration:none; font-weight:500;">
+    Ver
+</a>
             </div>
             @empty
             <p style="font-size:12px; color:#9ca3af; margin:0;">No hay documentos cargados aún.</p>
