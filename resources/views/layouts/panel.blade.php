@@ -17,7 +17,12 @@
     }
     * { scrollbar-width: none; -ms-overflow-style: none; }
     *::-webkit-scrollbar { display: none; }
-    #ticker-nombre, #ticker-dias { transition: opacity 0.3s ease; }
+    #ticker-nombre, #ticker-dias, #ticker-charla-nombre { transition: opacity 0.3s ease; }
+    @keyframes vaiven {
+        0%, 15% { transform: translateX(0); }
+        50% { transform: translateX(var(--scroll-x, 0)); }
+        85%, 100% { transform: translateX(0); }
+    }
     .tabla-scroll { scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; -ms-overflow-style: auto; }
 .tabla-scroll::-webkit-scrollbar { display: block; width: 5px; }
 .tabla-scroll::-webkit-scrollbar-track { background: transparent; }
@@ -214,7 +219,7 @@
                         <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
                     <span style="font-size:11px; color:#0369a1; font-weight:600; white-space:nowrap; flex-shrink:0;">Próxima:</span>
-                    <span id="ticker-nombre" style="font-size:12px; color:#0c4a6e; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">{{ $primera->nombre_organizacion }}</span>
+                    <span id="ticker-nombre" style="font-size:12px; color:#0c4a6e; font-weight:500; overflow:hidden; white-space:nowrap; flex:1; position:relative;"><span id="ticker-nombre-inner" style="display:inline-block; white-space:nowrap;">{{ $primera->nombre_organizacion }}</span></span>
                     <span id="ticker-dias" style="font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px; flex-shrink:0;
                         background:{{ $diasPrimera <= 7 ? '#fee2e2' : ($diasPrimera <= 15 ? '#fef3c7' : '#d1fae5') }};
                         color:{{ $diasPrimera <= 7 ? '#991b1b' : ($diasPrimera <= 15 ? '#92400e' : '#065f46') }};">
@@ -234,7 +239,7 @@
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                     </svg>
                     <span style="font-size:11px; color:#854d0e; font-weight:600; white-space:nowrap; flex-shrink:0;">Charla:</span>
-                    <span id="ticker-charla-nombre" style="font-size:12px; color:#713f12; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">{{ $primeraCharla->entrada->nombre_organizacion ?? '—' }}</span>
+                    <span id="ticker-charla-nombre" style="font-size:12px; color:#713f12; font-weight:500; overflow:hidden; white-space:nowrap; flex:1; position:relative;"><span id="ticker-charla-nombre-inner" style="display:inline-block; white-space:nowrap;">{{ $primeraCharla->entrada->nombre_organizacion ?? '—' }}</span></span>
                     <span style="font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px; flex-shrink:0; background:#fef9c3; color:#854d0e;">
                         {{ $diasCharla }} días
                     </span>
@@ -384,7 +389,29 @@
 </div>
 
 <script>
+function updateMarquee(outerId, innerId) {
+    const outer = document.getElementById(outerId);
+    const inner = document.getElementById(innerId);
+    if (!outer || !inner) return 0;
+    inner.style.animation = 'none';
+    inner.style.transform = 'translateX(0)';
+    void inner.offsetWidth; // forzar reflow
+    const overflow = inner.scrollWidth - outer.clientWidth;
+    if (overflow > 4) {
+        const duration = Math.max(4, overflow / 25);
+        inner.style.setProperty('--scroll-x', (-overflow - 6) + 'px');
+        inner.style.animation = `vaiven ${duration}s ease-in-out infinite`;
+        return duration * 1000;
+    } else {
+        inner.style.removeProperty('--scroll-x');
+        return 0;
+    }
+}
+
 @isset($elecciones)
+@if($elecciones->count() > 0)
+updateMarquee('ticker-nombre', 'ticker-nombre-inner');
+@endif
 @if($elecciones->count() > 1)
 @php
     $tickerData = $elecciones->map(function($e) {
@@ -397,6 +424,7 @@
 const tickerItems = @json($tickerData);
 let tickerIdx = 0;
 const tickerNombre = document.getElementById('ticker-nombre');
+const tickerNombreInner = document.getElementById('ticker-nombre-inner');
 const tickerDias = document.getElementById('ticker-dias');
 if (tickerNombre && tickerItems.length > 1) {
     setInterval(() => {
@@ -405,18 +433,22 @@ if (tickerNombre && tickerItems.length > 1) {
         setTimeout(() => {
             tickerIdx = (tickerIdx + 1) % tickerItems.length;
             const item = tickerItems[tickerIdx];
-            tickerNombre.textContent = item.nombre;
+            tickerNombreInner.textContent = item.nombre;
             tickerDias.textContent = item.dias + ' días';
             tickerDias.style.background = item.bg;
             tickerDias.style.color = item.color;
             tickerNombre.style.opacity = '1';
             tickerDias.style.opacity = '1';
+            updateMarquee('ticker-nombre', 'ticker-nombre-inner');
         }, 300);
-    }, 3000);
+    }, 8000);
 }
 @endif
 @endisset
 
+@if($cp && $cp->count() > 0)
+updateMarquee('ticker-charla-nombre', 'ticker-charla-nombre-inner');
+@endif
 @if($cp && $cp->count() > 1)
 @php
     $charlasData = $cp->map(function($c) {
@@ -426,15 +458,17 @@ if (tickerNombre && tickerItems.length > 1) {
 const charlasItems = @json($charlasData);
 let charlasIdx = 0;
 const tickerCharlaNombre = document.getElementById('ticker-charla-nombre');
+const tickerCharlaNombreInner = document.getElementById('ticker-charla-nombre-inner');
 if (tickerCharlaNombre && charlasItems.length > 1) {
     setInterval(() => {
         tickerCharlaNombre.style.opacity = '0';
         setTimeout(() => {
             charlasIdx = (charlasIdx + 1) % charlasItems.length;
-            tickerCharlaNombre.textContent = charlasItems[charlasIdx].nombre;
+            tickerCharlaNombreInner.textContent = charlasItems[charlasIdx].nombre;
             tickerCharlaNombre.style.opacity = '1';
+            updateMarquee('ticker-charla-nombre', 'ticker-charla-nombre-inner');
         }, 300);
-    }, 3000);
+    }, 8000);
 }
 @endif
 

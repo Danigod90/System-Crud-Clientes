@@ -8,10 +8,199 @@
     transform: translateY(-4px) scale(1.02);
     box-shadow: 0 16px 32px rgba(0,0,0,0.2) !important;
 }
+.add-org-btn {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #185FA5, #2B4EC8);
+    text-decoration: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(24,95,165,0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.add-org-btn:hover {
+    z-index: 50;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(24,95,165,0.45);
+}
+.add-org-btn::after {
+    content: "Nueva Organización";
+    position: absolute;
+    left: 52px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #111827;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 20;
+}
+.add-org-btn:hover::after {
+    opacity: 1;
+}
+.notes-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #E0A030, #E8C060);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(224,160,48,0.35);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.notes-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(224,160,48,0.45);
+}
+.notes-btn::after {
+    content: "Recordatorios";
+    position: absolute;
+    left: 52px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #111827;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 20;
+}
+.notes-btn:hover::after {
+    opacity: 1;
+}
+#notes-panel {
+    position: absolute;
+    top: 52px;
+    left: 0;
+    width: 260px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+    border: 1px solid #f0e0c0;
+    padding: 12px;
+    z-index: 30;
+    display: none;
+}
+#notes-panel.open { display: block; }
+#notes-panel textarea {
+    width: 100%;
+    resize: none;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-size: 12px;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+}
+#notes-panel textarea:focus { border-color: #E0A030; }
+#notes-list { max-height: 180px; overflow-y: auto; margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+.nota-item {
+    background: #fdf6e8;
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-size: 11.5px;
+    color: #4b3b0f;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 6px;
+    word-break: break-word;
+}
+.nota-item button {
+    background: none;
+    border: none;
+    color: #b45309;
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+.notes-wrap { position: relative; z-index: 1; }
+.notes-wrap:hover { z-index: 50; }
+#notes-hover-preview {
+    position: absolute;
+    top: 52px;
+    left: 0;
+    width: 220px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+    border: 1px solid #f0e0c0;
+    padding: 10px;
+    z-index: 25;
+    display: none;
+    max-height: 200px;
+    overflow-y: auto;
+}
+.notes-wrap:hover #notes-hover-preview.has-notes { display: block; }
+.notes-wrap.panel-open #notes-hover-preview { display: none !important; }
+.nota-preview-item {
+    background: #fdf6e8;
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-size: 11px;
+    color: #4b3b0f;
+    margin-bottom: 6px;
+    word-break: break-word;
+}
+.nota-preview-item:last-child { margin-bottom: 0; }
 </style>
 {{-- CARDS + HEADER TABLA FIJOS --}}
 <div style="margin:-18px -18px 0 -18px; padding:18px 18px 0 18px; background:linear-gradient(135deg, #e8eaf6 0%, #d4d8f0 25%, #e8d5f0 50%, #d4e8f0 75%, #e8eaf6 100%); box-shadow:0 8px 20px rgba(200,200,220,0.5);">
 <div style="max-width:1000px; margin:0 auto;">
+
+    {{-- BOTON NUEVA ORGANIZACION + RECORDATORIOS --}}
+    <div style="display:flex; gap:10px; margin-bottom:12px; position:relative;">
+        <a href="{{ route('secretaria.con-nota.create') }}" class="add-org-btn">
+            <svg width="19" height="19" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="12" y1="18" x2="12" y2="12"/>
+                <line x1="9" y1="15" x2="15" y2="15"/>
+            </svg>
+        </a>
+
+        <div class="notes-wrap">
+            <button type="button" class="notes-btn" onclick="toggleNotesPanel()">
+                <svg width="19" height="19" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 2h6a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/>
+                    <line x1="9" y1="7" x2="15" y2="7"/>
+                    <line x1="9" y1="11" x2="15" y2="11"/>
+                    <line x1="9" y1="15" x2="12" y2="15"/>
+                </svg>
+            </button>
+            <div id="notes-hover-preview">
+                <div id="notes-hover-list"></div>
+            </div>
+        </div>
+
+        <div id="notes-panel">
+            <textarea id="nota-input" rows="2" maxlength="1000" placeholder="Escribe un recordatorio..."></textarea>
+            <button type="button" onclick="agregarNota()" style="margin-top:6px; width:100%; background:#E0A030; color:#fff; border:none; border-radius:8px; padding:6px 0; font-size:11.5px; font-weight:600; cursor:pointer;">Agregar</button>
+            <div id="notes-list"></div>
+        </div>
+    </div>
 
     {{-- CARDS --}}
     <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px;">
@@ -194,5 +383,120 @@
 </div>
 </div>
 {{-- FIN BODY --}}
+
+<script>
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+let notasCache = null;
+
+function toggleNotesPanel() {
+    const panel = document.getElementById('notes-panel');
+    const wrap = document.querySelector('.notes-wrap');
+    const abrir = !panel.classList.contains('open');
+    panel.classList.toggle('open');
+    wrap.classList.toggle('panel-open', abrir);
+    if (abrir) cargarNotas();
+}
+
+document.addEventListener('click', function(e) {
+    const panel = document.getElementById('notes-panel');
+    const wrap = document.querySelector('.notes-wrap');
+    const btn = document.querySelector('.notes-btn');
+    if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== btn && !btn.contains(e.target)) {
+        panel.classList.remove('open');
+        wrap.classList.remove('panel-open');
+    }
+});
+
+function renderNotasEnLista(elId, notas, conBoton) {
+    const el = document.getElementById(elId);
+    if (!notas || notas.length === 0) {
+        el.innerHTML = '<div style="font-size:11px; color:#9ca3af; text-align:center; padding:6px 0;">Sin recordatorios.</div>';
+        return;
+    }
+    el.innerHTML = notas.map(n => conBoton ? `
+        <div class="nota-item">
+            <span>${escapeHtml(n.contenido)}</span>
+            <button onclick="eliminarNota(${n.id})" title="Eliminar">✕</button>
+        </div>
+    ` : `
+        <div class="nota-preview-item">${escapeHtml(n.contenido)}</div>
+    `).join('');
+}
+
+function cargarNotas() {
+    fetch('/notas')
+        .then(r => {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.json();
+        })
+        .then(data => {
+            notasCache = data.notas || [];
+            renderNotasEnLista('notes-list', notasCache, true);
+            renderNotasEnLista('notes-hover-list', notasCache, false);
+            const preview = document.getElementById('notes-hover-preview');
+            preview.classList.toggle('has-notes', notasCache.length > 0);
+        })
+        .catch(err => {
+            console.error('Error cargando notas:', err);
+            document.getElementById('notes-list').innerHTML = '<div style="font-size:11px; color:#dc2626; text-align:center; padding:6px 0;">Error al cargar (' + err.message + ')</div>';
+        });
+}
+
+document.querySelector('.notes-wrap').addEventListener('mouseenter', function() {
+    if (notasCache === null) cargarNotas();
+});
+
+document.addEventListener('DOMContentLoaded', cargarNotas);
+
+function agregarNota() {
+    const input = document.getElementById('nota-input');
+    const contenido = input.value.trim();
+    if (!contenido) return;
+    fetch('/notas', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ contenido })
+    })
+    .then(async r => {
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(data.error || ('HTTP ' + r.status));
+        return data;
+    })
+    .then(() => {
+        input.value = '';
+        cargarNotas();
+    })
+    .catch(err => {
+        console.error('Error guardando nota:', err);
+        alert(err.message);
+    });
+}
+
+function eliminarNota(id) {
+    fetch('/notas/' + id, {
+        method: 'DELETE',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+        }
+    })
+    .then(r => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+    })
+    .then(() => cargarNotas())
+    .catch(err => {
+        console.error('Error eliminando nota:', err);
+        alert('No se pudo eliminar (' + err.message + ').');
+    });
+}
+</script>
 
 </x-panel-layout>

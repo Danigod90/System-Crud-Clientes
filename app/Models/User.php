@@ -52,4 +52,9 @@ class User extends Authenticatable
 {
     return $this->hasOne(\App\Models\Asesor::class);
 }
+
+    public function notas()
+    {
+        return $this->hasMany(\App\Models\UserNote::class);
+    }
 }

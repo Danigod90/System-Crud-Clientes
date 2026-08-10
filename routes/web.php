@@ -172,6 +172,26 @@ Route::get('/notificaciones/lista', function() {
     return response()->json(['notificaciones' => $notifs]);
 })->middleware('auth');
 
+Route::get('/notas', function() {
+    $notas = auth()->user()->notas()->latest()->get(['id', 'contenido', 'created_at']);
+    return response()->json(['notas' => $notas]);
+})->middleware('auth');
+Route::post('/notas', function(\Illuminate\Http\Request $request) {
+    $request->validate(['contenido' => 'required|string|max:1000']);
+    if (auth()->user()->notas()->count() >= 10) {
+        return response()->json(['ok' => false, 'error' => 'Ya tenés 10 recordatorios. Eliminá alguno para agregar uno nuevo.'], 422);
+    }
+    $nota = auth()->user()->notas()->create(['contenido' => $request->contenido]);
+    return response()->json(['ok' => true, 'nota' => $nota]);
+})->middleware('auth');
+Route::delete('/notas/{nota}', function(\App\Models\UserNote $nota) {
+    if ($nota->user_id !== auth()->id()) {
+        abort(403);
+    }
+    $nota->delete();
+    return response()->json(['ok' => true]);
+})->middleware('auth');
+
 require __DIR__.'/auth.php';
 
 
