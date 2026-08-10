@@ -171,8 +171,10 @@
 {{-- CARDS + HEADER TABLA FIJOS --}}
 <div style="position:relative; top:0; z-index:10; margin:-18px -18px 0 -18px; padding:18px 18px 0 18px; background:linear-gradient(135deg, #e8f0f5 0%, #dde8f0 25%, #e5edf5 50%, #dde8f0 75%, #e8f0f5 100%); box-shadow:0 8px 20px rgba(180,180,190,0.3);">
 
-    {{-- BOTON NUEVA ORGANIZACION + RECORDATORIOS (flotando en el margen izquierdo) --}}
-    <div style="position:absolute; left:24px; top:18px; z-index:15; display:flex; flex-direction:column; gap:10px;">
+<div style="max-width:1000px; margin:0 auto; position:relative;">
+
+    {{-- BOTON NUEVA ORGANIZACION + RECORDATORIOS (flotando pegado al borde izquierdo del contenido) --}}
+    <div style="position:absolute; left:-58px; top:0; z-index:15; display:flex; flex-direction:column; gap:10px;">
         <a href="{{ route('secretaria.con-nota.create') }}" class="add-org-btn">
             <svg width="19" height="19" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -202,8 +204,6 @@
             <div id="notes-list"></div>
         </div>
     </div>
-
-<div style="max-width:1000px; margin:0 auto;">
 
     {{-- WIDGET PRIORIDADES TÉCNICA --}}
     @if($prioridades->count() > 0)
