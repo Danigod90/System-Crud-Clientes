@@ -1,4 +1,4 @@
-<x-panel-layout title="Manuales" :charlasPendientes="$charlasPendientes">
+<x-panel-layout :title="$titulo" :charlasPendientes="$charlasPendientes">
 
 <style>
 .manual-row { transition: background 0.15s; }
@@ -8,8 +8,8 @@
 <div style="max-width:800px; margin:0 auto; padding:0 8px 40px;">
 
     <div style="background:linear-gradient(135deg, #1e3a5f 0%, #0f2444 100%); border-radius:16px; padding:24px 28px; margin-bottom:20px;">
-        <h1 style="font-size:20px; font-weight:700; color:#fff; margin:0 0 4px;">📂 Manuales</h1>
-        <p style="font-size:13px; color:rgba(255,255,255,0.6); margin:0;">Documentos y recursos para asesores</p>
+        <h1 style="font-size:20px; font-weight:700; color:#fff; margin:0 0 4px;">📂 {{ $titulo }}</h1>
+        <p style="font-size:13px; color:rgba(255,255,255,0.6); margin:0;">{{ $subtitulo }}</p>
     </div>
 
     @if(session('success'))
@@ -45,7 +45,7 @@
                     <p style="font-size:10px; color:#9ca3af; margin:2px 0 0;">{{ strtoupper($manual->extension) }} · {{ number_format($manual->tamanio / 1024, 1) }} KB · {{ $manual->user->name ?? '—' }} · {{ $manual->created_at->format('d/m/Y') }}</p>
                 </div>
                 <div id="nombre-edit-{{ $manual->id }}" style="display:none;">
-                    <form method="POST" action="{{ route('asesor.manuales.update', $manual->id) }}" style="display:flex; gap:6px; align-items:center;">
+                    <form method="POST" action="{{ route($routePrefix.'.update', $manual->id) }}" style="display:flex; gap:6px; align-items:center;">
                         @csrf @method('PATCH')
                         <input type="text" name="nombre" value="{{ $manual->nombre }}"
                                style="flex:1; border:1px solid #2563eb; border-radius:6px; padding:5px 8px; font-size:13px; color:#111827; outline:none;">
@@ -57,7 +57,7 @@
 
             {{-- ACCIONES --}}
             <div style="display:flex; gap:6px; flex-shrink:0;">
-                <a href="{{ route('asesor.manuales.show', $manual->id) }}" target="_blank"
+                <a href="{{ route($routePrefix.'.show', $manual->id) }}" target="_blank"
                    style="display:inline-flex; align-items:center; gap:4px; background:#eff6ff; color:#2563eb; padding:5px 10px; border-radius:6px; font-size:11px; text-decoration:none; font-weight:500;">
                     Ver
                 </a>
@@ -65,7 +65,7 @@
                         style="display:inline-flex; align-items:center; gap:4px; background:#fef3c7; color:#92400e; padding:5px 10px; border-radius:6px; font-size:11px; border:none; cursor:pointer; font-weight:500;">
                     ✏️ Editar
                 </button>
-                <form method="POST" action="{{ route('asesor.manuales.destroy', $manual->id) }}">
+                <form method="POST" action="{{ route($routePrefix.'.destroy', $manual->id) }}">
                     @csrf @method('DELETE')
                     <button type="submit" onclick="return confirm('¿Eliminar este manual?')"
                             style="display:inline-flex; align-items:center; gap:4px; background:#fef2f2; color:#dc2626; padding:5px 10px; border-radius:6px; font-size:11px; border:none; cursor:pointer; font-weight:500;">
@@ -82,7 +82,7 @@
     {{-- FORM SUBIR --}}
     <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
         <h2 style="font-size:12px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:0.8px; margin:0 0 16px;">Subir nuevo manual</h2>
-        <form method="POST" action="{{ route('asesor.manuales.store') }}" enctype="multipart/form-data">
+        <form method="POST" action="{{ route($routePrefix.'.store') }}" enctype="multipart/form-data">
             @csrf
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                 <div>

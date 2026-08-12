@@ -139,6 +139,12 @@ Route::middleware(['auth', 'role:Tecnico|Admin'])->prefix('tecnico')->name('tecn
     Route::get('detalle/{entrada_id}/check-update', [\App\Http\Controllers\DetalleTecnicoController::class, 'checkAsesorUpdate'])->name('detalle_tecnico.checkUpdate');
     Route::post('detalle/{entrada_id}/asesor', [\App\Http\Controllers\DetalleTecnicoController::class, 'saveAsesor'])->name('detalle_tecnico.saveAsesor');
     Route::post('prioridad/{entrada}', [\App\Http\Controllers\Tecnico\PrioridadTecnicaController::class, 'toggle'])->name('prioridad.toggle');
+
+    Route::get('manuales', [\App\Http\Controllers\Asesor\ManualController::class, 'index'])->name('manuales.index');
+    Route::post('manuales', [\App\Http\Controllers\Asesor\ManualController::class, 'store'])->name('manuales.store');
+    Route::patch('manuales/{manual}', [\App\Http\Controllers\Asesor\ManualController::class, 'update'])->name('manuales.update');
+    Route::delete('manuales/{manual}', [\App\Http\Controllers\Asesor\ManualController::class, 'destroy'])->name('manuales.destroy');
+    Route::get('manuales/{manual}/ver', [\App\Http\Controllers\Asesor\ManualController::class, 'show'])->name('manuales.show');
 });
 
 Route::middleware(['auth', 'role:Supervisor'])->prefix('supervisor')->name('supervisor.')->group(function () {

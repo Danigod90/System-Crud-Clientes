@@ -168,6 +168,15 @@
 
         {{-- NAV UTILIDADES --}}
         <div style="padding:14px 14px 4px; font-size:10px; color:rgba(255,255,255,0.25); letter-spacing:1px; text-transform:uppercase;">Utilidades</div>
+        @if(auth()->user()->hasRole('Tecnico'))
+        <a href="{{ route('tecnico.manuales.index') }}"
+            style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('tecnico.manuales.*') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('tecnico.manuales.*') ? 'rgba(255,255,255,0.1)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('tecnico.manuales.*') ? '1px solid rgba(255,255,255,0.15)' : '1px solid transparent' }}; transition:all 0.2s;"
+            onmouseover="this.style.background='rgba(255,255,255,0.12)'"
+            onmouseout="this.style.background='{{ request()->routeIs('tecnico.manuales.*') ? 'rgba(255,255,255,0.1)' : 'transparent' }}'">
+            <span style="width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.28); flex-shrink:0;"></span>
+            Manuales Técnicos
+        </a>
+        @else
         <a href="{{ route('asesor.manuales.index') }}"
             style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('asesor.manuales.*') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('asesor.manuales.*') ? 'rgba(255,255,255,0.1)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('asesor.manuales.*') ? '1px solid rgba(255,255,255,0.15)' : '1px solid transparent' }}; transition:all 0.2s;"
             onmouseover="this.style.background='rgba(255,255,255,0.12)'"
@@ -175,6 +184,7 @@
             <span style="width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,0.28); flex-shrink:0;"></span>
             Manuales
         </a>
+        @endif
         @if(auth()->user()->hasRole('Asesor'))
         <a href="{{ route('asesor.calculadora.dhondt') }}"
             style="display:flex; align-items:center; gap:10px; padding:9px 14px; margin:1px 8px; border-radius:8px; font-size:13px; color:{{ request()->routeIs('asesor.calculadora.dhondt') ? '#fff' : 'rgba(255,255,255,0.55)' }}; background:{{ request()->routeIs('asesor.calculadora.dhondt') ? 'rgba(251,191,36,0.2)' : 'transparent' }}; text-decoration:none; border:{{ request()->routeIs('asesor.calculadora.dhondt') ? '1px solid rgba(251,191,36,0.3)' : '1px solid transparent' }}; transition:all 0.2s;"

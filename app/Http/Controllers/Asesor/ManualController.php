@@ -11,9 +11,13 @@ class ManualController extends Controller
 {
     public function index()
     {
-        $manuales = Manual::with('user')->orderBy('created_at', 'desc')->get();
+        $categoria = request()->routeIs('tecnico.manuales.*') ? 'tecnico' : 'general';
+        $manuales = Manual::with('user')->where('categoria', $categoria)->orderBy('created_at', 'desc')->get();
         $charlasPendientes = auth()->user()->charlasPendientes ?? collect();
-        return view('asesor.utilidades.manuales', compact('manuales', 'charlasPendientes'));
+        $routePrefix = $categoria === 'tecnico' ? 'tecnico.manuales' : 'asesor.manuales';
+        $titulo = $categoria === 'tecnico' ? 'Manuales Técnicos' : 'Manuales';
+        $subtitulo = $categoria === 'tecnico' ? 'Documentos y recursos para técnicos' : 'Documentos y recursos para asesores';
+        return view('asesor.utilidades.manuales', compact('manuales', 'charlasPendientes', 'routePrefix', 'titulo', 'subtitulo'));
     }
 
     public function store(Request $request)
@@ -23,6 +27,7 @@ class ManualController extends Controller
             'nombre'  => 'nullable|string|max:255',
         ]);
 
+        $categoria = request()->routeIs('tecnico.manuales.*') ? 'tecnico' : 'general';
         $archivo   = $request->file('archivo');
         $extension = $archivo->getClientOriginalExtension();
         $nombre    = $request->nombre ?: $archivo->getClientOriginalName();
@@ -35,6 +40,7 @@ class ManualController extends Controller
             'extension' => $extension,
             'tamanio'   => $archivo->getSize(),
             'user_id'   => auth()->id(),
+            'categoria' => $categoria,
         ]);
 
         return redirect()->back()->with('success', 'Manual subido correctamente.');

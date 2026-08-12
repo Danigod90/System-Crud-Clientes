@@ -15,6 +15,7 @@ class Manual extends Model
         'extension',
         'tamanio',
         'user_id',
+        'categoria',
     ];
 
     public function user()

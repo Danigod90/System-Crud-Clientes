@@ -205,6 +205,7 @@
 <rect x="9" y="10" width="6" height="6" rx="1"/>
 </svg>
 </a>
+@if(!request()->filled('organizacion') && !request()->filled('asunto') && !request()->filled('mes_eleccion') && !request()->filled('mes_ingreso'))
 <button onclick="togglePinAsesor({{ $entrada->id }}, this)"
         style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:8px; border:none; cursor:pointer; background:{{ $prioridades->pluck('entrada_con_nota_id')->contains($entrada->id) ? '#fce7f3' : '#f3f4f6' }}; flex-shrink:0;"
         title="Marcar como prioridad">
@@ -212,6 +213,7 @@
         <path d="M12 2L9 9H2l6 4.5-2.5 7.5L12 17l6.5 4-2.5-7.5L22 9h-7z"/>
     </svg>
 </button>
+@endif
                             </div>
                         </td>
                     </tr>

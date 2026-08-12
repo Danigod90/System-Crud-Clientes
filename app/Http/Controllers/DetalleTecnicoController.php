@@ -221,9 +221,11 @@ return redirect()->back()->with('success', 'Datos técnicos guardados correctame
 $entrada->refresh();
 $detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();
 
-    // Marcar como impreso
-    $detalle->impreso    = true;
-    $detalle->impreso_at = now();
+    // Marcar como impreso (la fecha de impresion solo se registra la primera vez)
+    $detalle->impreso = true;
+    if (is_null($detalle->impreso_at)) {
+        $detalle->impreso_at = now();
+    }
     $detalle->save();
     $detalle->refresh();
 

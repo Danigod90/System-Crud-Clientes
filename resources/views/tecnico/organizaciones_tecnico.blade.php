@@ -102,6 +102,7 @@
                         <th class="border border-gray-200 px-2 py-3 text-left" style="width:100px;">Asesor</th>
                         <th class="border border-gray-200 px-2 py-3 text-left" style="width:90px;">Fecha eleccion</th>
                         <th class="border border-gray-200 px-2 py-3 text-left" style="width:90px;">Fecha ingreso</th>
+                        <th class="border border-gray-200 px-2 py-3 text-left" style="width:90px;">Fecha impresión</th>
                         <th class="border border-gray-200 px-2 py-3 text-left" style="width:80px;">Estado</th>
                         <th class="border border-gray-200 px-2 py-3 text-center" style="width:90px;">Acciones</th>
                     </tr>
@@ -129,7 +130,10 @@
                             @endif
                         </td>
                         <td class="border border-gray-200 px-2 py-2 text-xs text-gray-600">
-                            {{ $entrada->created_at?->format('d/m/Y H:i') ?? '-' }}
+                            {{ $entrada->created_at?->format('d/m/Y H:i') ?? '—' }}
+                        </td>
+                        <td class="border border-gray-200 px-2 py-2 text-xs text-gray-600">
+                            {{ $entrada->detalleTecnico?->impreso_at?->format('d/m/Y H:i') ?? '—' }}
                         </td>
                         <td class="border border-gray-200 px-2 py-2" style="white-space:nowrap;">
                             @if($entrada->asunto_log)
@@ -159,6 +163,7 @@
                 <rect x="9" y="10" width="6" height="6" rx="1"/>
             </svg>
         </a>
+        @if(!request()->filled('estado') && !request()->filled('organizacion') && !request()->filled('asesor') && !request()->filled('mes_ingreso'))
         <button onclick="togglePin({{ $entrada->id }}, this)"
                 data-activo="{{ $prioridades->pluck('entrada_con_nota_id')->contains($entrada->id) ? '1' : '0' }}"
                 style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:8px; border:none; cursor:pointer; background:{{ $prioridades->pluck('entrada_con_nota_id')->contains($entrada->id) ? '#fce7f3' : '#f3f4f6' }};"
@@ -167,11 +172,12 @@
                 <path d="M12 2L9 9H2l6 4.5-2.5 7.5L12 17l6.5 4-2.5-7.5L22 9h-7z"/>
             </svg>
         </button>
+        @endif
     </div>
 </td>                    </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="border border-gray-200 px-4 py-6 text-center text-gray-500">
+                        <td colspan="9" class="border border-gray-200 px-4 py-6 text-center text-gray-500">
                             No hay organizaciones con técnica aún.
                         </td>
                     </tr>
