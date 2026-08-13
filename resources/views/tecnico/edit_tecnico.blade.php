@@ -250,15 +250,15 @@
 
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:14px;">
             <div>
-                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Listas</label>
-                <input type="number" name="cantidad_listas" min="0" max="10"
-                    value="{{ $entrada->detalleTecnico->cantidad_listas }}"
-                    style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
-            </div>
-            <div>
                 <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Papeletas</label>
                 <input type="number" name="cantidad_papeletas" id="input_papeletas" min="0" max="10"
     value="{{ $entrada->detalleTecnico->cantidad_papeletas }}"
+                    style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
+            </div>
+            <div>
+                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Cantidad de Listas</label>
+                <input type="number" name="cantidad_listas" min="0" max="10"
+                    value="{{ $entrada->detalleTecnico->cantidad_listas }}"
                     style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
             </div>
             <div>
@@ -812,7 +812,14 @@ function activarEdicionAsesor() {
     generarPapeletasTec();
     // calcularMaterialesTec() ← ELIMINADO, ya no calcula al abrir
 
-    document.querySelector('#asesor-form [name="cantidad_papeletas"]')?.addEventListener('input', () => { generarPapeletasTec(); });
+    document.querySelector('#asesor-form [name="cantidad_papeletas"]')?.addEventListener('input', function() {
+        generarPapeletasTec();
+        const val = parseInt(this.value) || 0;
+        const inputMatFinal = document.querySelector('#asesor-form [name="mat_final_papeletas"]');
+        if (inputMatFinal) {
+            inputMatFinal.value = val;
+        }
+    });
     document.querySelector('#asesor-form [name="cantidad_listas"]')?.addEventListener('input', generarPapeletasTec);
     // cantidad_mesas ya no dispara recalculo automático
     document.querySelector('#asesor-form [name="mat_final_papeletas"]')?.addEventListener('input', function() {

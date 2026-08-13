@@ -1265,18 +1265,21 @@ function calcularMaterialesAsesor() {
     if (fCuartos  && fCuartos.value  === '') fCuartos.value  = cuartos;
     if (fUrnas    && fUrnas.value    === '') fUrnas.value    = urnas;
 
-    const fPapeletas = document.getElementById('asesor_mat_papeletas');
-if (fPapeletas && fPapeletas.value === '') fPapeletas.value = papeletas;
-
     const fTintas = document.getElementById('asesor_mat_tintas');
     if (fTintas    && fTintas.value    === '') fTintas.value    = tintas;
 
 }
 
 document.querySelector('[name="cantidad_listas"]')?.addEventListener('input', generarPapeletas);
-document.getElementById('asesor_input_papeletas')?.addEventListener('input', () => {
+document.getElementById('asesor_input_papeletas')?.addEventListener('input', function() {
     generarPapeletas();
     calcularMaterialesAsesor();
+    const val = parseInt(this.value) || 0;
+    const fPapeletas = document.getElementById('asesor_mat_papeletas');
+    if (fPapeletas) {
+        fPapeletas.value = val;
+        actualizarVisibilidadEnviarTecnica();
+    }
 });
 document.getElementById('asesor_input_mesas')?.addEventListener('input', calcularMaterialesAsesor);
 
