@@ -826,13 +826,6 @@ $tintas   = $entrada->detalleTecnico->mat_final_tintas   !== null ? $entrada->de
                 <option value="Síndico">
                 <option value="Comité Revisadora de Cuentas">
             </datalist>
-            <datalist id="sistemas-asesor-list">
-                <option value="Lista Única">
-                <option value="Lista Cerrada">
-                <option value="Lista Desbloqueada">
-                <option value="Lista Cerrada Bloqueada">
-                <option value="Nominal">
-            </datalist>
         </div>
 <div style="margin-bottom:14px;">
     <p style="font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; margin:0 0 10px;">*Campo Obligatorio* Cargar manualmente los Materiales a Entregar</p>
@@ -1178,6 +1171,7 @@ const ordinalListas = ['Primera','Segunda','Tercera','Cuarta','Quinta'];
 
 const ordinalPapJS = ['Primera','Segunda','Tercera','Cuarta','Quinta','Sexta','Séptima','Octava','Novena','Décima'];
 const ordinalLisJS = ['Primera','Segunda','Tercera','Cuarta','Quinta'];
+const sistemasElecOpciones = ['Lista Única','Lista Cerrada Mayoría Simple','Lista Desbloqueada','Lista Cerrada Bloqueada','Sistema Nominal'];
 const savedData    = @json($datosGuardadosBlade ?? []);
 
 function generarPapeletas() {
@@ -1235,9 +1229,11 @@ function generarPapeletas() {
                 </div>
                 <div style="flex:1;">
                     <label style="font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; display:block; margin-bottom:4px;">Sistema de Elección</label>
-                    <input type="text" name="${sistemaKey}" value="${sistemaVal}"
-                        list="sistemas-asesor-list" placeholder="Sistema..."
+                    <select name="${sistemaKey}"
                         style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 7px; font-size:12px; color:#111827; background:#fff; box-sizing:border-box; margin-top:${marginTop}px;">
+                        <option value="">Sistema...</option>
+                        ${sistemasElecOpciones.map(op => `<option value="${op}" ${sistemaVal === op ? 'selected' : ''}>${op}</option>`).join('')}
+                    </select>
                 </div>
             </div>
         </div>`;

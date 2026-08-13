@@ -272,7 +272,6 @@
         {{-- PAPELETAS --}}
         @php
             $candidaturasTec = ['Presidente y Vicepresidentes','Presidente y Vicepresidente','Secretario General y Adjunto','Comisión Directiva','Miembros Titulares','Miembros Titulares y Suplentes','Vocales Titulares','Vocales Titulares y Suplentes','Tribunal Electoral Independiente','Junta Electoral','Colegio Electoral','Síndico','Comité Revisadora de Cuentas'];
-            $sistemasTec = ['Lista Única','Lista Cerrada','Lista Desbloqueada','Lista Cerrada Bloqueada','Nominal'];
         @endphp
 
         <div style="margin-bottom:14px;">
@@ -281,11 +280,6 @@
             <datalist id="candidaturas-tec-list">
                 @foreach($candidaturasTec as $c)
                 <option value="{{ $c }}">
-                @endforeach
-            </datalist>
-            <datalist id="sistemas-tec-list">
-                @foreach($sistemasTec as $s)
-                <option value="{{ $s }}">
                 @endforeach
             </datalist>
         </div>
@@ -746,6 +740,7 @@ const savedDataTec = @json($savedDataTecPHP);
 
 const ordinalPapTec = ['Primera','Segunda','Tercera','Cuarta','Quinta','Sexta','Séptima','Octava','Novena','Décima'];
 const ordinalLisTec = ['Primera','Segunda','Tercera','Cuarta','Quinta'];
+const sistemasElecOpcionesTec = ['Lista Única','Lista Cerrada Mayoría Simple','Lista Desbloqueada','Lista Cerrada Bloqueada','Sistema Nominal'];
 
 function generarPapeletasTec() {
     const cantPap = parseInt(document.querySelector('#asesor-form [name="cantidad_papeletas"]')?.value) || 0;
@@ -791,8 +786,11 @@ function generarPapeletasTec() {
     </div>
     <div style="min-width:0;">
         <label style="font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; display:block; margin-bottom:4px;">Sistema de Elección</label>
-        <input type="text" name="${sisKey}" value="${sisVal}" list="sistemas-tec-list" placeholder="Sistema..."
+        <select name="${sisKey}"
             style="width:100%; border:1px solid #d1d5db; border-radius:6px; padding:5px 7px; font-size:12px; color:#111827; background:#fff; box-sizing:border-box; margin-top:${marginTop}px;">
+            <option value="">Sistema...</option>
+            ${sistemasElecOpcionesTec.map(op => `<option value="${op}" ${sisVal === op ? 'selected' : ''}>${op}</option>`).join('')}
+        </select>
     </div>
 </div>
         </div>`;
