@@ -1,4 +1,9 @@
 <x-panel-layout title="Panel Técnico — {{ $entrada->codigo_org }}">
+    @php
+if (request()->has('volver')) {
+    session(['volver_organizacion_tecnico' => request('volver')]);
+}
+@endphp
 
 <div class="px-2 py-2">
     <div style="max-width:760px; margin:0 auto;">
@@ -7,7 +12,7 @@
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
                 <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0;">Datos de la organización</h3>
-                <a href="{{ route('tecnico.organizaciones') }}"
+                <a href="{{ session('volver_organizacion_tecnico', route('tecnico.organizaciones')) }}"
                    style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
                     <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <polyline points="15 18 9 12 15 6"/>
@@ -711,7 +716,7 @@ $defaultBoletin = is_null($entrada->detalleTecnico?->mat_final_papeletas) ? ($en
 
         {{-- VOLVER --}}
         <div style="display:flex; justify-content:flex-end;">
-            <a href="{{ route('tecnico.organizaciones') }}"
+            <a href="{{ session('volver_organizacion_tecnico', route('tecnico.organizaciones')) }}"
                style="display:inline-flex; align-items:center; gap:6px; background:#1e3a5f; color:white; padding:10px 20px; border-radius:8px; font-size:14px; text-decoration:none; font-weight:500;">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <polyline points="15 18 9 12 15 6"/>

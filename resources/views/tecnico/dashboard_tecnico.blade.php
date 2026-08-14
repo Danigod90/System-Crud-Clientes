@@ -142,6 +142,7 @@ $pad = $ent->detalleTecnico?->mat_final_padrones ?? ($mesas > 0 ? $mesas * 3 : '
 <div style="background:rgba(255,255,255,0.95); border-radius:16px 16px 0 0; border:1px solid rgba(255,255,255,0.9); border-bottom:none;">
     <div style="padding:6px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; font-weight:500; color:#111827; display:flex; justify-content:space-between; align-items:center;">
         Organizaciones recientes
+        <span style="font-size:11px; color:#9ca3af; font-weight:400; margin-left:6px;">— hacé click en alguna para editarla</span>
         <div style="display:flex; align-items:center; gap:8px;">
             <form method="GET" action="{{ route('tecnico.dashboard') }}" style="display:flex; align-items:center; gap:6px;">
                 <select name="asesor" onchange="this.form.submit()" style="border:1px solid #e5e7eb; border-radius:8px; padding:4px 10px; font-size:12px; color:#374151; outline:none; background:#fff; cursor:pointer; transition: box-shadow 0.2s ease;"
@@ -184,9 +185,9 @@ $pad = $ent->detalleTecnico?->mat_final_padrones ?? ($mesas > 0 ? $mesas * 3 : '
     <table style="width:100%; border-collapse:collapse; font-size:11px;">
         <tbody>
             @forelse($entradas as $entrada)
-            <tr style="border-bottom:1px solid #f3f4f6;" onmouseover="this.style.background='rgba(232,131,74,0.06)'" onmouseout="this.style.background='transparent'">
+            <tr style="border-bottom:1px solid #f3f4f6; cursor:pointer;" onclick="window.location='{{ route('tecnico.organizacion.edit', $entrada->id) }}?{{ http_build_query(['volver' => request()->fullUrl()]) }}'" onmouseover="this.style.background='rgba(232,131,74,0.06)'" onmouseout="this.style.background='transparent'">
                 <td style="padding:5px 10px; color:#E8834A; font-weight:600; font-family:monospace; width:120px;">
-                    <a href="{{ route('tecnico.organizacion.edit', $entrada->id) }}" style="color:#E8834A; text-decoration:none;">{{ $entrada->codigo_org }}</a>
+                    {{ $entrada->codigo_org }}
                 </td>
                 <td style="padding:5px 10px; color:#111827;">{{ $entrada->nombre_organizacion }}</td>
                 <td style="padding:5px 10px; color:#6b7280; width:120px; font-size:11px;">{{ $entrada->asesor_asignado ?? '-' }}</td>

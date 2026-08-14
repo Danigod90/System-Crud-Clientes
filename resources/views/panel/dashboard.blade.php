@@ -294,7 +294,7 @@
 {{-- HEADER TABLA FIJO --}}
 <div style="background:rgba(255,255,255,0.95); border-radius:10px 10px 0 0; border:1px solid rgba(255,255,255,0.9); border-bottom:none;">
     <div style="padding:4px 12px; border-bottom:1px solid #e5e7eb; display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-size:11px; font-weight:500; color:#111827;">Ultimas organizaciones ingresadas</span>
+        <span style="font-size:11px; font-weight:500; color:#111827;">Ultimas organizaciones ingresadas <span style="font-weight:400; color:#9ca3af;">— hacé click en alguna para ver el detalle</span></span>
         <div style="display:flex; align-items:center; gap:6px;">
             <form method="GET" action="{{ route('panel.dashboard') }}" style="display:flex; align-items:center; gap:4px;">
                <select name="asesor" onchange="this.form.submit()" style="border:1px solid #e5e7eb; border-radius:6px; padding:2px 6px; font-size:10px; color:#374151; outline:none; background:#fff; cursor:pointer;">
@@ -319,6 +319,7 @@
                 <th style="padding:3px 8px; text-align:left; color:#fff; font-weight:500; font-size:11px; width:120px;">Codigo</th>
                 <th style="padding:3px 8px; text-align:left; color:#fff; font-weight:500; font-size:11px;">Organizacion</th>
                 <th style="padding:3px 8px; text-align:left; color:#fff; font-weight:500; font-size:11px; width:120px;">Asesor</th>
+                <th style="padding:3px 8px; text-align:left; color:#fff; font-weight:500; font-size:11px; width:90px;">Fecha Elección</th>
                 <th style="padding:3px 1px; text-align:left; color:#fff; font-weight:500; font-size:11px; width:100px;">Asunto</th>
                 <th style="padding:3px 4px; text-align:left; color:#fff; font-weight:500; font-size:11px; width:120px;">Estado</th>
             </tr>
@@ -336,10 +337,19 @@
     <table style="width:100%; border-collapse:collapse; font-size:11px;">
         <tbody>
             @forelse($entradas as $entrada)
-            <tr style="border-bottom:1px solid #f3f4f6;" onmouseover="this.style.background='rgba(100,100,180,0.06)'" onmouseout="this.style.background='transparent'">
+            <tr style="border-bottom:1px solid #f3f4f6; cursor:pointer;"
+                onclick="window.location='{{ route('secretaria.con-nota.show', $entrada) }}?{{ http_build_query(['volver' => request()->fullUrl()]) }}'"
+                onmouseover="this.style.background='rgba(100,100,180,0.06)'" onmouseout="this.style.background='transparent'">
                 <td style="padding:5px 10px; color:#185FA5; font-weight:600; font-family:monospace; width:120px;">{{ $entrada->codigo_org }}</td>
                 <td style="padding:5px 10px; color:#111827;">{{ $entrada->nombre_organizacion }}</td>
                 <td style="padding:5px 10px; color:#6b7280; width:120px; font-size:11.5px;">{{ $entrada->asesor_asignado ?? '-' }}</td>
+                <td style="padding:5px 8px; width:90px; white-space:nowrap;">
+                    @if($entrada->fecha_eleccion)
+                        {{ $entrada->fecha_eleccion->format('d/m/Y') }}
+                    @else
+                        <span style="background:#fef9c3; color:#854d0e; font-size:9.5px; padding:2px 6px; border-radius:999px; font-weight:600;">⚠️ Sin fecha</span>
+                    @endif
+                </td>
                 <td style="padding:5px 1px; color:#111827; font-weight:600; width:100px;">{{ $entrada->asunto_texto }}</td>
                 <td style="padding:5px 2px; width:120px;">
                     @if($entrada->asunto_char)
@@ -373,7 +383,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="5" style="padding:20px 16px; text-align:center; color:#9ca3af; font-size:12px;">
+                <td colspan="6" style="padding:20px 16px; text-align:center; color:#9ca3af; font-size:12px;">
                     Sin organizaciones registradas aun.
                 </td>
             </tr>

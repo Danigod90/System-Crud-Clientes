@@ -328,6 +328,7 @@ $pad = $ent->detalleTecnico?->mat_final_padrones ?? ($mesas > 0 ? $mesas * 3 : '
     <div style="background:rgba(255,255,255,0.95); border-radius:16px 16px 0 0; border:1px solid rgba(255,255,255,0.9); border-bottom:none;">
         <div style="padding:6px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; font-weight:500; color:#111827; display:flex; justify-content:space-between; align-items:center;">
             Mis organizaciones
+            <span style="font-size:11px; color:#9ca3af; font-weight:400;">— hacé click en alguna para editarla</span>
 <a href="{{ route('asesor.mis-organizaciones') }}" style="font-size:12px; color:#1f0566; text-decoration:none;">Ver todas</a>        </div>
         <table style="width:100%; border-collapse:collapse;">
             <thead>
@@ -353,7 +354,7 @@ $pad = $ent->detalleTecnico?->mat_final_padrones ?? ($mesas > 0 ? $mesas * 3 : '
     <table style="width:100%; border-collapse:collapse; font-size:11px;">
         <tbody>
             @forelse($entradas as $entrada)
-            <tr style="border-bottom:1px solid #f3f4f6;" onmouseover="this.style.background='rgba(232,131,74,0.06)'" onmouseout="this.style.background='transparent'">
+            <tr style="border-bottom:1px solid #f3f4f6; cursor:pointer;" onclick="window.location='{{ route('asesor.organizacion.edit', $entrada) }}?{{ http_build_query(['volver' => request()->fullUrl()]) }}'" onmouseover="this.style.background='rgba(232,131,74,0.06)'" onmouseout="this.style.background='transparent'">
                 <td style="padding:5px 10px; color:#E8834A; font-weight:600; font-family:monospace; width:120px;">{{ $entrada->codigo_org }}</td>
                 <td style="padding:5px 10px; color:#111827;">{{ $entrada->nombre_organizacion }}</td>
                 <td style="padding:5px 10px; color:#6b7280; width:100px; font-size:11px;">
