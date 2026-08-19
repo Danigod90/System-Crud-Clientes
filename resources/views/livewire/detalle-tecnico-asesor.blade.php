@@ -143,15 +143,23 @@
         .spinner-guardar { animation: girar 0.7s linear infinite; }
     </style>
     <form
-        x-data="{}"
+        x-data="{ errorRed: false }"
         @submit.prevent="
+            errorRed = false;
             if (!$wire.mat_final_papeletas_formato || !$wire.mat_final_actas_formato || !$wire.mat_final_padrones_formato) {
-                $wire.guardar();
+                $wire.guardar().catch(() => { errorRed = true; });
             } else if (confirm('¿Confirmás guardar y enviar los datos técnicos?')) {
-                $wire.guardar();
+                $wire.guardar().catch(() => { errorRed = true; });
             }
         "
     >
+
+        <div x-show="errorRed" x-cloak style="display:flex; align-items:center; gap:10px; background:#fee2e2; color:#991b1b; padding:12px 16px; border-radius:10px; margin-bottom:14px; font-size:13px; border-left:4px solid #dc2626;">
+            <svg width="18" height="18" fill="none" stroke="#dc2626" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            No se pudo guardar. Revisá tu conexión a internet e intentá nuevamente.
+        </div>
 
         @if($errors->any())
         <div style="background:#fee2e2; border:1px solid #fecaca; color:#991b1b; padding:12px 16px; border-radius:10px; margin-bottom:14px; font-size:13px;">
