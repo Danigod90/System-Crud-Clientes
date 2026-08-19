@@ -339,7 +339,7 @@
             @forelse($entradas as $entrada)
             <tr style="border-bottom:1px solid #f3f4f6; cursor:pointer;"
                 onclick="window.location='{{ route('secretaria.con-nota.show', $entrada) }}?{{ http_build_query(['volver' => request()->fullUrl()]) }}'"
-                onmouseover="this.style.background='rgba(100,100,180,0.06)'" onmouseout="this.style.background='transparent'">
+                onmouseover="this.style.background='rgba(100,100,180,0.14)'" onmouseout="this.style.background='transparent'">
                 <td style="padding:5px 10px; color:#185FA5; font-weight:600; font-family:monospace; width:120px;">{{ $entrada->codigo_org }}</td>
                 <td style="padding:5px 10px; color:#111827;">{{ $entrada->nombre_organizacion }}</td>
                 <td style="padding:5px 10px; color:#6b7280; width:120px; font-size:11.5px;">{{ $entrada->asesor_asignado ?? '-' }}</td>

@@ -493,18 +493,32 @@ function closeAll() {
     if (ch) ch.style.display = 'none';
 }
 
+function posicionarMenuBajoBoton(menu, boton) {
+    if (!menu || !boton) return;
+    const rect = boton.getBoundingClientRect();
+    menu.style.top = (rect.bottom + 6) + 'px';
+    menu.style.left = rect.left + 'px';
+    menu.style.right = 'auto';
+}
+
 function toggleCharlas() {
     const ch = document.getElementById('charlasMenu');
     const visible = ch.style.display === 'block';
     closeAll();
-    if (!visible) ch.style.display = 'block';
+    if (!visible) {
+        posicionarMenuBajoBoton(ch, document.getElementById('ticker-box-charla'));
+        ch.style.display = 'block';
+    }
 }
 
 function toggleElecciones() {
     const el = document.getElementById('eleccionesMenu');
     const visible = el.style.display === 'block';
     closeAll();
-    if (!visible) el.style.display = 'block';
+    if (!visible) {
+        posicionarMenuBajoBoton(el, document.getElementById('ticker-box'));
+        el.style.display = 'block';
+    }
 }
 
 function toggleNotif() {

@@ -221,11 +221,15 @@
 $mesas = $ent->detalleTecnico?->cantidad_mesas ?? 0;
 $act = $ent->detalleTecnico?->mat_final_actas ?? ($mesas > 0 ? $mesas * 3 : '—');
 $pad = $ent->detalleTecnico?->mat_final_padrones ?? ($mesas > 0 ? $mesas * 3 : '—');
+$realizadoPrio = (bool) ($ent->detalleTecnico?->tec_realizado ?? false);
             @endphp
-            <div style="background:#fff8f8; border:1px solid rgba(220,38,38,0.15); border-radius:10px; padding:10px 12px;">
+            <div style="background:{{ $realizadoPrio ? '#f0fdf4' : '#fff8f8' }}; border:1px solid {{ $realizadoPrio ? 'rgba(22,163,74,0.25)' : 'rgba(220,38,38,0.15)' }}; border-radius:10px; padding:10px 12px;">
                 <div style="display:flex; align-items:center; gap:6px; margin-bottom:6px;">
-                    <span style="font-size:10px; font-weight:700; background:#dc2626; color:#fff; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">{{ $i+1 }}</span>
-                    <span style="font-size:10px; font-weight:600; color:#dc2626; font-family:monospace;">{{ $ent->codigo_org }}</span>
+                    <span style="font-size:10px; font-weight:700; background:{{ $realizadoPrio ? '#16a34a' : '#dc2626' }}; color:#fff; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">{{ $i+1 }}</span>
+                    <span style="font-size:10px; font-weight:600; color:{{ $realizadoPrio ? '#16a34a' : '#dc2626' }}; font-family:monospace;">{{ $ent->codigo_org }}</span>
+                    @if($realizadoPrio)
+                    <span style="margin-left:auto; font-size:9px; font-weight:700; color:#166534; background:#dcfce7; padding:2px 7px; border-radius:20px;">✓ Realizado</span>
+                    @endif
                 </div>
                 <p style="font-size:11px; font-weight:600; color:#111827; margin:0 0 4px; line-height:1.3; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">{{ $ent->nombre_organizacion }}</p>
                 <p style="font-size:10px; color:#6b7280; margin:0 0 4px;">{{ $ent->asesor_asignado ?? '—' }}</p>
@@ -354,7 +358,7 @@ $pad = $ent->detalleTecnico?->mat_final_padrones ?? ($mesas > 0 ? $mesas * 3 : '
     <table style="width:100%; border-collapse:collapse; font-size:11px;">
         <tbody>
             @forelse($entradas as $entrada)
-            <tr style="border-bottom:1px solid #f3f4f6; cursor:pointer;" onclick="window.location='{{ route('asesor.organizacion.edit', $entrada) }}?{{ http_build_query(['volver' => request()->fullUrl()]) }}'" onmouseover="this.style.background='rgba(232,131,74,0.06)'" onmouseout="this.style.background='transparent'">
+            <tr style="border-bottom:1px solid #f3f4f6; cursor:pointer;" onclick="window.location='{{ route('asesor.organizacion.edit', $entrada) }}?{{ http_build_query(['volver' => request()->fullUrl()]) }}'" onmouseover="this.style.background='rgba(232,131,74,0.14)'" onmouseout="this.style.background='transparent'">
                 <td style="padding:5px 10px; color:#E8834A; font-weight:600; font-family:monospace; width:120px;">{{ $entrada->codigo_org }}</td>
                 <td style="padding:5px 10px; color:#111827;">{{ $entrada->nombre_organizacion }}</td>
                 <td style="padding:5px 10px; color:#6b7280; width:100px; font-size:11px;">

@@ -346,6 +346,7 @@ public function exportPdf(Request $request)
             elseif ($asunto === 'log')    { $q->where('asunto_log', true); }
             elseif ($asunto === 'tec')    { $q->where('asunto_tec', true); }
             elseif ($asunto === 'obs')    { $q->where('asunto_obs', true); }
+            elseif ($asunto === 'inf')    { $q->where('asunto_inf', true); }
             elseif ($asunto === 'suspendida') { $q->where('eleccion_suspendida', 1); }
 
         })
@@ -391,6 +392,7 @@ public function exportPdf(Request $request)
         $e->asunto_log  ? 'Log'  : null,
         $e->asunto_tec  ? 'Tec'  : null,
         $e->asunto_obs  ? 'Obs'  : null,
+        $e->asunto_inf  ? 'Inf'  : null,
     ])->filter()->implode(' · ');
         $filas .= '
         <tr>
