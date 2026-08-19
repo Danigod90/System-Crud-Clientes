@@ -9,6 +9,7 @@
    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
     <style>
     @keyframes humo {
         0%   { background-position: 0% 50%; }
@@ -349,8 +350,9 @@
    <div id="notif-contenido" style="max-height:320px; overflow:auto;">
     @forelse(auth()->user()->notifications->take(8) as $notif)
     @php
-    $esNuevaEntrada = str_contains($notif->data['mensaje'] ?? '', 'Nueva entrada') && is_null($notif->read_at);
-    $bgColor = $esNuevaEntrada ? 'background:#f0fdf4;' : '';
+    $esNuevaEntrada = (str_contains($notif->data['mensaje'] ?? '', 'Nueva entrada') || str_contains($notif->data['mensaje'] ?? '', 'Nuevo trabajo')) && is_null($notif->read_at);
+    $esCorreccion = str_contains($notif->data['mensaje'] ?? '', 'editó nuevamente') && is_null($notif->read_at);
+    $bgColor = $esNuevaEntrada ? 'background:#f0fdf4;' : ($esCorreccion ? 'background:#fef9c3;' : '');
 @endphp
     <div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px; {{ $bgColor }}">
         <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:{{ $notif->read_at ? '#d1d5db' : '#185FA5' }};"></span>
@@ -520,7 +522,7 @@ function toggleNotif() {
                     contenido.innerHTML = '<div style="padding:20px 16px; text-align:center; font-size:12px; color:#9ca3af;">Sin notificaciones.</div>';
                 } else {
                     contenido.innerHTML = d.notificaciones.map(n => `
-<div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px; ${n.mensaje.includes('Nueva entrada') ? 'background:#d1fae5;' : ''}">                            <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:${n.leida ? '#d1d5db' : '#185FA5'};"></span>
+<div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px; ${(n.mensaje.includes('Nueva entrada') || n.mensaje.includes('Nuevo trabajo')) ? 'background:#d1fae5;' : (n.mensaje.includes('editó nuevamente') ? 'background:#fef9c3;' : '')}">                            <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:${n.leida ? '#d1d5db' : '#185FA5'};"></span>
                             <div style="flex:1;">
                                 <div style="font-size:12px; color:#111827; line-height:1.4;">${n.mensaje}</div>
                                 ${n.seccion ? `<div style="font-size:10.5px; color:#6b7280; margin-top:2px;">${n.seccion}</div>` : ''}
@@ -868,6 +870,7 @@ document.addEventListener('visibilitychange', function() {
 });
 
 </script>
+@livewireScripts
 
 </body>
 

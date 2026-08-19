@@ -98,6 +98,9 @@ if (request()->has('volver')) {
             <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:500; color:#6b7280; text-transform:none;">
                 <span style="width:9px; height:9px; border-radius:50%; background:{{ $tecDot }}; display:inline-block;"></span>
                 {{ $entrada->detalleTecnico->enviado_tecnica ? 'Enviado a Técnica' : 'Pendiente' }}
+                @if($entrada->detalleTecnico->enviado_tecnica && $entrada->detalleTecnico->enviado_tecnica_at)
+                    — {{ $entrada->detalleTecnico->enviado_tecnica_at->format('d/m/Y H:i') }}
+                @endif
             </span>
         </h3>
         <button id="btn-editar-asesor" onclick="activarEdicionAsesor()"
@@ -236,6 +239,7 @@ if (request()->has('volver')) {
 
     {{-- FORMULARIO EDITABLE ASESOR --}}
     <form id="asesor-form" method="POST" action="{{ route('tecnico.detalle_tecnico.saveAsesor', $entrada->id) }}"
+          autocomplete="off"
           style="display:none;">
         @csrf
 
@@ -293,6 +297,21 @@ if (request()->has('volver')) {
 @php
     $mEstForm = $entrada->detalleTecnico->cantidad_mesas ?? 0;
     $pEstForm = $entrada->detalleTecnico->cantidad_papeletas ?? 0;
+
+    // No usamos old() acá: la sesión de errores/inputs viejos puede quedar
+    // "viva" más tiempo del esperado y pegar datos de un envío fallido anterior.
+    // Siempre mostramos el valor real guardado en la base.
+    $efectivo = fn ($campo, $default) => $default;
+
+    $papVal             = $efectivo('mat_final_papeletas', $entrada->detalleTecnico->mat_final_papeletas ?? $entrada->detalleTecnico->cantidad_papeletas);
+    $papFormatoVal      = $efectivo('mat_final_papeletas_formato', $entrada->detalleTecnico->mat_final_papeletas_formato);
+    $actasVal           = $efectivo('mat_final_actas', is_null($entrada->detalleTecnico->mat_final_actas) ? ($mEstForm * 3) : $entrada->detalleTecnico->mat_final_actas);
+    $actasFormatoVal    = $efectivo('mat_final_actas_formato', $entrada->detalleTecnico->mat_final_actas_formato);
+    $padronesVal        = $efectivo('mat_final_padrones', is_null($entrada->detalleTecnico->mat_final_padrones) ? ($mEstForm * 3) : $entrada->detalleTecnico->mat_final_padrones);
+    $padronesFormatoVal = $efectivo('mat_final_padrones_formato', $entrada->detalleTecnico->mat_final_padrones_formato);
+    $cuartosVal         = $efectivo('mat_final_cuartos', is_null($entrada->detalleTecnico->mat_final_cuartos) ? $mEstForm : $entrada->detalleTecnico->mat_final_cuartos);
+    $urnasVal           = $efectivo('mat_final_urnas', is_null($entrada->detalleTecnico->mat_final_urnas) ? ($mEstForm * $pEstForm) : $entrada->detalleTecnico->mat_final_urnas);
+    $tintasVal          = $efectivo('mat_final_tintas', is_null($entrada->detalleTecnico->mat_final_tintas) ? $mEstForm : $entrada->detalleTecnico->mat_final_tintas);
 @endphp
 <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px; margin-bottom:14px;">
     <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar — podés editar los valores</p>
@@ -300,55 +319,55 @@ if (request()->has('volver')) {
         <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Papeletas</p>
             <input type="number" name="mat_final_papeletas" min="0"
-                value="{{ old('mat_final_papeletas', $entrada->detalleTecnico->mat_final_papeletas ?? $entrada->detalleTecnico->cantidad_papeletas) }}"
+                value="{{ $papVal }}"
                 style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center; margin-bottom:4px;">
-            <select name="mat_final_papeletas_formato" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 4px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
+            <select name="mat_final_papeletas_formato" autocomplete="off" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 4px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
                 <option value="">Formato...</option>
-                <option value="impreso" {{ old('mat_final_papeletas_formato', $entrada->detalleTecnico->mat_final_papeletas_formato) == 'impreso' ? 'selected' : '' }}>Impreso</option>
-                <option value="digital" {{ old('mat_final_papeletas_formato', $entrada->detalleTecnico->mat_final_papeletas_formato) == 'digital' ? 'selected' : '' }}>Digital</option>
-                <option value="sin_papeletas" {{ old('mat_final_papeletas_formato', $entrada->detalleTecnico->mat_final_papeletas_formato) == 'sin_papeletas' ? 'selected' : '' }}>Sin Papeletas</option>
+                <option value="impreso" {{ $papFormatoVal == 'impreso' ? 'selected' : '' }}>Impreso</option>
+                <option value="digital" {{ $papFormatoVal == 'digital' ? 'selected' : '' }}>Digital</option>
+                <option value="sin_papeletas" {{ $papFormatoVal == 'sin_papeletas' ? 'selected' : '' }}>Sin Papeletas</option>
             </select>
         </div>
         <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Actas</p>
             <input type="number" name="mat_final_actas" min="0"
-                value="{{ old('mat_final_actas', is_null($entrada->detalleTecnico->mat_final_actas) ? ($mEstForm * 3) : $entrada->detalleTecnico->mat_final_actas) }}"
+                value="{{ $actasVal }}"
                 style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center; margin-bottom:4px;">
-            <select name="mat_final_actas_formato" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 4px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
+            <select name="mat_final_actas_formato" autocomplete="off" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 4px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
                 <option value="">Formato...</option>
-                <option value="impreso" {{ old('mat_final_actas_formato', $entrada->detalleTecnico->mat_final_actas_formato) == 'impreso' ? 'selected' : '' }}>Impreso</option>
-                <option value="digital" {{ old('mat_final_actas_formato', $entrada->detalleTecnico->mat_final_actas_formato) == 'digital' ? 'selected' : '' }}>Digital</option>
-                <option value="sin_actas" {{ old('mat_final_actas_formato', $entrada->detalleTecnico->mat_final_actas_formato) == 'sin_actas' ? 'selected' : '' }}>Sin Actas</option>
+                <option value="impreso" {{ $actasFormatoVal == 'impreso' ? 'selected' : '' }}>Impreso</option>
+                <option value="digital" {{ $actasFormatoVal == 'digital' ? 'selected' : '' }}>Digital</option>
+                <option value="sin_actas" {{ $actasFormatoVal == 'sin_actas' ? 'selected' : '' }}>Sin Actas</option>
             </select>
         </div>
       <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Padrones</p>
             <input type="number" name="mat_final_padrones" min="0"
-                value="{{ old('mat_final_padrones', is_null($entrada->detalleTecnico->mat_final_padrones) ? ($mEstForm * 3) : $entrada->detalleTecnico->mat_final_padrones) }}"
+                value="{{ $padronesVal }}"
                 style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center; margin-bottom:4px;">
-            <select name="mat_final_padrones_formato" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 4px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
+            <select name="mat_final_padrones_formato" autocomplete="off" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 4px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
                 <option value="">Formato...</option>
-                <option value="impreso" {{ old('mat_final_padrones_formato', $entrada->detalleTecnico->mat_final_padrones_formato) == 'impreso' ? 'selected' : '' }}>Impreso</option>
-                <option value="digital" {{ old('mat_final_padrones_formato', $entrada->detalleTecnico->mat_final_padrones_formato) == 'digital' ? 'selected' : '' }}>Digital</option>
-                <option value="sin_padron" {{ old('mat_final_padrones_formato', $entrada->detalleTecnico->mat_final_padrones_formato) == 'sin_padron' ? 'selected' : '' }}>Sin Padrón</option>
+                <option value="impreso" {{ $padronesFormatoVal == 'impreso' ? 'selected' : '' }}>Impreso</option>
+                <option value="digital" {{ $padronesFormatoVal == 'digital' ? 'selected' : '' }}>Digital</option>
+                <option value="sin_padron" {{ $padronesFormatoVal == 'sin_padron' ? 'selected' : '' }}>Sin Padrón</option>
             </select>
         </div>
         <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Cuartos Oscuros</p>
             <input type="number" name="mat_final_cuartos" min="0"
-                value="{{ old('mat_final_cuartos', is_null($entrada->detalleTecnico->mat_final_cuartos) ? $mEstForm : $entrada->detalleTecnico->mat_final_cuartos) }}"
+                value="{{ $cuartosVal }}"
                 style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
         </div>
         <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Urnas</p>
             <input type="number" name="mat_final_urnas" min="0"
-                value="{{ old('mat_final_urnas', is_null($entrada->detalleTecnico->mat_final_urnas) ? ($mEstForm * $pEstForm) : $entrada->detalleTecnico->mat_final_urnas) }}"
+                value="{{ $urnasVal }}"
                 style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
         </div>
         <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Tintas</p>
             <input type="number" name="mat_final_tintas" min="0"
-                value="{{ old('mat_final_tintas', is_null($entrada->detalleTecnico->mat_final_tintas) ? $mEstForm : $entrada->detalleTecnico->mat_final_tintas) }}"
+                value="{{ $tintasVal }}"
                 style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
         </div>
     </div>
