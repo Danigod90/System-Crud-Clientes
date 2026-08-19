@@ -20,15 +20,9 @@ class DetalleTecnicoController extends Controller
     public function saveAsesor(Request $request, $entrada_id)
 {
      $request->validate([
-        'mat_final_papeletas_formato' => [
-            Rule::requiredIf(fn() => (int) $request->mat_final_papeletas > 0),
-        ],
-        'mat_final_actas_formato' => [
-            Rule::requiredIf(fn() => (int) $request->mat_final_actas > 0),
-        ],
-        'mat_final_padrones_formato' => [
-            Rule::requiredIf(fn() => (int) $request->mat_final_padrones > 0),
-        ],
+        'mat_final_papeletas_formato' => ['required'],
+        'mat_final_actas_formato'     => ['required'],
+        'mat_final_padrones_formato'  => ['required'],
     ], [
         'mat_final_papeletas_formato.required' => 'No seleccionaste el formato de Papeletas (Impreso o Digital).',
         'mat_final_actas_formato.required'     => 'No seleccionaste el formato de Actas (Impreso o Digital).',

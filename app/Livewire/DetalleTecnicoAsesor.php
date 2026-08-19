@@ -45,6 +45,8 @@ class DetalleTecnicoAsesor extends Component
     public bool $tecRealizado = false;
     public $tecRealizadoAt = null;
 
+    public ?string $mensajeExito = null;
+
     public array $candidaturasSugeridas = [
         'Presidente y Vicepresidentes',
         'Presidente y Vicepresidente',
@@ -197,6 +199,7 @@ class DetalleTecnicoAsesor extends Component
     public function activarEdicion(): void
     {
         $this->editando = true;
+        $this->mensajeExito = null;
     }
 
     public function cancelarEdicion(): void
@@ -208,9 +211,9 @@ class DetalleTecnicoAsesor extends Component
     public function guardar(): void
     {
         $this->validate([
-            'mat_final_papeletas_formato' => [Rule::requiredIf(fn () => (int) $this->mat_final_papeletas > 0)],
-            'mat_final_actas_formato'     => [Rule::requiredIf(fn () => (int) $this->mat_final_actas > 0)],
-            'mat_final_padrones_formato'  => [Rule::requiredIf(fn () => (int) $this->mat_final_padrones > 0)],
+            'mat_final_papeletas_formato' => ['required'],
+            'mat_final_actas_formato'     => ['required'],
+            'mat_final_padrones_formato'  => ['required'],
         ], [
             'mat_final_papeletas_formato.required' => 'No seleccionaste el formato de Papeletas (Impreso o Digital).',
             'mat_final_actas_formato.required'     => 'No seleccionaste el formato de Actas (Impreso o Digital).',
@@ -257,13 +260,13 @@ class DetalleTecnicoAsesor extends Component
         if ($this->mostrarEnviarTecnica && !$yaEstabaEnviado) {
             // Primer envío
             $this->marcarEnviadoYNotificar($detalle);
-            session()->flash('success', 'Datos técnicos guardados y enviados a técnica correctamente.');
+            $this->mensajeExito = 'Datos técnicos guardados y enviados a técnica correctamente.';
         } elseif ($yaEstabaEnviado) {
             // Ya se había enviado antes — esto es una corrección posterior
             $this->notificarCorreccion();
-            session()->flash('success', 'Datos técnicos actualizados. Se avisó a técnica del cambio.');
+            $this->mensajeExito = 'Datos técnicos actualizados. Se avisó a técnica del cambio.';
         } else {
-            session()->flash('success', 'Datos técnicos guardados correctamente.');
+            $this->mensajeExito = 'Datos técnicos guardados correctamente.';
         }
 
         $this->tieneDetalle     = true;

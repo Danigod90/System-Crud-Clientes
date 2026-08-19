@@ -1,5 +1,14 @@
 <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
 
+    @if($mensajeExito)
+    <div style="display:flex; align-items:center; gap:10px; background:#d1fae5; color:#065f46; padding:12px 16px; border-radius:10px; margin-bottom:14px; font-size:13px; border-left:4px solid #16a34a; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
+        <svg width="18" height="18" fill="none" stroke="#16a34a" stroke-width="2" viewBox="0 0 24 24" style="flex-shrink:0;">
+            <circle cx="12" cy="12" r="10"/><polyline points="9 12 11 14 15 10"/>
+        </svg>
+        {{ $mensajeExito }}
+    </div>
+    @endif
+
     {{-- HEADER --}}
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6;">
         <h3 style="font-size:13px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px; margin:0; display:flex; align-items:center; gap:8px;">
@@ -129,7 +138,20 @@
 
     @else
     {{-- ================= FORMULARIO EDITABLE ================= --}}
-    <form wire:submit="guardar">
+    <style>
+        @keyframes girar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spinner-guardar { animation: girar 0.7s linear infinite; }
+    </style>
+    <form
+        x-data="{}"
+        @submit.prevent="
+            if (!$wire.mat_final_papeletas_formato || !$wire.mat_final_actas_formato || !$wire.mat_final_padrones_formato) {
+                $wire.guardar();
+            } else if (confirm('¿Confirmás guardar y enviar los datos técnicos?')) {
+                $wire.guardar();
+            }
+        "
+    >
 
         @if($errors->any())
         <div style="background:#fee2e2; border:1px solid #fecaca; color:#991b1b; padding:12px 16px; border-radius:10px; margin-bottom:14px; font-size:13px;">
@@ -223,34 +245,43 @@
                         <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Papeletas</label>
                         <input type="number" wire:model.live.debounce.400ms="mat_final_papeletas" min="0"
                             style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center; margin-bottom:4px;">
-                        <select wire:model.live="mat_final_papeletas_formato" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 6px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
+                        <select wire:model.live="mat_final_papeletas_formato" style="width:100%; border:1px solid {{ $errors->has('mat_final_papeletas_formato') ? '#f87171' : '#bfdbfe' }}; border-radius:6px; padding:5px 6px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
                             <option value="">Formato...</option>
                             <option value="impreso">Impreso</option>
                             <option value="digital">Digital</option>
                             <option value="sin_papeletas">Sin Papeletas</option>
                         </select>
+                        @error('mat_final_papeletas_formato')
+                        <p style="font-size:10px; color:#dc2626; margin:3px 0 0;">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
                         <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Actas</label>
                         <input type="number" wire:model="mat_final_actas" min="0"
                             style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center; margin-bottom:4px;">
-                        <select wire:model.live="mat_final_actas_formato" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 6px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
+                        <select wire:model.live="mat_final_actas_formato" style="width:100%; border:1px solid {{ $errors->has('mat_final_actas_formato') ? '#f87171' : '#bfdbfe' }}; border-radius:6px; padding:5px 6px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
                             <option value="">Formato...</option>
                             <option value="impreso">Impreso</option>
                             <option value="digital">Digital</option>
                             <option value="sin_actas">Sin Actas</option>
                         </select>
+                        @error('mat_final_actas_formato')
+                        <p style="font-size:10px; color:#dc2626; margin:3px 0 0;">{{ $message }}</p>
+                        @enderror
                     </div>
                     <div>
                         <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Padrones</label>
                         <input type="number" wire:model="mat_final_padrones" min="0"
                             style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center; margin-bottom:4px;">
-                        <select wire:model.live="mat_final_padrones_formato" style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:5px 6px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
+                        <select wire:model.live="mat_final_padrones_formato" style="width:100%; border:1px solid {{ $errors->has('mat_final_padrones_formato') ? '#f87171' : '#bfdbfe' }}; border-radius:6px; padding:5px 6px; font-size:11px; color:#1e40af; background:#fff; box-sizing:border-box;">
                             <option value="">Formato...</option>
                             <option value="impreso">Impreso</option>
                             <option value="digital">Digital</option>
                             <option value="sin_padron">Sin Padrón</option>
                         </select>
+                        @error('mat_final_padrones_formato')
+                        <p style="font-size:10px; color:#dc2626; margin:3px 0 0;">{{ $message }}</p>
+                        @enderror
                     </div>
                     @if($entrada->asunto_log)
                     <div>
@@ -292,16 +323,24 @@
         <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:14px;">
             @if($tieneDetalle)
             <button type="button" wire:click="cancelarEdicion"
+                    wire:loading.attr="disabled" wire:target="guardar"
                     style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
                 Cancelar
             </button>
             @endif
             <button type="submit"
+                    wire:loading.attr="disabled" wire:target="guardar"
                     style="display:inline-flex; align-items:center; gap:6px; background:#2563eb; color:white; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
-                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <polyline points="20 6 9 17 4 12"/>
-                </svg>
-                Guardar y Enviar
+                <span wire:loading.remove.inline-flex wire:target="guardar" style="align-items:center; gap:6px;">
+                    Guardar y Enviar
+                </span>
+                <span wire:loading.inline-flex wire:target="guardar" style="align-items:center; gap:6px;">
+                    <svg class="spinner-guardar" width="13" height="13" fill="none" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>
+                        <path d="M21 12a9 9 0 0 0-9-9" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+                    </svg>
+                    Enviando...
+                </span>
             </button>
         </div>
     </form>
