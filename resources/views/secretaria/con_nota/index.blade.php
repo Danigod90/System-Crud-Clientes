@@ -163,7 +163,23 @@
                             {{ $entrada->asesor_asignado ?? '-' }}
                         </td>
                         <td class="border border-gray-200 px-2 py-2" style="text-align:center;">
-                            <span class="font-mono font-semibold text-gray-800" style="font-size:12px;">{{ $entrada->asunto_texto }}</span>
+                            @php
+                                $partesAsunto = collect([
+                                    $entrada->asunto_char ? 'Char' : null,
+                                    $entrada->asunto_log  ? 'Log'  : null,
+                                    $entrada->asunto_tec  ? 'Tec'  : null,
+                                    $entrada->asunto_obs  ? 'Obs'  : null,
+                                    $entrada->asunto_inf  ? 'Inf'  : null,
+                                ])->filter()->values();
+                                $lineasAsunto = $partesAsunto->chunk(2)->map(fn($l) => $l->implode(' · '));
+                            @endphp
+                            <span class="font-mono font-semibold text-gray-800" style="font-size:12px;">
+                                @forelse($lineasAsunto as $linea)
+                                    <span style="white-space:nowrap;">{{ $linea }}</span>@if(!$loop->last)<br>@endif
+                                @empty
+                                    —
+                                @endforelse
+                            </span>
                         </td>
                         <td class="border border-gray-200 px-2 py-2 capitalize" style="text-align:center;">
                             {{ $entrada->via_ingreso }}
@@ -181,54 +197,54 @@
                         <td class="border border-gray-200 px-2 py-2 text-xs text-gray-600" style="text-align:center;">
                             {{ $entrada->created_at?->format('d/m/Y H:i') ?? '-' }}
                         </td>
-                        <td class="border border-gray-200 px-2 py-2" style="width:120px; white-space:nowrap;">
+                        <td class="border border-gray-200 px-2 py-2" style="width:120px;">
                            @if($entrada->eleccion_suspendida)
    <span style="display:inline-flex; align-items:center; gap:4px;">
     <span style="font-size:11px; color:#dc2626; font-weight:600;">Suspendido</span>
     <span style="width:9px; height:9px; border-radius:50%; background:#dc2626; display:inline-block;"></span>
 </span>
 @else
-    @if($entrada->asunto_char)
-        <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
+@php
+    $tiposEstado = collect([
+        $entrada->asunto_char ? 'char' : null,
+        $entrada->asunto_log  ? 'log'  : null,
+        $entrada->asunto_tec  ? 'tec'  : null,
+        $entrada->asunto_obs  ? 'obs'  : null,
+        $entrada->asunto_inf  ? 'inf'  : null,
+    ])->filter()->values();
+@endphp
+<div style="display:inline-grid; grid-template-columns:auto auto auto auto; column-gap:6px; row-gap:3px; align-items:center;">
+    @foreach($tiposEstado as $tipo)
+        @if($tipo === 'char')
             <span style="font-size:11px; color:#6b7280;">Char</span>
-            @foreach($entrada->charlas as $i => $ch)
-                @php $charDot = match($ch->estado) { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
-                <span style="width:9px; height:9px; border-radius:50%; background:{{ $charDot }}; display:inline-block;"></span>
-                <sup style="font-size:8px; color:#6b7280;">{{ $i+1 }}</sup>
-            @endforeach
-            @if($entrada->charlas->isEmpty())
-                <span style="width:9px; height:9px; border-radius:50%; background:#eab308; display:inline-block;"></span>
-            @endif
-        </span>
-    @endif
-    @if($entrada->asunto_log)
-        @php $logDot = in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? '#16a34a' : '#eab308'; @endphp
-        <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
+            <span style="display:inline-flex; align-items:center; gap:3px;">
+                @foreach($entrada->charlas as $i => $ch)
+                    @php $charDot = match($ch->estado) { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
+                    <span style="width:9px; height:9px; border-radius:50%; background:{{ $charDot }}; display:inline-block;"></span>
+                    <sup style="font-size:8px; color:#6b7280;">{{ $i+1 }}</sup>
+                @endforeach
+                @if($entrada->charlas->isEmpty())
+                    <span style="width:9px; height:9px; border-radius:50%; background:#eab308; display:inline-block;"></span>
+                @endif
+            </span>
+        @elseif($tipo === 'log')
+            @php $logDot = in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? '#16a34a' : '#eab308'; @endphp
             <span style="font-size:11px; color:#6b7280;">Log</span>
             <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>
-        </span>
-    @endif
-    @if($entrada->asunto_tec)
-        @php $tecDot = $entrada->detalleTecnico?->tec_realizado ? '#16a34a' : '#eab308'; @endphp
-        <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
+        @elseif($tipo === 'tec')
+            @php $tecDot = $entrada->detalleTecnico?->tec_realizado ? '#16a34a' : '#eab308'; @endphp
             <span style="font-size:11px; color:#6b7280;">Tec</span>
             <span style="width:9px; height:9px; border-radius:50%; background:{{ $tecDot }}; display:inline-block;"></span>
-        </span>
-    @endif
-    @if($entrada->asunto_obs)
-        @php $obsDot = match($entrada->observador?->estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', default => '#eab308' }; @endphp
-        <span style="display:inline-flex; align-items:center; gap:3px;">
+        @elseif($tipo === 'obs')
+            @php $obsDot = match($entrada->observador?->estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', default => '#eab308' }; @endphp
             <span style="font-size:11px; color:#6b7280;">Obs</span>
             <span style="width:9px; height:9px; border-radius:50%; background:{{ $obsDot }}; display:inline-block;"></span>
-        </span>
-    @endif
-    @if($entrada->asunto_inf)
-        <span style="display:inline-flex; align-items:center; gap:3px;">
+        @elseif($tipo === 'inf')
             <span style="font-size:11px; color:#6b7280;">Informativo</span>
             <span style="width:9px; height:9px; border-radius:50%; background:#9ca3af; display:inline-block;"></span>
-        </span>
-    @endif
-
+        @endif
+    @endforeach
+</div>
 @endif
                         </td>
                         <td class="border border-gray-200 px-2 py-2" style="width:110px;">
