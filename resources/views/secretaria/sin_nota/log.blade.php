@@ -116,6 +116,7 @@
                             <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">Código</th>
                             <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Organización</th>
                             <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Asunto</th>
+                            <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Asesor</th>
                             <th style="padding:7px 12px; text-align:center; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Urnas</th>
                             <th style="padding:7px 12px; text-align:center; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Cuartos</th>
                             <th style="padding:7px 12px; text-align:center; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Tintas</th>
@@ -150,6 +151,7 @@
                                     <span style="background:#d1fae5; color:#065f46; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">LOG</span>
                                 @endif
                             </td>
+                            <td style="padding:7px 12px; color:#374151; font-size:12px; white-space:nowrap;">{{ $entrada->asesor_asignado ?? '—' }}</td>
                             <td style="padding:7px 12px; text-align:center; color:#374151; font-size:12px;">{{ $urnas }}</td>
                             <td style="padding:7px 12px; text-align:center; color:#374151; font-size:12px;">{{ $cuartos }}</td>
                             <td style="padding:7px 12px; text-align:center; color:#374151; font-size:12px;">{{ $tintas }}</td>
@@ -172,7 +174,7 @@
                             </td>
                         </tr>
                         @empty
-                        <tr><td colspan="9" style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">Sin materiales entregados pendientes de devolución.</td></tr>
+                        <tr><td colspan="10" style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">Sin materiales entregados pendientes de devolución.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -192,6 +194,7 @@
                             <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">Código</th>
                             <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Organización</th>
                             <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Asunto</th>
+                            <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Asesor</th>
                             <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">Entregado por</th>
                             <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">Fecha entrega</th>
                             <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">Devuelto por</th>
@@ -218,6 +221,7 @@
                                     <span style="background:#d1fae5; color:#065f46; font-size:10px; font-weight:600; padding:2px 6px; border-radius:4px;">LOG</span>
                                 @endif
                             </td>
+                            <td style="padding:7px 12px; color:#374151; font-size:12px; white-space:nowrap;">{{ $entrada->asesor_asignado ?? '—' }}</td>
                             <td style="padding:7px 12px; color:#374151; font-size:12px;">{{ $entrada->entregado_por ?? '—' }}</td>
                             <td style="padding:7px 12px; color:#94a3b8; white-space:nowrap; font-size:11px;">{{ $entrada->fecha_entrega ? $entrada->fecha_entrega->format('d/m/Y H:i') : '—' }}</td>
                             <td style="padding:7px 12px; color:#374151; font-size:12px;">{{ $entrada->logDevolucion?->devuelto_por ?? '—' }}</td>
@@ -227,7 +231,7 @@
                             <td style="padding:7px 12px; color:#94a3b8; white-space:nowrap; font-size:11px;">{{ $entrada->logDevolucion?->created_at?->format('d/m/Y') ?? '—' }}</td>
                         </tr>
                         @empty
-                        <tr><td colspan="10" style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">Sin devoluciones registradas todavía.</td></tr>
+                        <tr><td colspan="11" style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">Sin devoluciones registradas todavía.</td></tr>
                         @endforelse
                     </tbody>
                 </table>

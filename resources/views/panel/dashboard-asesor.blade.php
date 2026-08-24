@@ -229,6 +229,8 @@ $realizadoPrio = (bool) ($ent->detalleTecnico?->tec_realizado ?? false);
                     <span style="font-size:10px; font-weight:600; color:{{ $realizadoPrio ? '#16a34a' : '#dc2626' }}; font-family:monospace;">{{ $ent->codigo_org }}</span>
                     @if($realizadoPrio)
                     <span style="margin-left:auto; font-size:9px; font-weight:700; color:#166534; background:#dcfce7; padding:2px 7px; border-radius:20px;">✓ Realizado</span>
+                    @else
+                    <span style="margin-left:auto; font-size:9px; font-weight:700; color:#991b1b; background:#fee2e2; padding:2px 7px; border-radius:20px;">Pendiente</span>
                     @endif
                 </div>
                 <p style="font-size:11px; font-weight:600; color:#111827; margin:0 0 4px; line-height:1.3; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">{{ $ent->nombre_organizacion }}</p>
