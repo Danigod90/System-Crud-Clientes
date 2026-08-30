@@ -31,11 +31,32 @@ class ChatController extends Controller
             ->where(fn($q) => $q->where('user1_id', $user->id)->orWhere('user2_id', $user->id))
             ->get();
 
+        $ocultasIds = ChatLectura::where('user_id', $user->id)->where('oculta', true)->pluck('conversacion_id');
+
         foreach ($directos as $d) {
+            if ($ocultasIds->contains($d->id)) continue;
             $conversaciones[] = $this->formatConversacion($d, $user);
         }
 
         return response()->json($conversaciones);
+    }
+
+    // Ocultar (cerrar) un chat directo de la lista del usuario, sin borrar nada
+    public function ocultar($id)
+    {
+        $user = Auth::user();
+        $conv = ChatConversacion::findOrFail($id);
+
+        if ($conv->tipo !== 'directo') {
+            return response()->json(['ok' => false, 'error' => 'Solo se pueden cerrar chats directos.'], 422);
+        }
+
+        ChatLectura::updateOrCreate(
+            ['conversacion_id' => $id, 'user_id' => $user->id],
+            ['oculta' => true]
+        );
+
+        return response()->json(['ok' => true]);
     }
 
     // Todos los usuarios para iniciar chat directo
@@ -112,6 +133,13 @@ class ChatController extends Controller
             'archivo_nombre'  => $archivoNombre,
             'archivo_tipo'    => $archivoTipo,
         ]);
+
+        // Si alguno de los dos había "cerrado" este chat, reaparece al llegar actividad nueva
+        if ($conv->tipo === 'directo') {
+            ChatLectura::where('conversacion_id', $id)
+                ->whereIn('user_id', [$conv->user1_id, $conv->user2_id])
+                ->update(['oculta' => false]);
+        }
 
         return response()->json([
             'id'             => $mensaje->id,

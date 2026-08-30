@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ChatLectura extends Model
 {
-    protected $fillable = ['conversacion_id', 'user_id', 'leido_at'];
+    protected $fillable = ['conversacion_id', 'user_id', 'leido_at', 'oculta'];
 
     public function user()
     {

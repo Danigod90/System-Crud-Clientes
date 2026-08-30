@@ -350,9 +350,9 @@
    <div id="notif-contenido" style="max-height:320px; overflow:auto;">
     @forelse(auth()->user()->notifications->take(8) as $notif)
     @php
-    $esNuevaEntrada = (str_contains($notif->data['mensaje'] ?? '', 'Nueva entrada') || str_contains($notif->data['mensaje'] ?? '', 'Nuevo trabajo')) && is_null($notif->read_at);
-    $esCorreccion = str_contains($notif->data['mensaje'] ?? '', 'editó nuevamente') && is_null($notif->read_at);
-    $bgColor = $esNuevaEntrada ? 'background:#f0fdf4;' : ($esCorreccion ? 'background:#fef9c3;' : '');
+    $esNuevaEntrada = $loop->first && (str_contains($notif->data['mensaje'] ?? '', 'Nueva entrada') || str_contains($notif->data['mensaje'] ?? '', 'Nuevo trabajo')) && is_null($notif->read_at);
+    $esCorreccion = $loop->first && str_contains($notif->data['mensaje'] ?? '', 'editó nuevamente') && is_null($notif->read_at);
+    $bgColor = $esNuevaEntrada ? 'background:#f6fefa;' : ($esCorreccion ? 'background:#fefdf5;' : '');
 @endphp
     <div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px; {{ $bgColor }}">
         <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:{{ $notif->read_at ? '#d1d5db' : '#185FA5' }};"></span>
@@ -535,8 +535,8 @@ function toggleNotif() {
                 if (d.notificaciones.length === 0) {
                     contenido.innerHTML = '<div style="padding:20px 16px; text-align:center; font-size:12px; color:#9ca3af;">Sin notificaciones.</div>';
                 } else {
-                    contenido.innerHTML = d.notificaciones.map(n => `
-<div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px; ${(n.mensaje.includes('Nueva entrada') || n.mensaje.includes('Nuevo trabajo')) ? 'background:#d1fae5;' : (n.mensaje.includes('editó nuevamente') ? 'background:#fef9c3;' : '')}">                            <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:${n.leida ? '#d1d5db' : '#185FA5'};"></span>
+                    contenido.innerHTML = d.notificaciones.map((n, idx) => `
+<div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px; ${(idx === 0 && !n.leida && (n.mensaje.includes('Nueva entrada') || n.mensaje.includes('Nuevo trabajo'))) ? 'background:#f6fefa;' : (idx === 0 && !n.leida && n.mensaje.includes('editó nuevamente')) ? 'background:#fefdf5;' : ''}">                            <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:${n.leida ? '#d1d5db' : '#185FA5'};"></span>
                             <div style="flex:1;">
                                 <div style="font-size:12px; color:#111827; line-height:1.4;">${n.mensaje}</div>
                                 ${n.seccion ? `<div style="font-size:10.5px; color:#6b7280; margin-top:2px;">${n.seccion}</div>` : ''}
@@ -608,6 +608,18 @@ let notifInterval = setInterval(actualizarNotificaciones, 30000);
     <span id="chat-badge" style="display:none; position:absolute; top:-3px; right:-3px; background:#e24b4a; color:#fff; font-size:9px; font-weight:600; width:16px; height:16px; border-radius:50%; align-items:center; justify-content:center;">0</span>
 </div>
 
+{{-- VISTA PREVIA DEL ÚLTIMO MENSAJE --}}
+<div id="chat-preview" onclick="abrirPreviewChat()" style="display:none; position:fixed; bottom:84px; right:24px; max-width:260px; background:#fff; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.18); border:1px solid #e5e7eb; padding:10px 12px; z-index:7999; cursor:pointer;">
+    <div style="display:flex; align-items:flex-start; gap:8px;">
+        <span style="font-size:15px; flex-shrink:0; margin-top:1px;">💬</span>
+        <div style="min-width:0;">
+            <div id="chat-preview-nombre" style="font-size:11px; font-weight:700; color:#1e3a5f; margin-bottom:2px;"></div>
+            <div id="chat-preview-texto" style="font-size:12px; color:#374151; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;"></div>
+            <div id="chat-preview-extra" style="display:none; font-size:10px; color:#2563eb; font-weight:600; margin-top:4px;"></div>
+        </div>
+    </div>
+</div>
+
 <div id="chat-panel" style="display:none; position:fixed; bottom:84px; right:24px; width:360px; height:440px; background:#fff; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.18); z-index:8000; display:none; flex-direction:column; overflow:hidden; border:1px solid #e5e7eb;">
 
     {{-- Header --}}
@@ -672,6 +684,7 @@ function toggleChat() {
     const panel = document.getElementById('chat-panel');
     panel.style.display = chatAbierto ? 'flex' : 'none';
     if (chatAbierto) {
+        ocultarPreviewChat();
         cargarConversaciones();
         if (!pollingInterval) pollingInterval = setInterval(chatPolling, 3000);
     } else {
@@ -691,7 +704,13 @@ async function cargarConversaciones() {
     const cont = document.getElementById('chat-convs');
     cont.innerHTML = convs.map(c => `
         <div onclick="seleccionarConv(${c.id}, '${c.nombre}', '${c.tipo}')"
-            style="padding:8px 10px; cursor:pointer; border-bottom:1px solid #f3f4f6; ${convActualId === c.id ? 'background:#eff6ff;' : ''}">
+            style="position:relative; padding:8px 24px 8px 10px; cursor:pointer; border-bottom:1px solid #f3f4f6; ${convActualId === c.id ? 'background:#eff6ff;' : ''}">
+            ${c.tipo === 'directo' ? `
+            <button onclick="event.stopPropagation(); cerrarConversacion(${c.id})" title="Cerrar chat"
+                style="position:absolute; top:6px; right:4px; width:16px; height:16px; border:none; background:transparent; color:#9ca3af; cursor:pointer; font-size:12px; line-height:1; border-radius:4px; display:flex; align-items:center; justify-content:center;"
+                onmouseover="this.style.background='#f3f4f6'; this.style.color='#dc2626';"
+                onmouseout="this.style.background='transparent'; this.style.color='#9ca3af';">✕</button>
+            ` : ''}
             <div style="font-size:11px; font-weight:600; color:#374151; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
                 ${c.tipo === 'general' ? '👥 ' : c.tipo === 'rol' ? '🔧 ' : '💬 '}${c.nombre}
             </div>
@@ -704,6 +723,20 @@ async function cargarConversaciones() {
             <span style="font-size:10px; color:#6b7280;">Nuevo chat</span>
         </div>
     `;
+}
+
+async function cerrarConversacion(id) {
+    if (!confirm('¿Cerrar este chat? No se borra nada, solo desaparece de tu lista hasta que llegue un mensaje nuevo.')) return;
+    await fetch('/chat/ocultar/' + id, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+    });
+    if (convActualId === id) {
+        convActualId = null;
+        document.getElementById('chat-msgs').innerHTML = '';
+        document.getElementById('chat-conv-header').textContent = 'Seleccioná una conversación';
+    }
+    cargarConversaciones();
 }
 
 async function seleccionarConv(id, nombre, tipo) {
@@ -846,6 +879,54 @@ async function actualizarBadge() {
     } else {
         badge.style.display = 'none';
     }
+    chequearPreviewChat();
+}
+
+let ultimoMensajePreviewId = null;
+let previewChatOtras = 0;
+let previewChatConv = null;
+
+async function chequearPreviewChat() {
+    if (chatAbierto) return;
+    try {
+        const res = await fetch('/chat/conversaciones');
+        const convs = await res.json();
+        const conNoLeidos = convs.filter(c => c.no_leidos > 0 && c.ultimo);
+        const conNuevo = conNoLeidos.sort((a, b) => (b.ultimo_hora || '').localeCompare(a.ultimo_hora || ''))[0];
+        if (!conNuevo) return;
+        const fingerprint = conNuevo.id + '|' + conNuevo.ultimo + '|' + conNuevo.ultimo_hora;
+        const otras = conNoLeidos.length - 1;
+        if (fingerprint === ultimoMensajePreviewId && otras === previewChatOtras) return;
+        ultimoMensajePreviewId = fingerprint;
+        previewChatOtras = otras;
+        mostrarPreviewChat(conNuevo, otras);
+    } catch (e) {}
+}
+
+function mostrarPreviewChat(conv, otras) {
+    previewChatConv = conv;
+    const prev = document.getElementById('chat-preview');
+    document.getElementById('chat-preview-nombre').textContent = conv.ultimo_user || conv.nombre;
+    document.getElementById('chat-preview-texto').textContent = conv.ultimo;
+    const extra = document.getElementById('chat-preview-extra');
+    if (otras > 0) {
+        extra.textContent = '+ ' + otras + (otras === 1 ? ' chat más esperando' : ' chats más esperando');
+        extra.style.display = 'block';
+    } else {
+        extra.style.display = 'none';
+    }
+    prev.style.display = 'block';
+}
+
+function ocultarPreviewChat() {
+    document.getElementById('chat-preview').style.display = 'none';
+}
+
+function abrirPreviewChat() {
+    const conv = previewChatConv;
+    ocultarPreviewChat();
+    toggleChat();
+    if (conv) setTimeout(() => seleccionarConv(conv.id, conv.nombre, conv.tipo), 200);
 }
 
 function pingOnline() {

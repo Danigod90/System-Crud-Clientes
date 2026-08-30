@@ -88,6 +88,7 @@ Route::middleware(['auth'])->prefix('chat')->name('chat.')->group(function () {
     Route::get('/mensajes/{id}',     [\App\Http\Controllers\ChatController::class, 'mensajes'])->name('mensajes');
     Route::post('/enviar/{id}',      [\App\Http\Controllers\ChatController::class, 'enviar'])->name('enviar');
     Route::post('/directo/{userId}', [\App\Http\Controllers\ChatController::class, 'iniciarDirecto'])->name('directo');
+    Route::post('/ocultar/{id}',     [\App\Http\Controllers\ChatController::class, 'ocultar'])->name('ocultar');
     Route::get('/no-leidos',         [\App\Http\Controllers\ChatController::class, 'noLeidos'])->name('noLeidos');
     Route::post('/ping',             [\App\Http\Controllers\ChatController::class, 'ping'])->name('ping');
 });
