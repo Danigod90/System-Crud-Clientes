@@ -13,7 +13,10 @@
                 <h2 style="font-size:16px; font-weight:700; color:#1e293b; margin:0;">Gestión de Log</h2>
                 <p style="font-size:12px; color:#94a3b8; margin:2px 0 0;">Control de materiales prestados y devueltos</p>
             </div>
-            <a href="{{ route('panel.dashboard') }}" style="font-size:12px; color:#94a3b8; text-decoration:none;">← Volver al panel</a>
+            <a href="{{ route('panel.dashboard') }}"
+               style="display:inline-flex; align-items:center; gap:6px; background:#2563eb; color:#fff; padding:7px 14px; border-radius:8px; font-size:12px; font-weight:500; text-decoration:none;">
+                ← Volver al panel
+            </a>
         </div>
 
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:10px 16px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.04); display:flex; align-items:center; gap:10px;">
@@ -159,9 +162,14 @@
                             <td style="padding:7px 12px; color:#94a3b8; white-space:nowrap; font-size:11px;">{{ $entrada->fecha_entrega ? $entrada->fecha_entrega->format('d/m/Y H:i') : '—' }}</td>
                             <td style="padding:7px 12px; white-space:nowrap;">
                                 <div style="display:flex; gap:5px; align-items:center;">
-                                    <button onclick="abrirModalEditarEntrega({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}', '{{ addslashes($entrada->entregado_por ?? '') }}', '{{ $fechaEntregaJs }}')"
-                                            title="Editar datos de entrega"
-                                            style="display:inline-flex; align-items:center; justify-content:center; background:#f8fafc; border:1px solid #e5e7eb; color:#6b7280; padding:3px 6px; border-radius:6px; font-size:11px; cursor:pointer; line-height:1;">✏️</button>
+                                    <button onclick="abrirModalDetalleEntrega({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}', '{{ addslashes($entrada->entregado_por ?? '') }}', '{{ $fechaEntregaJs }}', '{{ addslashes($entrada->persona_retira ?? '') }}', '{{ addslashes($entrada->telefono_retira ?? '') }}')"
+                                            title="Ver detalle de entrega"
+                                            style="display:inline-flex; align-items:center; justify-content:center; background:#f8fafc; border:1px solid #e5e7eb; color:#6b7280; padding:3px 6px; border-radius:6px; font-size:11px; cursor:pointer; line-height:1;">
+                                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                            <circle cx="12" cy="12" r="3"/>
+                                        </svg>
+                                    </button>
                                     @if($entrada->asunto_log)
                                         <button onclick="abrirModal({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}', {{ $urnas }}, {{ $cuartos }}, {{ $tintas }})"
                                                 style="background:#2563eb; color:white; border:none; padding:3px 8px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500; white-space:nowrap;">
@@ -252,9 +260,19 @@
                 <input type="text" name="entregado_por" id="entregar-funcionario" required placeholder="Nombre completo..."
                        style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
             </div>
-            <div style="margin-bottom:20px;">
+            <div style="margin-bottom:14px;">
                 <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora de entrega *</label>
                 <input type="datetime-local" name="fecha_entrega" id="entregar-fecha" required
+                       style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+            </div>
+            <div style="margin-bottom:14px;">
+                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Persona que retira *</label>
+                <input type="text" name="persona_retira" id="entregar-persona-retira" required placeholder="Nombre completo..."
+                       style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+            </div>
+            <div style="margin-bottom:20px;">
+                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Teléfono de contacto *</label>
+                <input type="text" name="telefono_retira" id="entregar-telefono-retira" required placeholder="Ej: 0981 123 456"
                        style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
             </div>
             <div style="display:flex; gap:10px; justify-content:flex-end;">
@@ -292,27 +310,45 @@
     </div>
 </div>
 
-{{-- MODAL: EDITAR ENTREGA --}}
-<div id="modal-editar-entrega" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:50; align-items:center; justify-content:center;">
-    <div style="background:white; border-radius:12px; padding:28px; max-width:440px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
-        <h3 style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:4px;">Editar datos de entrega</h3>
-        <p id="modal-editar-org" style="font-size:12px; color:#64748b; margin-bottom:18px;"></p>
-        <form id="form-editar-entrega" method="POST">
+{{-- MODAL: DETALLE / EDITAR ENTREGA --}}
+<div id="modal-detalle-entrega" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:50; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:12px; padding:28px; max-width:460px; width:90%; box-shadow:0 20px 60px rgba(0,0,0,0.3); max-height:88vh; overflow-y:auto;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
+            <div>
+                <h3 style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:4px;">Detalle de entrega</h3>
+                <p id="detalle-org" style="font-size:12px; color:#64748b; margin:0;"></p>
+            </div>
+            <button type="button" id="btn-editar-detalle" onclick="activarEdicionDetalle()"
+                    style="display:inline-flex; align-items:center; gap:5px; background:#f3f4f6; color:#374151; padding:6px 12px; border-radius:8px; font-size:11px; border:none; cursor:pointer; font-weight:500; flex-shrink:0;">
+                ✏️ Editar
+            </button>
+        </div>
+        <form id="form-detalle-entrega" method="POST" style="margin-top:18px;">
             @csrf @method('PATCH')
             <div style="margin-bottom:14px;">
                 <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Funcionario que entrega *</label>
-                <input type="text" name="entregado_por" id="editar-funcionario" required
-                       style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                <input type="text" name="entregado_por" id="detalle-funcionario" required disabled
+                       style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; background:#f9fafb;">
+            </div>
+            <div style="margin-bottom:14px;">
+                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora de entrega *</label>
+                <input type="datetime-local" name="fecha_entrega" id="detalle-fecha" required disabled
+                       style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; background:#f9fafb;">
+            </div>
+            <div style="margin-bottom:14px;">
+                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Persona que retira *</label>
+                <input type="text" name="persona_retira" id="detalle-persona-retira" required disabled
+                       style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; background:#f9fafb;">
             </div>
             <div style="margin-bottom:20px;">
-                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora de entrega *</label>
-                <input type="datetime-local" name="fecha_entrega" id="editar-fecha" required
-                       style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Teléfono de contacto *</label>
+                <input type="text" name="telefono_retira" id="detalle-telefono-retira" required disabled
+                       style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; background:#f9fafb;">
             </div>
             <div style="display:flex; gap:10px; justify-content:flex-end;">
-                <button type="button" onclick="document.getElementById('modal-editar-entrega').style.display='none'"
-                        style="padding:8px 18px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:13px; cursor:pointer;">Cancelar</button>
-                <button type="submit" style="padding:8px 18px; border-radius:8px; border:none; background:#2563eb; color:white; font-size:13px; cursor:pointer; font-weight:500;">Guardar cambios</button>
+                <button type="button" onclick="document.getElementById('modal-detalle-entrega').style.display='none'"
+                        style="padding:8px 18px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:13px; cursor:pointer;">Cerrar</button>
+                <button type="submit" id="btn-guardar-detalle" style="display:none; padding:8px 18px; border-radius:8px; border:none; background:#2563eb; color:white; font-size:13px; cursor:pointer; font-weight:500;">Guardar cambios</button>
             </div>
         </form>
     </div>
@@ -395,6 +431,8 @@ function abrirModalEntregar(id, org) {
     document.getElementById('modal-entregar-org').textContent = org;
     document.getElementById('entregar-fecha').value = fechaLocalAhora();
     document.getElementById('entregar-funcionario').value = '';
+    document.getElementById('entregar-persona-retira').value = '';
+    document.getElementById('entregar-telefono-retira').value = '';
     document.getElementById('form-entregar').action = '/secretaria/sin-nota/log/' + id + '/entregar';
     document.getElementById('modal-entregar').style.display = 'flex';
     setTimeout(() => document.getElementById('entregar-funcionario').focus(), 100);
@@ -453,13 +491,30 @@ function cerrarModalReciboLog() {
     window.location.reload();
 }
 
-function abrirModalEditarEntrega(id, org, funcionario, fecha) {
-    document.getElementById('modal-editar-org').textContent = org;
-    document.getElementById('editar-funcionario').value = funcionario;
-    document.getElementById('editar-fecha').value = fecha || fechaLocalAhora();
-    document.getElementById('form-editar-entrega').action = '/secretaria/sin-nota/log/' + id + '/editar-entrega';
-    document.getElementById('modal-editar-entrega').style.display = 'flex';
-    setTimeout(() => document.getElementById('editar-funcionario').focus(), 100);
+function abrirModalDetalleEntrega(id, org, funcionario, fecha, personaRetira, telefonoRetira) {
+    document.getElementById('detalle-org').textContent = org;
+    document.getElementById('detalle-funcionario').value = funcionario;
+    document.getElementById('detalle-fecha').value = fecha || fechaLocalAhora();
+    document.getElementById('detalle-persona-retira').value = personaRetira;
+    document.getElementById('detalle-telefono-retira').value = telefonoRetira;
+    document.getElementById('form-detalle-entrega').action = '/secretaria/sin-nota/log/' + id + '/editar-entrega';
+    desactivarEdicionDetalle();
+    document.getElementById('modal-detalle-entrega').style.display = 'flex';
+}
+
+function activarEdicionDetalle() {
+    document.querySelectorAll('#form-detalle-entrega input').forEach(i => i.disabled = false);
+    document.querySelectorAll('#form-detalle-entrega input').forEach(i => i.style.background = '#fff');
+    document.getElementById('btn-guardar-detalle').style.display = 'inline-block';
+    document.getElementById('btn-editar-detalle').style.display = 'none';
+    setTimeout(() => document.getElementById('detalle-funcionario').focus(), 100);
+}
+
+function desactivarEdicionDetalle() {
+    document.querySelectorAll('#form-detalle-entrega input').forEach(i => i.disabled = true);
+    document.querySelectorAll('#form-detalle-entrega input').forEach(i => i.style.background = '#f9fafb');
+    document.getElementById('btn-guardar-detalle').style.display = 'none';
+    document.getElementById('btn-editar-detalle').style.display = 'inline-flex';
 }
 
 function abrirModal(id, org, urnas, cuartos, tintas) {
@@ -478,7 +533,7 @@ function filtrarTablas(valor) {
     });
 }
 
-['modal-entregar', 'modal-imprimir-log', 'modal-editar-entrega', 'modal-devolucion', 'modal-recibo-log'].forEach(id => {
+['modal-entregar', 'modal-imprimir-log', 'modal-detalle-entrega', 'modal-devolucion', 'modal-recibo-log'].forEach(id => {
     document.getElementById(id).addEventListener('click', function(e) {
         if (e.target === this) this.style.display = 'none';
     });

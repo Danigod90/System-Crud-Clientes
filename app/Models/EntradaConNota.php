@@ -34,6 +34,8 @@ class EntradaConNota extends Model
         'supervisor_cargado_at',
         'entregado_por',   // nuevo
         'fecha_entrega',   // nuevo
+        'persona_retira',
+        'telefono_retira',
         'direccion',
         'eleccion_suspendida',
         'eleccion_suspendida_at',

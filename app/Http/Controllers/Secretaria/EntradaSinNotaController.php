@@ -202,16 +202,20 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
     public function entregar(Request $request, $id)
 {
     $request->validate([
-        'entregado_por' => 'required|string|max:255',
-        'fecha_entrega' => 'required|date',
+        'entregado_por'   => 'required|string|max:255',
+        'fecha_entrega'   => 'required|date',
+        'persona_retira'  => 'required|string|max:255',
+        'telefono_retira' => 'required|string|max:30',
     ]);
 
     $entrada = \App\Models\EntradaConNota::findOrFail($id);
 
     $entrada->update([
-        'log_estado'    => 'entregada',
-        'entregado_por' => $request->entregado_por,
-        'fecha_entrega' => $request->fecha_entrega,
+        'log_estado'      => 'entregada',
+        'entregado_por'   => $request->entregado_por,
+        'fecha_entrega'   => $request->fecha_entrega,
+        'persona_retira'  => $request->persona_retira,
+        'telefono_retira' => $request->telefono_retira,
     ]);
 
     // Crear registro en PDF de servicios realizados
@@ -234,15 +238,19 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
     public function editarEntrega(Request $request, $id)
     {
         $request->validate([
-            'entregado_por' => 'required|string|max:255',
-            'fecha_entrega' => 'required|date',
+            'entregado_por'   => 'required|string|max:255',
+            'fecha_entrega'   => 'required|date',
+            'persona_retira'  => 'required|string|max:255',
+            'telefono_retira' => 'required|string|max:30',
         ]);
 
         $entrada = \App\Models\EntradaConNota::findOrFail($id);
 
         $entrada->update([
-            'entregado_por' => $request->entregado_por,
-            'fecha_entrega' => $request->fecha_entrega,
+            'entregado_por'   => $request->entregado_por,
+            'fecha_entrega'   => $request->fecha_entrega,
+            'persona_retira'  => $request->persona_retira,
+            'telefono_retira' => $request->telefono_retira,
         ]);
 
         return redirect()->route('secretaria.sin-nota.log')
