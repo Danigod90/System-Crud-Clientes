@@ -91,7 +91,7 @@ class ChatController extends Controller
                 'user_id'        => $m->user_id,
                 'nombre'         => $m->user->name,
                 'mensaje'        => $m->mensaje,
-                'archivo'        => $m->archivo ? Storage::url($m->archivo) : null,
+                'archivo'        => $m->archivo ? ($m->archivo_tipo === 'sticker' ? asset('stickers/' . $m->archivo) : Storage::url($m->archivo)) : null,
                 'archivo_nombre' => $m->archivo_nombre,
                 'archivo_tipo'   => $m->archivo_tipo,
                 'es_mio'         => $m->user_id === $user->id,
@@ -108,6 +108,20 @@ class ChatController extends Controller
         return response()->json($mensajes);
     }
 
+    // Lista de stickers disponibles (archivos estáticos en public/stickers, van con el repo)
+    public function stickers()
+    {
+        $archivos = collect(glob(public_path('stickers') . '/*.{png,webp,PNG,WEBP}', GLOB_BRACE))
+            ->sort()
+            ->values()
+            ->map(fn($f) => [
+                'archivo' => basename($f),
+                'url'     => asset('stickers/' . basename($f)),
+            ]);
+
+        return response()->json($archivos);
+    }
+
     // Enviar mensaje
     public function enviar(Request $request, $id)
     {
@@ -118,7 +132,14 @@ class ChatController extends Controller
         $archivoNombre = null;
         $archivoTipo = null;
 
-        if ($request->hasFile('archivo')) {
+        if ($request->filled('sticker')) {
+            // Solo permitimos nombres de archivo ya existentes en public/stickers, sin rutas raras
+            $nombreSticker = basename($request->sticker);
+            if (file_exists(public_path('stickers/' . $nombreSticker))) {
+                $archivo = $nombreSticker;
+                $archivoTipo = 'sticker';
+            }
+        } elseif ($request->hasFile('archivo')) {
             $file = $request->file('archivo');
             $archivo = $file->store('chat', 'public');
             $archivoNombre = $file->getClientOriginalName();
@@ -146,11 +167,52 @@ class ChatController extends Controller
             'user_id'        => $mensaje->user_id,
             'nombre'         => $user->name,
             'mensaje'        => $mensaje->mensaje,
-            'archivo'        => $archivo ? Storage::url($archivo) : null,
+            'archivo'        => $archivo ? ($archivoTipo === 'sticker' ? asset('stickers/' . $archivo) : Storage::url($archivo)) : null,
             'archivo_nombre' => $archivoNombre,
             'archivo_tipo'   => $archivoTipo,
             'es_mio'         => true,
             'hora'           => $mensaje->created_at->format('H:i'),
+        ]);
+    }
+
+    // Enviar un zumbido (nudge estilo MSN) — solo chats directos, con enfriamiento de 3 min por conversación
+    public function zumbido($id)
+    {
+        $user = Auth::user();
+        $conv = ChatConversacion::findOrFail($id);
+
+        if ($conv->tipo !== 'directo') {
+            return response()->json(['ok' => false, 'error' => 'El zumbido solo está disponible en chats directos.'], 422);
+        }
+
+        $ultimoZumbido = ChatMensaje::where('conversacion_id', $id)
+            ->where('user_id', $user->id)
+            ->where('archivo_tipo', 'zumbido')
+            ->latest()
+            ->first();
+
+        if ($ultimoZumbido && $ultimoZumbido->created_at->diffInSeconds(now()) < 180) {
+            $restante = 180 - $ultimoZumbido->created_at->diffInSeconds(now());
+            return response()->json(['ok' => false, 'error' => 'Esperá un poco antes de volver a zumbar.', 'restante' => $restante], 429);
+        }
+
+        $mensaje = ChatMensaje::create([
+            'conversacion_id' => $id,
+            'user_id'         => $user->id,
+            'archivo_tipo'    => 'zumbido',
+        ]);
+
+        ChatLectura::where('conversacion_id', $id)
+            ->whereIn('user_id', [$conv->user1_id, $conv->user2_id])
+            ->update(['oculta' => false]);
+
+        return response()->json([
+            'ok'      => true,
+            'id'      => $mensaje->id,
+            'user_id' => $mensaje->user_id,
+            'nombre'  => $user->name,
+            'es_mio'  => true,
+            'hora'    => $mensaje->created_at->format('H:i'),
         ]);
     }
 
@@ -231,9 +293,10 @@ class ChatController extends Controller
             'nombre'       => $nombre,
             'rol'          => $conv->rol,
             'no_leidos'    => $noLeidos,
-            'ultimo'       => $ultimo ? ($ultimo->mensaje ?? '📎 Archivo') : null,
+            'ultimo'       => $ultimo ? ($ultimo->mensaje ?? ($ultimo->archivo_tipo === 'sticker' ? '🙂 Sticker' : ($ultimo->archivo_tipo === 'zumbido' ? '👋 Zumbido' : '📎 Archivo'))) : null,
             'ultimo_user'  => $ultimo?->user?->name,
             'ultimo_hora'  => $ultimo?->created_at?->format('H:i'),
+            'ultimo_tipo'  => $ultimo?->archivo_tipo,
         ];
     }
 }

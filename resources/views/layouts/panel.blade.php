@@ -29,6 +29,19 @@
 .tabla-scroll::-webkit-scrollbar-track { background: transparent; }
 .tabla-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 .tabla-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    @keyframes zumbido-shake {
+        0%, 100% { transform: translateX(0); }
+        10% { transform: translateX(-10px) rotate(-1deg); }
+        20% { transform: translateX(9px) rotate(1deg); }
+        30% { transform: translateX(-8px) rotate(-1deg); }
+        40% { transform: translateX(7px) rotate(1deg); }
+        50% { transform: translateX(-6px); }
+        60% { transform: translateX(5px); }
+        70% { transform: translateX(-4px); }
+        80% { transform: translateX(3px); }
+        90% { transform: translateX(-2px); }
+    }
+    .zumbido-anim { animation: zumbido-shake 0.5s ease-in-out; }
     </style>
 </head>
 
@@ -620,7 +633,7 @@ let notifInterval = setInterval(actualizarNotificaciones, 30000);
     </div>
 </div>
 
-<div id="chat-panel" style="display:none; position:fixed; bottom:84px; right:24px; width:360px; height:440px; background:#fff; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.18); z-index:8000; display:none; flex-direction:column; overflow:hidden; border:1px solid #e5e7eb;">
+<div id="chat-panel" style="display:none; position:fixed; bottom:84px; right:24px; width:392px; height:440px; background:#fff; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.18); z-index:8000; display:none; flex-direction:column; overflow:hidden; border:1px solid #e5e7eb;">
 
     {{-- Header --}}
     <div style="background:#1e3a5f; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
@@ -640,12 +653,15 @@ let notifInterval = setInterval(actualizarNotificaciones, 30000);
         <div id="chat-convs" style="width:115px; border-right:1px solid #e5e7eb; overflow-y:auto; background:#f8fafc; flex-shrink:0;"></div>
 
         {{-- Mensajes --}}
-        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+        <div style="flex:1; display:flex; flex-direction:column; overflow:hidden; position:relative;">
             <div id="chat-conv-header" style="padding:7px 10px; border-bottom:1px solid #e5e7eb; font-size:11px; font-weight:600; color:#374151; background:#fff; flex-shrink:0; display:flex; align-items:center; gap:6px;">
                 Seleccioná una conversación
             </div>
             <div id="chat-msgs" style="flex:1; overflow-y:auto; padding:8px; display:flex; flex-direction:column; gap:5px; background:#f9fafb;"></div>
-            <div id="chat-input-wrap" style="padding:7px; border-top:1px solid #e5e7eb; display:flex; gap:5px; align-items:center; background:#fff; flex-shrink:0;">
+            <div id="chat-sticker-picker" style="display:none; position:absolute; bottom:46px; left:7px; right:7px; max-height:170px; overflow-y:auto; background:#fff; border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 4px 16px rgba(0,0,0,0.12); padding:8px; z-index:20; grid-template-columns:repeat(6, 1fr); gap:6px;"></div>
+            <div id="chat-input-wrap" style="padding:7px; border-top:1px solid #e5e7eb; display:flex; gap:5px; align-items:center; background:#fff; flex-shrink:0; position:relative;">
+                <button type="button" onclick="toggleStickerPicker()" style="cursor:pointer; color:#9ca3af; background:none; border:none; padding:0; display:flex; align-items:center; font-size:16px; line-height:1;">🙂</button>
+                <button type="button" id="btn-zumbido" onclick="enviarZumbido()" title="Mandar un zumbido" style="cursor:pointer; color:#9ca3af; background:none; border:none; padding:0; display:none; align-items:center; font-size:16px; line-height:1;">👋</button>
                 <label for="chat-file" style="cursor:pointer; color:#9ca3af; display:flex; align-items:center;">
                     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                 </label>
@@ -686,16 +702,19 @@ function toggleChat() {
     if (chatAbierto) {
         ocultarPreviewChat();
         cargarConversaciones();
+        actualizarBotonZumbido();
         if (!pollingInterval) pollingInterval = setInterval(chatPolling, 3000);
     } else {
         clearInterval(pollingInterval);
         pollingInterval = null;
+        document.getElementById('chat-sticker-picker').style.display = 'none';
     }
 }
 
 function chatPolling() {
     if (convActualId) cargarMensajes(convActualId, false);
     actualizarBadge();
+    actualizarBotonZumbido();
 }
 
 async function cargarConversaciones() {
@@ -740,8 +759,11 @@ async function cerrarConversacion(id) {
 }
 
 async function seleccionarConv(id, nombre, tipo) {
+    document.getElementById('chat-sticker-picker').style.display = 'none';
     convActualId = id;
     document.getElementById('chat-conv-header').textContent = (tipo === 'general' ? '👥 ' : tipo === 'rol' ? '🔧 ' : '💬 ') + nombre;
+    document.getElementById('btn-zumbido').style.display = tipo === 'directo' ? 'flex' : 'none';
+    actualizarBotonZumbido();
     await cargarMensajes(id, true);
     cargarConversaciones();
 }
@@ -754,25 +776,47 @@ async function cargarMensajes(id, scroll) {
     const cont = document.getElementById('chat-msgs');
     const cantAnterior = cantidadMensajesPorConv[id] ?? null;
 
-    cont.innerHTML = msgs.map(m => `
+    // Si ya estaba viendo el final de la conversación, lo mantenemos ahí
+    // después de refrescar (si no, cada actualización de fondo te tira el scroll arriba)
+    const estabaAbajo = (cont.scrollTop + cont.clientHeight) >= (cont.scrollHeight - 30);
+
+    cont.innerHTML = msgs.map(m => {
+        if (m.archivo_tipo === 'zumbido') {
+            return `
+                <div style="text-align:center; margin:4px 0;">
+                    <span style="font-size:10px; color:#9ca3af; font-style:italic; background:#f3f4f6; padding:3px 10px; border-radius:20px;">
+                        👋 ${m.es_mio ? 'Le mandaste un zumbido' : (m.nombre + ' te mandó un zumbido')}
+                    </span>
+                </div>
+            `;
+        }
+        return `
         <div style="display:flex; flex-direction:column; align-items:${m.es_mio ? 'flex-end' : 'flex-start'};">
             ${!m.es_mio ? `<div style="font-size:9px; color:#9ca3af; margin-bottom:2px;">${m.nombre}</div>` : ''}
             ${m.mensaje ? `<div style="background:${m.es_mio ? '#dbeafe' : '#fff'}; border:1px solid #e5e7eb; border-radius:8px; padding:5px 8px; font-size:11px; color:#374151; max-width:85%; line-height:1.5;">${m.mensaje}</div>` : ''}
-            ${m.archivo ? `<a href="${m.archivo}" target="_blank" style="display:flex; align-items:center; gap:4px; background:#f3f4f6; border:1px solid #e5e7eb; border-radius:6px; padding:4px 8px; font-size:10px; color:#374151; text-decoration:none; margin-top:2px;">📎 ${m.archivo_nombre}</a>` : ''}
+            ${m.archivo && m.archivo_tipo === 'sticker' ? `<img src="${m.archivo}" style="width:56px; height:56px; margin-top:2px;">` : ''}
+            ${m.archivo && m.archivo_tipo !== 'sticker' ? `<a href="${m.archivo}" target="_blank" style="display:flex; align-items:center; gap:4px; background:#f3f4f6; border:1px solid #e5e7eb; border-radius:6px; padding:4px 8px; font-size:10px; color:#374151; text-decoration:none; margin-top:2px;">📎 ${m.archivo_nombre}</a>` : ''}
             <div style="font-size:9px; color:#d1d5db; margin-top:2px;">${m.hora}</div>
         </div>
-    `).join('');
+        `;
+    }).join('');
 
     // Sonido solo si esta MISMA conversación tiene mensajes nuevos de otra persona
     if (cantAnterior !== null && msgs.length > cantAnterior) {
         const mensajesNuevos = msgs.slice(cantAnterior);
         const nuevosDeOtros = mensajesNuevos.filter(m => !m.es_mio);
-        if (nuevosDeOtros.length > 0) reproducirSonido();
+        const zumbidoRecibido = nuevosDeOtros.find(m => m.archivo_tipo === 'zumbido');
+        if (zumbidoRecibido) {
+            sacudirChat();
+            reproducirZumbido();
+        } else if (nuevosDeOtros.length > 0) {
+            reproducirSonido();
+        }
     }
 
     cantidadMensajesPorConv[id] = msgs.length;
 
-    if (scroll) cont.scrollTop = cont.scrollHeight;
+    if (scroll || estabaAbajo) cont.scrollTop = cont.scrollHeight;
 }
 
 let audioCtx = null;
@@ -801,6 +845,83 @@ function reproducirSonido() {
         console.error('Audio error:', e);
     }
 }
+
+const audioZumbido = new Audio('/sounds/zumbido.mp3');
+
+function reproducirZumbido() {
+    try {
+        audioZumbido.currentTime = 0;
+        audioZumbido.play();
+    } catch(e) {}
+}
+
+function sacudirChat() {
+    const panel = document.getElementById('chat-panel');
+    panel.classList.remove('zumbido-anim');
+    void panel.offsetWidth; // fuerza reflow para poder reiniciar la animación
+    panel.classList.add('zumbido-anim');
+    // La saco al terminar: si no, queda "pegada" y al cerrar/abrir el panel
+    // (display:none → flex) el navegador la vuelve a disparar sola.
+    setTimeout(() => panel.classList.remove('zumbido-anim'), 550);
+}
+
+function sacudirBotonChat() {
+    const btn = document.getElementById('chat-btn');
+    btn.classList.remove('zumbido-anim');
+    void btn.offsetWidth;
+    btn.classList.add('zumbido-anim');
+    setTimeout(() => btn.classList.remove('zumbido-anim'), 550);
+}
+
+// Guardo el enfriamiento en localStorage (no en una variable JS) para que
+// sobreviva si navegás a otra pantalla del sistema mientras espera los 3 min.
+function obtenerZumbidoHasta(convId) {
+    const v = localStorage.getItem('zumbidoHasta_' + convId);
+    return v ? parseInt(v, 10) : 0;
+}
+function guardarZumbidoHasta(convId, timestamp) {
+    localStorage.setItem('zumbidoHasta_' + convId, String(timestamp));
+}
+
+function actualizarBotonZumbido() {
+    const btn = document.getElementById('btn-zumbido');
+    if (!btn || btn.style.display === 'none' || !convActualId) return;
+    const hasta = obtenerZumbidoHasta(convActualId);
+    if (Date.now() < hasta) {
+        btn.disabled = true;
+        btn.style.opacity = '0.35';
+    } else {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+    }
+}
+
+async function enviarZumbido() {
+    if (!convActualId) return;
+    if (Date.now() < obtenerZumbidoHasta(convActualId)) return;
+
+    const res = await fetch(`/chat/zumbido/${convActualId}`, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content }
+    });
+    const data = await res.json();
+
+    if (!data.ok) {
+        if (data.restante) guardarZumbidoHasta(convActualId, Date.now() + data.restante * 1000);
+        actualizarBotonZumbido();
+        return;
+    }
+
+    guardarZumbidoHasta(convActualId, Date.now() + 180000);
+    actualizarBotonZumbido();
+    sacudirChat();
+    reproducirZumbido();
+    await cargarMensajes(convActualId, true);
+    cargarConversaciones();
+}
+
+// Se re-evalúa solo, sin depender de que el chat esté abierto ni de recargar (F5)
+setInterval(actualizarBotonZumbido, 5000);
 
 async function enviarMensaje() {
     const input = document.getElementById('chat-input');
@@ -831,6 +952,44 @@ function chatArchivoSeleccionado(input) {
     if (chatArchivoFile) {
         document.getElementById('chat-input').placeholder = '📎 ' + chatArchivoFile.name;
     }
+}
+
+let listaStickers = null;
+
+async function toggleStickerPicker() {
+    const picker = document.getElementById('chat-sticker-picker');
+    const abrir = picker.style.display === 'none' || !picker.style.display;
+    if (!abrir) {
+        picker.style.display = 'none';
+        return;
+    }
+    if (!listaStickers) {
+        const res = await fetch('/chat/stickers');
+        listaStickers = await res.json();
+    }
+    picker.innerHTML = listaStickers.map(s => `
+        <img src="${s.url}" onclick="enviarSticker('${s.archivo}')"
+            style="width:100%; aspect-ratio:1; cursor:pointer; border-radius:6px; transition:transform 0.1s;"
+            onmouseover="this.style.transform='scale(1.12)'" onmouseout="this.style.transform='scale(1)'">
+    `).join('');
+    picker.style.display = 'grid';
+}
+
+async function enviarSticker(archivo) {
+    if (!convActualId) return;
+    document.getElementById('chat-sticker-picker').style.display = 'none';
+
+    const formData = new FormData();
+    formData.append('sticker', archivo);
+
+    await fetch(`/chat/enviar/${convActualId}`, {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+        body: formData
+    });
+
+    await cargarMensajes(convActualId, true);
+    cargarConversaciones();
 }
 
 async function abrirUsuarios() {
@@ -882,10 +1041,12 @@ async function actualizarBadge() {
     chequearPreviewChat();
 }
 
-let ultimoMensajePreviewId = null;
-let previewChatOtras = 0;
 let previewChatConv = null;
 
+// Uso localStorage (no una variable JS) para recordar el último aviso visto,
+// porque cada clic a otra pantalla del sistema recarga la página entera y
+// borraría una variable normal — así el zumbido se detecta como "nuevo" bien,
+// pase lo que pase con la navegación.
 async function chequearPreviewChat() {
     if (chatAbierto) return;
     try {
@@ -893,13 +1054,24 @@ async function chequearPreviewChat() {
         const convs = await res.json();
         const conNoLeidos = convs.filter(c => c.no_leidos > 0 && c.ultimo);
         const conNuevo = conNoLeidos.sort((a, b) => (b.ultimo_hora || '').localeCompare(a.ultimo_hora || ''))[0];
+
         if (!conNuevo) return;
+
         const fingerprint = conNuevo.id + '|' + conNuevo.ultimo + '|' + conNuevo.ultimo_hora;
         const otras = conNoLeidos.length - 1;
-        if (fingerprint === ultimoMensajePreviewId && otras === previewChatOtras) return;
-        ultimoMensajePreviewId = fingerprint;
-        previewChatOtras = otras;
+
         mostrarPreviewChat(conNuevo, otras);
+
+        const fingerprintGuardado = localStorage.getItem('chatPreviewFingerprint');
+        if (fingerprint === fingerprintGuardado) return; // ya lo procesamos, aunque haya sido en otra página
+
+        const esPrimeraVezEnEsteNavegador = fingerprintGuardado === null;
+        localStorage.setItem('chatPreviewFingerprint', fingerprint);
+
+        if (!esPrimeraVezEnEsteNavegador && conNuevo.ultimo_tipo === 'zumbido') {
+            sacudirBotonChat();
+            reproducirZumbido();
+        }
     } catch (e) {}
 }
 
