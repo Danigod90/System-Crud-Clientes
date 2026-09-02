@@ -1049,6 +1049,7 @@ async function enviarMensaje() {
     input.value = '';
     chatArchivoFile = null;
     document.getElementById('chat-file').value = '';
+    input.placeholder = 'Escribí un mensaje...'; // saca la "sombra" del nombre del archivo ya enviado
 
     await fetch(`/chat/enviar/${convActualId}`, {
         method: 'POST',
