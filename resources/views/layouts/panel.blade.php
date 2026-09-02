@@ -703,6 +703,31 @@ let enLineaInterval = null;
 let enLineaAbierto = false;
 let cargandoEnLinea = false;
 
+// El sonido de notificación (y el del zumbido) solo puede arrancar sin problemas
+// si el navegador ya "desbloqueó" el audio con alguna interacción del usuario.
+// Antes eso solo pasaba al abrir el chat; si nunca lo abrías, el primer sonido
+// (el que más importa, el del primer mensaje que te avisa) podía no sonar.
+// Con esto, cualquier click/tecla/toque en cualquier parte de la app lo desbloquea.
+function desbloquearAudio() {
+    iniciarAudio();
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+    // "Cebamos" el audio del zumbido en silencio para que el navegador lo registre
+    // como ya usado, y así reproducirlo después desde un aviso de fondo no falle.
+    const volumenOriginal = audioZumbido.volume;
+    audioZumbido.volume = 0;
+    audioZumbido.play().then(() => {
+        audioZumbido.pause();
+        audioZumbido.currentTime = 0;
+        audioZumbido.volume = volumenOriginal;
+    }).catch(() => { audioZumbido.volume = volumenOriginal; });
+    document.removeEventListener('click', desbloquearAudio);
+    document.removeEventListener('keydown', desbloquearAudio);
+    document.removeEventListener('touchstart', desbloquearAudio);
+}
+document.addEventListener('click', desbloquearAudio);
+document.addEventListener('keydown', desbloquearAudio);
+document.addEventListener('touchstart', desbloquearAudio);
+
 async function actualizarEnLinea() {
     if (cargandoEnLinea) return;
     cargandoEnLinea = true;
@@ -884,10 +909,17 @@ function iniciarAudio() {
     }
 }
 
-function reproducirSonido() {
+async function reproducirSonido() {
     try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
+        if (audioCtx.state === 'suspended') {
+            // Antes esto se disparaba y se seguía de largo sin esperar a que el
+            // navegador realmente lo reanude, así que el osc.start() de abajo
+            // podía quedar programado sobre un contexto todavía dormido y no sonar.
+            await audioCtx.resume().catch(() => {});
+        }
+        if (audioCtx.state !== 'running') return; // el navegador no lo desbloqueó aún, no forzamos
+
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain);
@@ -908,7 +940,7 @@ const audioZumbido = new Audio('/sounds/zumbido.mp3');
 function reproducirZumbido() {
     try {
         audioZumbido.currentTime = 0;
-        audioZumbido.play();
+        audioZumbido.play().catch(() => {});
     } catch(e) {}
 }
 
