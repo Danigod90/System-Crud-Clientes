@@ -642,6 +642,7 @@ let notifInterval = setInterval(actualizarNotificaciones, 30000);
             Chat interno
         </span>
         <div style="display:flex; gap:6px; align-items:center;">
+            <button type="button" id="btn-notif-permiso" onclick="activarNotificacionesEscritorio()" title="Avisarte con el chat minimizado" style="display:none; background:rgba(255,255,255,0.15); border:none; border-radius:20px; width:24px; height:24px; cursor:pointer; color:#fff; font-size:12px; align-items:center; justify-content:center;">🔔</button>
             <button type="button" id="btn-en-linea" onclick="toggleEnLinea()" style="display:flex; background:rgba(255,255,255,0.15); border:none; border-radius:20px; padding:3px 9px; cursor:pointer; color:#fff; font-size:10px; font-weight:600; align-items:center; gap:4px;">
                 <span style="width:6px; height:6px; border-radius:50%; background:#16a34a; display:inline-block;"></span>
                 <span id="en-linea-texto">0 en línea</span>
@@ -864,6 +865,10 @@ async function cargarMensajes(id, scroll) {
         } else if (nuevosDeOtros.length > 0) {
             reproducirSonido();
         }
+        if (nuevosDeOtros.length > 0) {
+            const ultimo = nuevosDeOtros[nuevosDeOtros.length - 1];
+            mostrarNotificacionEscritorio(ultimo.nombre, ultimo.archivo_tipo === 'zumbido' ? '👋 Zumbido' : (ultimo.mensaje || (ultimo.archivo_tipo === 'sticker' ? '🙂 Sticker' : '📎 Archivo')));
+        }
     }
 
     cantidadMensajesPorConv[id] = msgs.length;
@@ -923,6 +928,30 @@ function sacudirBotonChat() {
     void btn.offsetWidth;
     btn.classList.add('zumbido-anim');
     setTimeout(() => btn.classList.remove('zumbido-anim'), 550);
+}
+
+// Notificaciones nativas del sistema (Windows/Mac), avisan aunque tengas
+// la ventana minimizada o estés en otra pestaña. Requieren permiso del navegador.
+function actualizarBotonNotifPermiso() {
+    const btn = document.getElementById('btn-notif-permiso');
+    if (!('Notification' in window)) { btn.style.display = 'none'; return; }
+    btn.style.display = Notification.permission === 'default' ? 'flex' : 'none';
+}
+
+function activarNotificacionesEscritorio() {
+    if (!('Notification' in window)) return;
+    Notification.requestPermission().then(() => actualizarBotonNotifPermiso());
+}
+
+function mostrarNotificacionEscritorio(titulo, cuerpo) {
+    if (!('Notification' in window)) return;
+    if (Notification.permission !== 'granted') return;
+    // Solo si de verdad no estás mirando la pestaña — si la tenés activa, ya te avisa el cartelito de adentro del chat.
+    if (!document.hidden && document.hasFocus()) return;
+    try {
+        const notif = new Notification(titulo, { body: cuerpo, icon: '/favicon.ico' });
+        notif.onclick = () => { window.focus(); notif.close(); };
+    } catch (e) {}
 }
 
 // Guardo el enfriamiento en localStorage (no en una variable JS) para que
@@ -1132,6 +1161,10 @@ async function chequearPreviewChat() {
             sacudirBotonChat();
             reproducirZumbido();
         }
+
+        if (!esPrimeraVezEnEsteNavegador) {
+            mostrarNotificacionEscritorio(conNuevo.ultimo_user || conNuevo.nombre, conNuevo.ultimo);
+        }
     } catch (e) {}
 }
 
@@ -1175,6 +1208,7 @@ function pingOnline() {
 const CADENCIA_RAPIDA = { notif: 30000, ping: 30000, badge: 10000, enLinea: 15000, chat: 3000 };
 const CADENCIA_LENTA  = { notif: 60000, ping: 45000, badge: 30000, enLinea: 45000, chat: 8000 };
 
+actualizarBotonNotifPermiso();
 actualizarBadge();
 pingInterval = setInterval(pingOnline, CADENCIA_RAPIDA.ping);
 badgeInterval = setInterval(actualizarBadge, CADENCIA_RAPIDA.badge);
