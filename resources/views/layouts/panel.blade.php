@@ -1168,34 +1168,52 @@ function pingOnline() {
     });
 }
 
-actualizarBadge();
-pingInterval = setInterval(pingOnline, 30000);
-badgeInterval = setInterval(actualizarBadge, 10000);
-actualizarEnLinea();
-enLineaInterval = setInterval(actualizarEnLinea, 15000);
+// Cadencia normal (pestaña visible) vs. cadencia reducida (minimizada / en otra pestaña).
+// Antes se frenaba todo por completo al minimizar, pero eso significaba no enterarte
+// de mensajes ni zumbidos hasta volver a mirar la pantalla. Ahora sigue consultando,
+// solo que más espaciado, para no sobrecargar el servidor sin dejar de avisar.
+const CADENCIA_RAPIDA = { notif: 30000, ping: 30000, badge: 10000, enLinea: 15000, chat: 3000 };
+const CADENCIA_LENTA  = { notif: 60000, ping: 45000, badge: 30000, enLinea: 45000, chat: 8000 };
 
-// Pausar todo el polling cuando la pestaña no está activa, y reanudar al volver
+actualizarBadge();
+pingInterval = setInterval(pingOnline, CADENCIA_RAPIDA.ping);
+badgeInterval = setInterval(actualizarBadge, CADENCIA_RAPIDA.badge);
+actualizarEnLinea();
+enLineaInterval = setInterval(actualizarEnLinea, CADENCIA_RAPIDA.enLinea);
+
+// Al minimizar/cambiar de pestaña seguimos consultando, pero más lento;
+// al volver, se retoma la cadencia normal y se refresca todo de una.
 document.addEventListener('visibilitychange', function() {
+    clearInterval(notifInterval);
+    clearInterval(pingInterval);
+    clearInterval(badgeInterval);
+    clearInterval(enLineaInterval);
+    if (pollingInterval) {
+        clearInterval(pollingInterval);
+        pollingInterval = null;
+    }
+
     if (document.visibilityState === 'hidden') {
-        clearInterval(notifInterval);
-        clearInterval(pingInterval);
-        clearInterval(badgeInterval);
-        clearInterval(enLineaInterval);
-        if (pollingInterval) {
-            clearInterval(pollingInterval);
-            pollingInterval = null;
+        const c = CADENCIA_LENTA;
+        notifInterval = setInterval(actualizarNotificaciones, c.notif);
+        pingInterval = setInterval(pingOnline, c.ping);
+        badgeInterval = setInterval(actualizarBadge, c.badge);
+        enLineaInterval = setInterval(actualizarEnLinea, c.enLinea);
+        if (chatAbierto && convActualId) {
+            pollingInterval = setInterval(chatPolling, c.chat);
         }
     } else {
+        const c = CADENCIA_RAPIDA;
         actualizarNotificaciones();
         actualizarBadge();
         pingOnline();
         actualizarEnLinea();
-        notifInterval = setInterval(actualizarNotificaciones, 30000);
-        pingInterval = setInterval(pingOnline, 30000);
-        badgeInterval = setInterval(actualizarBadge, 10000);
-        enLineaInterval = setInterval(actualizarEnLinea, 15000);
+        notifInterval = setInterval(actualizarNotificaciones, c.notif);
+        pingInterval = setInterval(pingOnline, c.ping);
+        badgeInterval = setInterval(actualizarBadge, c.badge);
+        enLineaInterval = setInterval(actualizarEnLinea, c.enLinea);
         if (chatAbierto && convActualId) {
-            pollingInterval = setInterval(chatPolling, 3000);
+            pollingInterval = setInterval(chatPolling, c.chat);
             cargarMensajes(convActualId, false);
         }
     }
