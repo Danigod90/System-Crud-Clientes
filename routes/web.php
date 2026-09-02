@@ -85,6 +85,7 @@ Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin|A
 Route::middleware(['auth'])->prefix('chat')->name('chat.')->group(function () {
     Route::get('/conversaciones',    [\App\Http\Controllers\ChatController::class, 'conversaciones'])->name('conversaciones');
     Route::get('/usuarios',          [\App\Http\Controllers\ChatController::class, 'usuarios'])->name('usuarios');
+    Route::get('/en-linea',          [\App\Http\Controllers\ChatController::class, 'enLinea'])->name('enLinea');
     Route::get('/mensajes/{id}',     [\App\Http\Controllers\ChatController::class, 'mensajes'])->name('mensajes');
     Route::get('/stickers',          [\App\Http\Controllers\ChatController::class, 'stickers'])->name('stickers');
     Route::post('/enviar/{id}',      [\App\Http\Controllers\ChatController::class, 'enviar'])->name('enviar');

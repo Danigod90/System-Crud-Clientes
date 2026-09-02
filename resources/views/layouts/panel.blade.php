@@ -636,14 +636,19 @@ let notifInterval = setInterval(actualizarNotificaciones, 30000);
 <div id="chat-panel" style="display:none; position:fixed; bottom:84px; right:24px; width:392px; height:440px; background:#fff; border-radius:12px; box-shadow:0 8px 32px rgba(0,0,0,0.18); z-index:8000; display:none; flex-direction:column; overflow:hidden; border:1px solid #e5e7eb;">
 
     {{-- Header --}}
-    <div style="background:#1e3a5f; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
+    <div style="background:#1e3a5f; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; position:relative;">
         <span style="font-size:13px; font-weight:600; color:#fff; display:flex; align-items:center; gap:6px;">
             <svg width="14" height="14" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             Chat interno
         </span>
-        <div style="display:flex; gap:6px;">
+        <div style="display:flex; gap:6px; align-items:center;">
+            <button type="button" id="btn-en-linea" onclick="toggleEnLinea()" style="display:flex; background:rgba(255,255,255,0.15); border:none; border-radius:20px; padding:3px 9px; cursor:pointer; color:#fff; font-size:10px; font-weight:600; align-items:center; gap:4px;">
+                <span style="width:6px; height:6px; border-radius:50%; background:#16a34a; display:inline-block;"></span>
+                <span id="en-linea-texto">0 en línea</span>
+            </button>
             <button onclick="toggleChat()" style="background:rgba(255,255,255,0.15); border:none; border-radius:6px; width:24px; height:24px; cursor:pointer; color:#fff; font-size:14px; display:flex; align-items:center; justify-content:center;">—</button>
         </div>
+        <div id="en-linea-panel" style="display:none; position:absolute; top:38px; right:34px; min-width:140px; max-width:220px; max-height:180px; overflow-y:auto; background:#fff; border:1px solid #e5e7eb; border-radius:8px; box-shadow:0 6px 20px rgba(0,0,0,0.15); padding:6px; z-index:30;"></div>
     </div>
 
     {{-- Body --}}
@@ -693,6 +698,48 @@ let pollingInterval = null;
 let chatArchivoFile = null;
 let pingInterval = null;
 let badgeInterval = null;
+let enLineaInterval = null;
+let enLineaAbierto = false;
+let cargandoEnLinea = false;
+
+async function actualizarEnLinea() {
+    if (cargandoEnLinea) return;
+    cargandoEnLinea = true;
+    try {
+        const res = await fetch('/chat/en-linea');
+        const usuarios = await res.json();
+        document.getElementById('en-linea-texto').textContent = usuarios.length + ' en línea';
+
+        const panel = document.getElementById('en-linea-panel');
+        if (usuarios.length === 0) {
+            panel.innerHTML = `<div style="font-size:11px; color:#9ca3af; padding:4px 6px;">Nadie más conectado</div>`;
+        } else {
+            panel.innerHTML = usuarios.map(u => `
+                <div onclick="abrirDirectoDesdeEnLinea(${u.id})"
+                    style="display:flex; align-items:center; gap:6px; padding:5px 6px; font-size:11px; color:#374151; cursor:pointer; border-radius:6px;"
+                    onmouseover="this.style.background='#f3f4f6'" onmouseout="this.style.background='transparent'">
+                    <span style="width:7px; height:7px; border-radius:50%; background:#16a34a; flex-shrink:0;"></span>
+                    ${u.nombre}
+                </div>
+            `).join('');
+        }
+    } catch (e) {
+    } finally {
+        cargandoEnLinea = false;
+    }
+}
+
+function toggleEnLinea() {
+    enLineaAbierto = !enLineaAbierto;
+    document.getElementById('en-linea-panel').style.display = enLineaAbierto ? 'block' : 'none';
+    if (enLineaAbierto) actualizarEnLinea();
+}
+
+function abrirDirectoDesdeEnLinea(userId) {
+    document.getElementById('en-linea-panel').style.display = 'none';
+    enLineaAbierto = false;
+    iniciarDirecto(userId);
+}
 
 function toggleChat() {
     iniciarAudio();
@@ -708,11 +755,15 @@ function toggleChat() {
         clearInterval(pollingInterval);
         pollingInterval = null;
         document.getElementById('chat-sticker-picker').style.display = 'none';
+        document.getElementById('en-linea-panel').style.display = 'none';
+        enLineaAbierto = false;
     }
 }
 
+let cargandoMensajes = false; // mismo seguro, para no pisar consultas de /chat/mensajes
+
 function chatPolling() {
-    if (convActualId) cargarMensajes(convActualId, false);
+    if (convActualId && !cargandoMensajes) cargarMensajes(convActualId, false);
     actualizarBadge();
     actualizarBotonZumbido();
 }
@@ -771,7 +822,8 @@ async function seleccionarConv(id, nombre, tipo) {
 let cantidadMensajesPorConv = {};
 
 async function cargarMensajes(id, scroll) {
-    const res = await fetch(`/chat/mensajes/${id}`);
+    cargandoMensajes = true;
+    const res = await fetch(`/chat/mensajes/${id}`).finally(() => { cargandoMensajes = false; });
     const msgs = await res.json();
     const cont = document.getElementById('chat-msgs');
     const cantAnterior = cantidadMensajesPorConv[id] ?? null;
@@ -1028,17 +1080,25 @@ async function iniciarDirecto(userId) {
     if (conv) seleccionarConv(conv.id, conv.nombre, conv.tipo);
 }
 
+let actualizandoBadge = false; // evita que se pisen consultas si el servidor tarda en responder
+
 async function actualizarBadge() {
-    const res = await fetch('/chat/no-leidos');
-    const data = await res.json();
-    const badge = document.getElementById('chat-badge');
-    if (data.total > 0) {
-        badge.textContent = data.total;
-        badge.style.display = 'flex';
-    } else {
-        badge.style.display = 'none';
+    if (actualizandoBadge) return;
+    actualizandoBadge = true;
+    try {
+        const res = await fetch('/chat/no-leidos');
+        const data = await res.json();
+        const badge = document.getElementById('chat-badge');
+        if (data.total > 0) {
+            badge.textContent = data.total;
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+        await chequearPreviewChat();
+    } finally {
+        actualizandoBadge = false;
     }
-    chequearPreviewChat();
 }
 
 let previewChatConv = null;
@@ -1111,6 +1171,8 @@ function pingOnline() {
 actualizarBadge();
 pingInterval = setInterval(pingOnline, 30000);
 badgeInterval = setInterval(actualizarBadge, 10000);
+actualizarEnLinea();
+enLineaInterval = setInterval(actualizarEnLinea, 15000);
 
 // Pausar todo el polling cuando la pestaña no está activa, y reanudar al volver
 document.addEventListener('visibilitychange', function() {
@@ -1118,6 +1180,7 @@ document.addEventListener('visibilitychange', function() {
         clearInterval(notifInterval);
         clearInterval(pingInterval);
         clearInterval(badgeInterval);
+        clearInterval(enLineaInterval);
         if (pollingInterval) {
             clearInterval(pollingInterval);
             pollingInterval = null;
@@ -1126,9 +1189,11 @@ document.addEventListener('visibilitychange', function() {
         actualizarNotificaciones();
         actualizarBadge();
         pingOnline();
+        actualizarEnLinea();
         notifInterval = setInterval(actualizarNotificaciones, 30000);
         pingInterval = setInterval(pingOnline, 30000);
         badgeInterval = setInterval(actualizarBadge, 10000);
+        enLineaInterval = setInterval(actualizarEnLinea, 15000);
         if (chatAbierto && convActualId) {
             pollingInterval = setInterval(chatPolling, 3000);
             cargarMensajes(convActualId, false);

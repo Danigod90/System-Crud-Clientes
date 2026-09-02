@@ -76,6 +76,20 @@ class ChatController extends Controller
         return response()->json($usuarios);
     }
 
+    // Quiénes están conectados ahora (para el botón "X en línea")
+    public function enLinea()
+    {
+        $user = Auth::user();
+        $usuarios = User::where('id', '!=', $user->id)
+            ->whereNotNull('last_seen_at')
+            ->where('last_seen_at', '>=', now()->subMinutes(2))
+            ->orderBy('name')
+            ->get()
+            ->map(fn($u) => ['id' => $u->id, 'nombre' => $u->name]);
+
+        return response()->json($usuarios);
+    }
+
     // Mensajes de una conversación
     public function mensajes($id)
     {
