@@ -605,11 +605,36 @@ async function actualizarNotificaciones() {
             } else {
                 badge.textContent = d.count;
             }
+            avisarNotificacionNueva();
         } else {
             if (badge) badge.remove();
         }
     } catch(e) {}
 }
+
+// Aviso nativo de Windows para notificaciones nuevas (misma idea que ya usa el
+// chat): se guarda en localStorage el id de la última notificación vista, y
+// si la más reciente de la lista trae un id distinto, es que llegó algo nuevo.
+async function avisarNotificacionNueva() {
+    try {
+        const res = await fetch('/notificaciones/lista');
+        const data = await res.json();
+        const notifs = data.notificaciones || [];
+        if (notifs.length === 0) return;
+
+        const ultima = notifs[0];
+        const idGuardado = localStorage.getItem('ultimaNotifId');
+        if (ultima.id === idGuardado) return;
+
+        const esPrimeraVezEnEsteNavegador = idGuardado === null;
+        localStorage.setItem('ultimaNotifId', ultima.id);
+
+        if (!esPrimeraVezEnEsteNavegador) {
+            mostrarNotificacionEscritorio(ultima.seccion || 'Nueva notificación', ultima.mensaje);
+        }
+    } catch (e) {}
+}
+
 let notifInterval = setInterval(actualizarNotificaciones, 30000);
 
 </script>

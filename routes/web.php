@@ -174,6 +174,7 @@ Route::post('/notificaciones/leer', function() {
 Route::get('/notificaciones/lista', function() {
     $notifs = auth()->user()->notifications->take(8)->map(function($n) {
         return [
+            'id'      => $n->id,
             'mensaje' => $n->data['mensaje'] ?? '',
             'seccion' => $n->data['seccion'] ?? '',
             'leida'   => !is_null($n->read_at),
