@@ -136,6 +136,24 @@ class ChatController extends Controller
         return response()->json($archivos);
     }
 
+    // Descargar un archivo adjunto del chat (antes el link iba directo al
+    // archivo estático y el navegador/webview decidía solo si mostrarlo o
+    // bajarlo; ahora lo servimos nosotros forzando la descarga, y de paso
+    // exigimos sesión iniciada, cosa que el link directo no pedía).
+    public function archivo($mensajeId)
+    {
+        $mensaje = ChatMensaje::findOrFail($mensajeId);
+
+        if (!$mensaje->archivo || in_array($mensaje->archivo_tipo, ['sticker', 'zumbido'])) {
+            abort(404);
+        }
+
+        $path   = Storage::disk('public')->path($mensaje->archivo);
+        $nombre = $mensaje->archivo_nombre ?: basename($mensaje->archivo);
+
+        return response()->download($path, $nombre);
+    }
+
     // Enviar mensaje
     public function enviar(Request $request, $id)
     {

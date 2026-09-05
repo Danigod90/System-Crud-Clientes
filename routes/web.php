@@ -88,6 +88,7 @@ Route::middleware(['auth'])->prefix('chat')->name('chat.')->group(function () {
     Route::get('/en-linea',          [\App\Http\Controllers\ChatController::class, 'enLinea'])->name('enLinea');
     Route::get('/mensajes/{id}',     [\App\Http\Controllers\ChatController::class, 'mensajes'])->name('mensajes');
     Route::get('/stickers',          [\App\Http\Controllers\ChatController::class, 'stickers'])->name('stickers');
+    Route::get('/archivo/{mensaje}', [\App\Http\Controllers\ChatController::class, 'archivo'])->name('archivo');
     Route::post('/enviar/{id}',      [\App\Http\Controllers\ChatController::class, 'enviar'])->name('enviar');
     Route::post('/zumbido/{id}',     [\App\Http\Controllers\ChatController::class, 'zumbido'])->name('zumbido');
     Route::post('/directo/{userId}', [\App\Http\Controllers\ChatController::class, 'iniciarDirecto'])->name('directo');

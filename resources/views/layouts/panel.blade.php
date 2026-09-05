@@ -873,7 +873,7 @@ async function cargarMensajes(id, scroll) {
             ${!m.es_mio ? `<div style="font-size:9px; color:#9ca3af; margin-bottom:2px;">${m.nombre}</div>` : ''}
             ${m.mensaje ? `<div style="background:${m.es_mio ? '#dbeafe' : '#fff'}; border:1px solid #e5e7eb; border-radius:8px; padding:5px 8px; font-size:11px; color:#374151; max-width:85%; line-height:1.5;">${m.mensaje}</div>` : ''}
             ${m.archivo && m.archivo_tipo === 'sticker' ? `<img src="${m.archivo}" style="width:56px; height:56px; margin-top:2px;">` : ''}
-            ${m.archivo && m.archivo_tipo !== 'sticker' ? `<a href="${m.archivo}" target="_blank" style="display:flex; align-items:center; gap:4px; background:#f3f4f6; border:1px solid #e5e7eb; border-radius:6px; padding:4px 8px; font-size:10px; color:#374151; text-decoration:none; margin-top:2px;">📎 ${m.archivo_nombre}</a>` : ''}
+            ${m.archivo && m.archivo_tipo !== 'sticker' ? `<a href="/chat/archivo/${m.id}" style="display:flex; align-items:center; gap:4px; background:#f3f4f6; border:1px solid #e5e7eb; border-radius:6px; padding:4px 8px; font-size:10px; color:#374151; text-decoration:none; margin-top:2px;">📎 ${m.archivo_nombre}</a>` : ''}
             <div style="font-size:9px; color:#d1d5db; margin-top:2px;">${m.hora}</div>
         </div>
         `;
