@@ -20,6 +20,12 @@ class WhatsAppService
 
     public function enviar(string $numero, string $mensaje): bool
     {
+        // Servicio descontinuado: la red tiene un cortafuegos que bloquea la salida
+        // a Twilio, así que ni lo intentamos (evita llenar el log de errores todos los días).
+        // Para reactivarlo en el futuro, descomentar el bloque de abajo.
+        return false;
+
+        /*
         try {
             $this->client->messages->create(
                 'whatsapp:+595' . $numero,
@@ -33,7 +39,7 @@ class WhatsAppService
             \Log::error('WhatsApp error: ' . $e->getMessage());
             return false;
         }
-
+        */
     }
     public function avisarSupervisora(string $mensaje): bool
 {
