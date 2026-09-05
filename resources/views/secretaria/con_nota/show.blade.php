@@ -178,7 +178,7 @@
                     <p style="font-size:10px; color:#9ca3af; margin:0;">{{ strtoupper($doc->extension) }} · {{ number_format($doc->tamanio / 1024, 1) }} KB · {{ $doc->user->name ?? '—' }} · {{ $doc->created_at->format('d/m/Y') }}</p>
                 </div>
                 <div style="display:flex; gap:6px; flex-shrink:0;">
-                   <a href="{{ Storage::disk('public')->url($doc->ruta) }}"
+                   <a href="{{ route('documentos.show', $doc->id) }}"
    download="{{ str_ends_with(strtolower($doc->nombre), '.' . strtolower($doc->extension)) ? $doc->nombre : $doc->nombre . '.' . $doc->extension }}"
    style="display:inline-flex; align-items:center; gap:4px; background:#eff6ff; color:#2563eb; padding:4px 10px; border-radius:6px; font-size:11px; text-decoration:none; font-weight:500;">
     Ver

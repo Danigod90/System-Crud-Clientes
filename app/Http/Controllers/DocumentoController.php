@@ -55,6 +55,16 @@ class DocumentoController extends Controller
 
     // TODO: agregar verificación de permisos antes del redirect (Tarea #13)
 
-    return redirect(Storage::disk('public')->url($documento->ruta));
+    // Antes esto redirigía directo al archivo estático y el navegador/webview
+    // decidía solo si mostrarlo o descargarlo (con los PDF, casi siempre optaba
+    // por abrirlos con su visor interno). Sirviendo el archivo así, con
+    // response()->download(), el servidor le dice explícitamente que es una
+    // descarga — algo que ningún visor de PDF puede pasar por alto.
+    $path = Storage::disk('public')->path($documento->ruta);
+    $nombreDescarga = str_ends_with(strtolower($documento->nombre), '.' . strtolower($documento->extension))
+        ? $documento->nombre
+        : $documento->nombre . '.' . $documento->extension;
+
+    return response()->download($path, $nombreDescarga);
 }
 }
