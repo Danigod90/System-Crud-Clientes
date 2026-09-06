@@ -100,7 +100,7 @@
                 <thead>
                     <tr class="bg-gray-50 text-gray-600 uppercase text-xs">
                         <th class="border border-gray-200 px-2 py-3 text-left" style="width:100px;">Codigo ORG</th>
-                        <th class="border border-gray-200 px-2 py-3 text-left" style="width:220px;">Organizacion</th>
+                        <th class="border border-gray-200 px-2 py-3 text-center" style="width:220px;">Organizacion</th>
                         <th class="border border-gray-200 px-2 py-3 text-left" style="width:80px;">Asunto</th>
                         <th class="border border-gray-200 px-2 py-3 text-left" style="width:75px;">Via</th>
                         <th class="border border-gray-200 px-2 py-3 text-left" style="width:90px;">Fecha eleccion</th>
