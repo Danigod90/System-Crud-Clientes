@@ -46,6 +46,9 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::get('tipo-organizaciones', [\App\Http\Controllers\Admin\TipoOrganizacionController::class, 'index'])->name('tipo-organizaciones.index');
     Route::post('tipo-organizaciones', [\App\Http\Controllers\Admin\TipoOrganizacionController::class, 'store'])->name('tipo-organizaciones.store');
     Route::delete('tipo-organizaciones/{tipoOrganizacion}', [\App\Http\Controllers\Admin\TipoOrganizacionController::class, 'destroy'])->name('tipo-organizaciones.destroy');
+    Route::get('papelera', [\App\Http\Controllers\Admin\PapeleraController::class, 'index'])->name('papelera.index');
+    Route::post('papelera/{id}/restaurar', [\App\Http\Controllers\Admin\PapeleraController::class, 'restore'])->name('papelera.restore');
+    Route::delete('papelera/{id}', [\App\Http\Controllers\Admin\PapeleraController::class, 'forceDelete'])->name('papelera.force-delete');
 });
 
 Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin|Asesor'])
@@ -177,6 +180,7 @@ Route::get('/notificaciones/lista', function() {
             'id'      => $n->id,
             'mensaje' => $n->data['mensaje'] ?? '',
             'seccion' => $n->data['seccion'] ?? '',
+            'tipo'    => $n->data['tipo'] ?? null,
             'leida'   => !is_null($n->read_at),
             'hace'    => $n->created_at->diffForHumans(),
         ];

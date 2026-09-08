@@ -285,7 +285,28 @@ return redirect()->route('secretaria.con-nota.show', ['conNota' => $conNota, 'vo
     {
         $nombre = $conNota->nombre_organizacion;
         $codigo = $conNota->codigo_org;
+        $quienBorra = auth()->user();
+
+        // Borrado suave: la fila queda oculta en todo el sistema, pero no
+        // desaparece de la base — un admin la puede ver y restaurar desde
+        // la Papelera. Guardamos quién la borró antes de que el soft-delete
+        // marque deleted_at.
+        $conNota->update(['eliminado_por_user_id' => $quienBorra?->id]);
         $conNota->delete();
+
+        // Avisar a Secretaria Con Nota, que es quien maneja esta grilla día a
+        // día (Admin no necesita el aviso, ya tiene la Papelera para revisar
+        // cuando quiera). Se excluye a quien acaba de borrarla, por si la
+        // borró la propia secretaria.
+        $secretarias = \App\Models\User::role('Secretaria Con Nota')->get()
+            ->reject(fn($u) => $u->id === $quienBorra?->id);
+        foreach ($secretarias as $secretaria) {
+            $secretaria->notify(new \App\Notifications\OrganizacionEliminadaNotification(
+                ($quienBorra?->name ?? 'Alguien') . ' eliminó la organización ' . $codigo . ' — ' . $nombre,
+                $conNota->id
+            ));
+        }
+
         return redirect()->route('secretaria.con-nota.index')
             ->with('error', 'Se elimino la entrada ' . $codigo . ' — ' . $nombre . '.');
     }

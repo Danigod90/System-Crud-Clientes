@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class EntradaConNota extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'entradas_con_nota';
 
     protected $fillable = [
@@ -39,6 +42,7 @@ class EntradaConNota extends Model
         'direccion',
         'eleccion_suspendida',
         'eleccion_suspendida_at',
+        'eliminado_por_user_id',
     ];
 
     protected $casts = [
@@ -90,9 +94,12 @@ class EntradaConNota extends Model
         static::creating(function ($model) {
             $year = date('Y');
             do {
-                $ultimo = self::max('id') + 1;
+                // withTrashed(): con el soft-delete, una organización borrada
+                // no debe "liberar" su código — si no, se lo podríamos volver
+                // a asignar a una nueva y chocar con la restricción de único.
+                $ultimo = self::withTrashed()->max('id') + 1;
                 $codigo = 'ORG-' . $year . '-' . str_pad($ultimo, 4, '0', STR_PAD_LEFT);
-            } while (self::where('codigo_org', $codigo)->exists());
+            } while (self::withTrashed()->where('codigo_org', $codigo)->exists());
 
             $model->codigo_org     = $codigo;
             $model->registrado_por = auth()->user()->name ?? 'Sistema';
@@ -118,5 +125,10 @@ class EntradaConNota extends Model
     public function documentos()
     {
         return $this->hasMany(\App\Models\Documento::class, 'entrada_con_nota_id')->latest();
+    }
+
+    public function eliminadoPor()
+    {
+        return $this->belongsTo(User::class, 'eliminado_por_user_id');
     }
 }

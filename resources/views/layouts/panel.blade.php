@@ -549,7 +549,7 @@ function toggleNotif() {
                     contenido.innerHTML = '<div style="padding:20px 16px; text-align:center; font-size:12px; color:#9ca3af;">Sin notificaciones.</div>';
                 } else {
                     contenido.innerHTML = d.notificaciones.map((n, idx) => `
-<div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px; ${(idx === 0 && !n.leida && (n.mensaje.includes('Nueva entrada') || n.mensaje.includes('Nuevo trabajo'))) ? 'background:#f6fefa;' : (idx === 0 && !n.leida && n.mensaje.includes('editó nuevamente')) ? 'background:#fefdf5;' : ''}">                            <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:${n.leida ? '#d1d5db' : '#185FA5'};"></span>
+<div style="padding:11px 16px; border-bottom:1px solid #f9fafb; display:flex; align-items:flex-start; gap:8px; ${n.tipo === 'eliminacion' ? 'background:#fef2f2;' : (idx === 0 && !n.leida && (n.mensaje.includes('Nueva entrada') || n.mensaje.includes('Nuevo trabajo'))) ? 'background:#f6fefa;' : (idx === 0 && !n.leida && n.mensaje.includes('editó nuevamente')) ? 'background:#fefdf5;' : ''}">                            <span style="width:7px; height:7px; border-radius:50%; flex-shrink:0; margin-top:4px; background:${n.tipo === 'eliminacion' ? '#dc2626' : (n.leida ? '#d1d5db' : '#185FA5')};"></span>
                             <div style="flex:1;">
                                 <div style="font-size:12px; color:#111827; line-height:1.4;">${n.mensaje}</div>
                                 ${n.seccion ? `<div style="font-size:10.5px; color:#6b7280; margin-top:2px;">${n.seccion}</div>` : ''}
