@@ -256,7 +256,7 @@ $detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();
     }
 
     // Materiales técnicos
-$matMesas    = $detalle->mat_mesas ?? $mesas;
+$matMesas    = $detalle->cantidad_mesas ?? $detalle->mat_mesas ?? 0;
 $matActas    = !is_null($detalle->mat_final_actas) ? $detalle->mat_final_actas : (!is_null($detalle->mat_actas_electorales) ? $detalle->mat_actas_electorales : ($mesas * 3));
 $matActasFmt = $detalle->mat_final_actas_formato ? ucfirst($detalle->mat_final_actas_formato) : ($detalle->mat_actas_electorales_formato ? ucfirst($detalle->mat_actas_electorales_formato) : '');
 $matPadron   = !is_null($detalle->mat_final_padrones) ? $detalle->mat_final_padrones : (!is_null($detalle->mat_padron) ? $detalle->mat_padron : ($mesas * 3));
