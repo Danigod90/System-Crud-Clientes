@@ -58,7 +58,7 @@
                             $cuartos = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_cuartos ?? $m)        : ($entrada->asunto_log ? $entrada->log_cuartos : 0);
                             $tintas  = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_tintas  ?? $m)        : ($entrada->asunto_log ? $entrada->log_tintas  : 0);
                         @endphp
-                        <tr style="border-bottom:1px solid #f3f4f6;" data-org="{{ $entrada->nombre_organizacion }}">
+                        <tr style="border-bottom:1px solid #f3f4f6;" data-org="{{ $entrada->codigo_org }} {{ $entrada->nombre_organizacion }}">
                             <td style="padding:7px 12px; color:#185FA5; font-weight:600; font-family:monospace; white-space:nowrap; font-size:11px;">{{ $entrada->codigo_org }}</td>
                             <td style="padding:7px 12px; color:#1e293b; font-weight:500; font-size:12px;">{{ $entrada->nombre_organizacion }}</td>
                             <td style="padding:7px 12px;">
@@ -139,7 +139,7 @@
                             $tintas  = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_tintas  ?? $m)        : ($entrada->asunto_log ? $entrada->log_tintas  : 0);
                             $fechaEntregaJs = $entrada->fecha_entrega ? $entrada->fecha_entrega->format('Y-m-d\TH:i') : '';
                         @endphp
-                        <tr style="border-bottom:1px solid #f3f4f6;" data-org="{{ $entrada->nombre_organizacion }}">
+                        <tr style="border-bottom:1px solid #f3f4f6;" data-org="{{ $entrada->codigo_org }} {{ $entrada->nombre_organizacion }}">
                             <td style="padding:7px 12px; color:#185FA5; font-weight:600; font-family:monospace; white-space:nowrap; font-size:11px;">{{ $entrada->codigo_org }}</td>
                             <td style="padding:7px 12px; color:#1e293b; font-weight:500; font-size:12px;">{{ $entrada->nombre_organizacion }}</td>
                             <td style="padding:7px 12px;">
@@ -214,7 +214,7 @@
                     </thead>
                     <tbody>
                         @forelse($devueltos as $entrada)
-                        <tr style="border-bottom:1px solid #f3f4f6;" data-org="{{ $entrada->nombre_organizacion }}">
+                        <tr style="border-bottom:1px solid #f3f4f6;" data-org="{{ $entrada->codigo_org }} {{ $entrada->nombre_organizacion }}">
                             <td style="padding:7px 12px; color:#185FA5; font-weight:600; font-family:monospace; white-space:nowrap; font-size:11px;">{{ $entrada->codigo_org }}</td>
                             <td style="padding:7px 12px; color:#1e293b; font-weight:500; font-size:12px;">{{ $entrada->nombre_organizacion }}</td>
                             <td style="padding:7px 12px;">
