@@ -15,7 +15,10 @@ class EntradaConNotaController extends Controller
 
     $entradas = EntradaConNota::with(['user', 'charla'])
         ->when($request->organizacion, fn($q) =>
-            $q->where('nombre_organizacion', 'like', '%' . $request->organizacion . '%')
+            $q->where(function($sub) use ($request) {
+                $sub->where('nombre_organizacion', 'like', '%' . $request->organizacion . '%')
+                    ->orWhere('codigo_org', 'like', '%' . $request->organizacion . '%');
+            })
         )
         ->when($request->asesor, fn($q) =>
             $q->where('asesor_asignado', $request->asesor)
@@ -352,7 +355,10 @@ public function exportPdf(Request $request)
 {
     $entradas = EntradaConNota::with(['charla'])
         ->when($request->organizacion, fn($q) =>
-            $q->where('nombre_organizacion', 'like', '%' . $request->organizacion . '%')
+            $q->where(function($sub) use ($request) {
+                $sub->where('nombre_organizacion', 'like', '%' . $request->organizacion . '%')
+                    ->orWhere('codigo_org', 'like', '%' . $request->organizacion . '%');
+            })
         )
         ->when($request->asesor, fn($q) =>
             $q->where('asesor_asignado', $request->asesor)
