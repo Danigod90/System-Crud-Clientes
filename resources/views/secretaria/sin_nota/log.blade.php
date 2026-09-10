@@ -295,9 +295,19 @@
             <input type="text" id="log-funcionario" required placeholder="Nombre completo..."
                    style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
         </div>
-        <div style="margin-bottom:20px;">
+        <div style="margin-bottom:14px;">
             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora *</label>
             <input type="datetime-local" id="log-fecha" required
+                   style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:14px;">
+            <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Persona que retira *</label>
+            <input type="text" id="log-persona-retira" required placeholder="Nombre completo..."
+                   style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:20px;">
+            <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Teléfono de quien retira *</label>
+            <input type="text" id="log-telefono-retira" required placeholder="Ej: 0981 123 456"
                    style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
         </div>
         <p style="font-size:11px; color:#94a3b8; margin-bottom:16px; text-align:center;">Al confirmar se guarda el registro y se muestra la vista previa.</p>
@@ -444,19 +454,27 @@ function abrirModalImprimirLog(id, org) {
     document.getElementById('modal-log-org').textContent = org;
     document.getElementById('log-fecha').value = fechaLocalAhora();
     document.getElementById('log-funcionario').value = '';
+    document.getElementById('log-persona-retira').value = '';
+    document.getElementById('log-telefono-retira').value = '';
     document.getElementById('modal-imprimir-log').style.display = 'flex';
     setTimeout(() => document.getElementById('log-funcionario').focus(), 100);
 }
 
 async function confirmarImprimirLog() {
-    const funcionario = document.getElementById('log-funcionario').value.trim();
-    const fecha       = document.getElementById('log-fecha').value;
-    if (!funcionario) { alert('Por favor ingresá el nombre del funcionario.'); return; }
-    if (!fecha)       { alert('Por favor ingresá la fecha.'); return; }
+    const funcionario     = document.getElementById('log-funcionario').value.trim();
+    const fecha           = document.getElementById('log-fecha').value;
+    const personaRetira   = document.getElementById('log-persona-retira').value.trim();
+    const telefonoRetira  = document.getElementById('log-telefono-retira').value.trim();
+    if (!funcionario)    { alert('Por favor ingresá el nombre del funcionario.'); return; }
+    if (!fecha)          { alert('Por favor ingresá la fecha.'); return; }
+    if (!personaRetira)  { alert('Por favor ingresá el nombre de quien retira.'); return; }
+    if (!telefonoRetira) { alert('Por favor ingresá el teléfono de quien retira.'); return; }
 
     const url = '/secretaria/sin-nota/log/' + _logEntradaId + '/imprimir-logistica'
         + '?entregado_por=' + encodeURIComponent(funcionario)
-        + '&fecha_entrega=' + encodeURIComponent(fecha);
+        + '&fecha_entrega=' + encodeURIComponent(fecha)
+        + '&persona_retira=' + encodeURIComponent(personaRetira)
+        + '&telefono_retira=' + encodeURIComponent(telefonoRetira);
 
     document.getElementById('modal-imprimir-log').style.display = 'none';
 

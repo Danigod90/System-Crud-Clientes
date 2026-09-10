@@ -260,13 +260,22 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
     // ── Imprime logística (solo LOG) guardando funcionario/fecha
   public function imprimirLogistica(Request $request, $id)
 {
+    $request->validate([
+        'entregado_por'   => 'required|string|max:255',
+        'fecha_entrega'   => 'required|date',
+        'persona_retira'  => 'required|string|max:255',
+        'telefono_retira' => 'required|string|max:30',
+    ]);
+
     $entrada = \App\Models\EntradaConNota::findOrFail($id);
 
     $entrada->update([
-        'log_estado'     => 'entregada',
-        'entregado_por'  => $request->entregado_por,
-        'fecha_entrega'  => $request->fecha_entrega,
-        'log_impreso_at' => now(),
+        'log_estado'      => 'entregada',
+        'entregado_por'   => $request->entregado_por,
+        'fecha_entrega'   => $request->fecha_entrega,
+        'persona_retira'  => $request->persona_retira,
+        'telefono_retira' => $request->telefono_retira,
+        'log_impreso_at'  => now(),
     ]);
 
     $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$entrada->asesor_asignado])->first();

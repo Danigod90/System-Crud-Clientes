@@ -165,8 +165,8 @@ class NotaPdfController extends Controller
 <table class="firma-table">
     <tr>
         <td>Firma</td>
-        <td>Aclaración</td>
-        <td>N° de Teléfono</td>
+        <td>' . ($conNota->persona_retira ? e($conNota->persona_retira) : 'Aclaración') . '</td>
+        <td>' . ($conNota->telefono_retira ? e($conNota->telefono_retira) : 'N° de Teléfono') . '</td>
     </tr>
 </table>
 <div style="font-size:10px; margin-top:10px; border-bottom:1px solid #000; padding-bottom:2px;">Nombre del funcionario que otorga: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
