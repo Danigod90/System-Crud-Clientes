@@ -35,6 +35,8 @@ class TecnicoOrganizacionesController extends Controller
             $query->whereHas('detalleTecnico', fn($q) => $q->where('enviado_tecnica', true)->where('impreso', false));
         } elseif ($request->estado === 'sin_fecha') {
             $query->whereNull('fecha_eleccion');
+        } elseif ($request->estado === 'realizado') {
+            $query->whereHas('detalleTecnico', fn($q) => $q->where('tec_realizado', true));
         }
     }
 
@@ -44,7 +46,37 @@ class TecnicoOrganizacionesController extends Controller
 
     $prioridadIds = \App\Models\PrioridadTecnica::orderBy('orden')->pluck('entrada_con_nota_id')->toArray();
 
-    $entradas = $query->orderByRaw("FIELD(id, " . (count($prioridadIds) ? implode(',', $prioridadIds) : '0') . ") DESC")
+    // Las prioridades manuales solo reordenan la vista general (sin filtros).
+    // Con un filtro aplicado, se respeta el orden natural del filtro (evita
+    // que una prioridad marcada "salte" por encima aunque no tenga que ver
+    // con lo que se está filtrando).
+    $hayFiltro = $request->filled('organizacion') || $request->filled('asesor')
+        || $request->filled('estado') || $request->filled('mes_ingreso');
+
+    if (!$hayFiltro) {
+        $query->orderByRaw("FIELD(id, " . (count($prioridadIds) ? implode(',', $prioridadIds) : '0') . ") DESC");
+    }
+
+    // El orden por fecha de envío a técnica solo aplica cuando se filtra
+    // puntualmente por "Enviado a técnica". El resto de los filtros (y la
+    // vista general) mantienen el orden de siempre (fecha de entrada).
+    if ($request->filled('estado') && $request->estado === 'enviado') {
+        $query->orderBy(
+            \App\Models\DetalleTecnico::select('enviado_tecnica_at')
+                ->whereColumn('entrada_id', 'entradas_con_nota.id')
+                ->limit(1),
+            'desc'
+        );
+    } elseif ($request->filled('estado') && $request->estado === 'realizado') {
+        $query->orderBy(
+            \App\Models\DetalleTecnico::select('impreso_at')
+                ->whereColumn('entrada_id', 'entradas_con_nota.id')
+                ->limit(1),
+            'desc'
+        );
+    }
+
+    $entradas = $query
         ->latest()
         ->paginate(20)->withQueryString();
     $asesores = \App\Models\Asesor::orderBy('nombre')->get();
