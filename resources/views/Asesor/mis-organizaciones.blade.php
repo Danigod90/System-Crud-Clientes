@@ -95,6 +95,37 @@
                 </div>
             </form>
 
+            <div style="display:flex; flex-wrap:wrap; gap:18px; align-items:center; padding:8px 4px; margin-bottom:8px; font-size:12px; color:#6b7280;">
+                <span style="display:inline-flex; align-items:center; gap:6px;">
+                    <span style="display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; background:#e0f2fe; border-radius:6px; color:#0369a1; flex-shrink:0;">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </span>
+                    Apretá el ojito para ver y editar una organización
+                </span>
+                <span style="display:inline-flex; align-items:center; gap:6px;">
+                    <span style="display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; background:#fef9c3; border-radius:6px; color:#854d0e; flex-shrink:0;">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                            <rect x="2" y="7" width="20" height="14" rx="2"/>
+                            <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/>
+                            <line x1="2" y1="13" x2="22" y2="13"/>
+                            <rect x="9" y="10" width="6" height="6" rx="1"/>
+                        </svg>
+                    </span>
+                    Apretá el maletín para empezar a trabajar
+                </span>
+                <span style="display:inline-flex; align-items:center; gap:6px;">
+                    <span style="display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px; background:#fce7f3; border-radius:6px; flex-shrink:0;">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="#db2777" stroke="#db2777" stroke-width="2">
+                            <path d="M12 2L9 9H2l6 4.5-2.5 7.5L12 17l6.5 4-2.5-7.5L22 9h-7z"/>
+                        </svg>
+                    </span>
+                    Apretá la estrella para darle prioridad — quedará por encima del resto
+                </span>
+            </div>
+
             <div style="overflow-x:auto;">
             <table class="w-full table-fixed border-collapse text-sm" style="min-width:800px;">
                 <thead>
@@ -111,7 +142,7 @@
                 </thead>
                 <tbody>
                     @forelse($entradas as $entrada)
-                    <tr class="hover:bg-gray-50">
+                    <tr class="hover:bg-gray-50" @if($prioridades->pluck('entrada_con_nota_id')->contains($entrada->id)) style="background:#fdf2f8;" @endif>
                         <td class="border border-gray-200 px-2 py-2 font-mono font-semibold text-blue-700">
                             {{ $entrada->codigo_org }}
                         </td>
@@ -221,7 +252,6 @@
 <rect x="9" y="10" width="6" height="6" rx="1"/>
 </svg>
 </a>
-@if(!request()->filled('organizacion') && !request()->filled('asunto') && !request()->filled('mes_eleccion') && !request()->filled('mes_ingreso'))
 <button onclick="togglePinAsesor({{ $entrada->id }}, this)"
         style="display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:8px; border:none; cursor:pointer; background:{{ $prioridades->pluck('entrada_con_nota_id')->contains($entrada->id) ? '#fce7f3' : '#f3f4f6' }}; flex-shrink:0;"
         title="Marcar como prioridad">
@@ -229,7 +259,6 @@
         <path d="M12 2L9 9H2l6 4.5-2.5 7.5L12 17l6.5 4-2.5-7.5L22 9h-7z"/>
     </svg>
 </button>
-@endif
                             </div>
                         </td>
                     </tr>

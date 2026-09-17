@@ -73,9 +73,16 @@ class MisOrganizacionesController extends Controller
 
     $prioridadIds = $prioridades->pluck('entrada_con_nota_id')->toArray();
 
-    $entradas = $query->orderByRaw("FIELD(id, " . (count($prioridadIds) ? implode(',', $prioridadIds) : '0') . ") DESC")
-        ->latest()
-        ->paginate(15)->withQueryString();
+    // Las prioridades manuales solo reordenan la vista general (sin filtros).
+    // Con un filtro aplicado, se respeta el orden natural del filtro.
+    $hayFiltro = request('organizacion') || request('asunto') || request('mes_ingreso')
+        || request('mes_eleccion') || request('estado_charla') || request('sin_fecha');
+
+    if (!$hayFiltro) {
+        $query->orderByRaw("FIELD(id, " . (count($prioridadIds) ? implode(',', $prioridadIds) : '0') . ") DESC");
+    }
+
+    $entradas = $query->latest()->paginate(15)->withQueryString();
 
     return view('asesor.mis-organizaciones', compact('entradas', 'asesores', 'charlasPendientes', 'prioridades'));
 }
