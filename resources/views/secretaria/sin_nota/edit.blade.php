@@ -36,6 +36,12 @@
 </div>
 
                     <div class="mb-4">
+                        <label class="block text-gray-700 font-semibold mb-1">Fecha de Atención</label>
+                        <input type="date" name="fecha" value="{{ old('fecha', $sinNota->fecha ? \Carbon\Carbon::parse($sinNota->fecha)->format('Y-m-d') : '') }}"
+                               class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div class="mb-4">
                         <label class="block text-gray-700 font-semibold mb-1">Teléfono <span class="text-gray-400 font-normal">(opcional)</span></label>
                         <input type="text" name="telefono" value="{{ old('telefono', $sinNota->telefono) }}"
                                class="w-full border rounded px-3 py-2" placeholder="Ej: 0981 123 456">
@@ -47,6 +53,7 @@
                             <option value="">Seleccionar...</option>
                             <option value="Asesoramiento Electoral" {{ old('tipo_charla', $sinNota->tipo_charla) == 'Asesoramiento Electoral' ? 'selected' : '' }}>Asesoramiento Electoral</option>
                             <option value="Charla para Miembros de Mesa" {{ old('tipo_charla', $sinNota->tipo_charla) == 'Charla para Miembros de Mesa' ? 'selected' : '' }}>Charla para Miembros de Mesa</option>
+                            <option value="Materiales Entregados" {{ old('tipo_charla', $sinNota->tipo_charla) == 'Materiales Entregados' ? 'selected' : '' }}>Materiales Entregados</option>
                         </select>
                     </div>
 

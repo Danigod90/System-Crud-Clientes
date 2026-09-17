@@ -1,4 +1,8 @@
 ﻿<x-panel-layout title="Gestión de Log">
+<style>
+    @keyframes girar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+    .spinner-guardar { animation: girar 0.7s linear infinite; }
+</style>
 <div class="px-2 py-2">
     <div style="max-width:1200px; margin:0 auto;">
 
@@ -278,7 +282,7 @@
             <div style="display:flex; gap:10px; justify-content:flex-end;">
                 <button type="button" onclick="document.getElementById('modal-entregar').style.display='none'"
                         style="padding:8px 18px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:13px; cursor:pointer;">Cancelar</button>
-                <button type="submit" style="padding:8px 18px; border-radius:8px; border:none; background:#16a34a; color:white; font-size:13px; cursor:pointer; font-weight:500;">✓ Confirmar entrega</button>
+                <button type="submit" id="btn-confirmar-entrega" style="padding:8px 18px; border-radius:8px; border:none; background:#16a34a; color:white; font-size:13px; cursor:pointer; font-weight:500;">✓ Confirmar entrega</button>
             </div>
         </form>
     </div>
@@ -314,7 +318,7 @@
         <div style="display:flex; gap:10px; justify-content:center;">
             <button onclick="document.getElementById('modal-imprimir-log').style.display='none'"
                     style="padding:8px 18px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:13px; cursor:pointer;">Cancelar</button>
-            <button onclick="confirmarImprimirLog()"
+            <button id="btn-confirmar-imprimir-log" onclick="confirmarImprimirLog()"
                     style="padding:8px 18px; border-radius:8px; border:none; background:#0369a1; color:white; font-size:13px; cursor:pointer; font-weight:500;">Confirmar e imprimir</button>
         </div>
     </div>
@@ -444,6 +448,11 @@ function abrirModalEntregar(id, org) {
     document.getElementById('entregar-persona-retira').value = '';
     document.getElementById('entregar-telefono-retira').value = '';
     document.getElementById('form-entregar').action = '/secretaria/sin-nota/log/' + id + '/entregar';
+    const btnConfirmarEntrega = document.getElementById('btn-confirmar-entrega');
+    btnConfirmarEntrega.disabled = false;
+    btnConfirmarEntrega.style.opacity = '1';
+    btnConfirmarEntrega.style.cursor = 'pointer';
+    btnConfirmarEntrega.innerHTML = '✓ Confirmar entrega';
     document.getElementById('modal-entregar').style.display = 'flex';
     setTimeout(() => document.getElementById('entregar-funcionario').focus(), 100);
 }
@@ -456,11 +465,19 @@ function abrirModalImprimirLog(id, org) {
     document.getElementById('log-funcionario').value = '';
     document.getElementById('log-persona-retira').value = '';
     document.getElementById('log-telefono-retira').value = '';
+    const btnImprimirLog = document.getElementById('btn-confirmar-imprimir-log');
+    btnImprimirLog.disabled = false;
+    btnImprimirLog.style.opacity = '1';
+    btnImprimirLog.style.cursor = 'pointer';
+    btnImprimirLog.innerHTML = 'Confirmar e imprimir';
     document.getElementById('modal-imprimir-log').style.display = 'flex';
     setTimeout(() => document.getElementById('log-funcionario').focus(), 100);
 }
 
 async function confirmarImprimirLog() {
+    const btnImprimirLog = document.getElementById('btn-confirmar-imprimir-log');
+    if (btnImprimirLog.disabled) return;
+
     const funcionario     = document.getElementById('log-funcionario').value.trim();
     const fecha           = document.getElementById('log-fecha').value;
     const personaRetira   = document.getElementById('log-persona-retira').value.trim();
@@ -469,6 +486,14 @@ async function confirmarImprimirLog() {
     if (!fecha)          { alert('Por favor ingresá la fecha.'); return; }
     if (!personaRetira)  { alert('Por favor ingresá el nombre de quien retira.'); return; }
     if (!telefonoRetira) { alert('Por favor ingresá el teléfono de quien retira.'); return; }
+
+    btnImprimirLog.disabled = true;
+    btnImprimirLog.style.opacity = '0.7';
+    btnImprimirLog.style.cursor = 'not-allowed';
+    btnImprimirLog.innerHTML = '<svg class="spinner-guardar" width="13" height="13" fill="none" viewBox="0 0 24 24" style="vertical-align:middle; margin-right:5px;">'
+        + '<circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>'
+        + '<path d="M21 12a9 9 0 0 0-9-9" stroke="#fff" stroke-width="3" stroke-linecap="round"/>'
+        + '</svg>Guardando...';
 
     const url = '/secretaria/sin-nota/log/' + _logEntradaId + '/imprimir-logistica'
         + '?entregado_por=' + encodeURIComponent(funcionario)
@@ -555,6 +580,17 @@ function filtrarTablas(valor) {
     document.getElementById(id).addEventListener('click', function(e) {
         if (e.target === this) this.style.display = 'none';
     });
+});
+
+document.getElementById('form-entregar').addEventListener('submit', function() {
+    const btn = document.getElementById('btn-confirmar-entrega');
+    btn.disabled = true;
+    btn.style.opacity = '0.7';
+    btn.style.cursor = 'not-allowed';
+    btn.innerHTML = '<svg class="spinner-guardar" width="13" height="13" fill="none" viewBox="0 0 24 24" style="vertical-align:middle; margin-right:5px;">'
+        + '<circle cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.35)" stroke-width="3"/>'
+        + '<path d="M21 12a9 9 0 0 0-9-9" stroke="#fff" stroke-width="3" stroke-linecap="round"/>'
+        + '</svg>Guardando...';
 });
 </script>
 </x-panel-layout>

@@ -42,10 +42,20 @@ class EntradaSinNota extends Model
     // nunca se pisan.
     public function save(array $options = [])
     {
-        if (!$this->exists) {
+        // Si ya viene con un código propio (por ejemplo, el codigo_org de una
+        // organización que entregó materiales), lo respetamos tal cual y no
+        // generamos un número de visita sin nota — ese código correlativo
+        // "SN-..." es solo para las visitas reales que se cargan desde la
+        // pantalla de Mesa de Entrada Sin Nota.
+        if (!$this->exists && empty($this->numero_entrada)) {
             return DB::transaction(function () use ($options) {
                 $year = date('Y');
+                // Solo se mira el máximo entre los que ya tienen el formato
+                // "SN-...", para no mezclar la secuencia con códigos de
+                // organización (formato distinto) que puedan estar guardados
+                // en esta misma columna.
                 $ultimo = self::whereYear('created_at', $year)
+                    ->where('numero_entrada', 'like', 'SN-%')
                     ->lockForUpdate()
                     ->max(DB::raw('CAST(SUBSTRING_INDEX(numero_entrada, "-", -1) AS UNSIGNED)'));
                 $siguiente = ($ultimo ?? 0) + 1;

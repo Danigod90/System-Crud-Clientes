@@ -73,7 +73,7 @@
                         <th style="padding:10px 16px; text-align:left; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">Nombre/s y Apellido/s</th>
                         <th style="padding:10px 16px; text-align:left; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">Asunto</th>
                         <th style="padding:10px 16px; text-align:left; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">Asesor</th>
-                        <th style="padding:10px 16px; text-align:left; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">Fecha</th>
+                        <th style="padding:10px 16px; text-align:left; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;">Fecha / Hora</th>
                         <th style="padding:10px 16px; text-align:left; font-size:11px; font-weight:600; color:#6b7280; text-transform:uppercase; letter-spacing:0.5px;"></th>
                     </tr>
                 </thead>
@@ -84,7 +84,12 @@
                        <td style="padding:10px 16px; font-size:13px; color:#1e293b; font-weight:500;">{{ $entrada->nombre_completo }}</td>
                         <td style="padding:10px 16px; font-size:13px; color:#374151;">{{ $entrada->tipo_charla }}</td>
                         <td style="padding:10px 16px; font-size:13px; color:#374151;">{{ $entrada->asesor ? $entrada->asesor->nombre . ' ' . $entrada->asesor->apellido : '—' }}</td>
-                        <td style="padding:10px 16px; font-size:12px; color:#94a3b8;">{{ $entrada->created_at ? $entrada->created_at->format('d/m/Y') : '—' }}</td>
+                        <td style="padding:10px 16px; font-size:12px; color:#94a3b8;">
+                            {{ $entrada->fecha ? \Carbon\Carbon::parse($entrada->fecha)->format('d/m/Y') : '—' }}
+                            @if($entrada->created_at)
+                                <span style="color:#c7cdd6;">·</span> {{ $entrada->created_at->format('H:i') }}
+                            @endif
+                        </td>
                         <td style="padding:10px 16px;">
                             <a href="{{ route('secretaria.sin-nota.show', ['sinNota' => $entrada->id]) }}"
                                style="font-size:12px; color:#2563eb; text-decoration:none; font-weight:500;">Ver →</a>

@@ -56,29 +56,26 @@ if (request()->has('volver')) {
                         Imprimir Nota
                     </a>
                     @endif
-                    @if($entrada->asunto_log && !$entrada->asunto_tec)
+                    @if($entrada->asunto_log && !$entrada->asunto_tec && $entrada->log_estado !== 'entregada')
+<button type="button" onclick="abrirModalImprimirLog({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}')"
+                       style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                        Imprimir Logístico
+                    </button>
+              @elseif($entrada->asunto_log && !$entrada->asunto_tec && $entrada->log_estado === 'entregada')
 <a href="{{ route('secretaria.con-nota.recibo-logistica', $entrada->id) }}" target="_blank"
                        style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                             <polyline points="14 2 14 8 20 8"/>
                         </svg>
-                        Imprimir Logístico
+                        Reimprimir
                     </a>
               @endif
-                    @if($entrada->asunto_log && !$entrada->asunto_tec && $entrada->log_estado !== 'entregada')
-                    <form method="POST" action="{{ route('secretaria.con-nota.entregar-log', $entrada->id) }}" style="display:inline;">
-                        @csrf @method('PATCH')
-                        <button type="submit"
-                                onclick="return confirm('¿Confirmar entrega logística de {{ addslashes($entrada->nombre_organizacion) }}?')"
-                                style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
-                            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <polyline points="20 6 9 17 4 12"/>
-                            </svg>
-                            Marcar entregado
-                        </button>
-                    </form>
-                    @elseif($entrada->asunto_log && !$entrada->asunto_tec && $entrada->log_estado === 'entregada')
+                    @if($entrada->asunto_log && !$entrada->asunto_tec && $entrada->log_estado === 'entregada')
                     <span style="display:inline-flex; align-items:center; gap:6px; background:#d1fae5; color:#065f46; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:500;">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <polyline points="20 6 9 17 4 12"/>
@@ -87,6 +84,10 @@ if (request()->has('volver')) {
                     </span>
                     @endif
                 </div>
+
+                @if($entrada->asunto_log && !$entrada->asunto_tec)
+                    @include('secretaria.partials.modal-imprimir-logistica')
+                @endif
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
                 <div>

@@ -19,7 +19,10 @@ class MisOrganizacionesController extends Controller
     $query = EntradaConNota::where('asesor_asignado', $nombreAsesor);
 
     if (request('organizacion')) {
-        $query->where('nombre_organizacion', 'like', '%' . request('organizacion') . '%');
+        $query->where(function($sub) {
+            $sub->where('nombre_organizacion', 'like', '%' . request('organizacion') . '%')
+                ->orWhere('codigo_org', 'like', '%' . request('organizacion') . '%');
+        });
     }
     if (request('asunto')) {
         $asunto = request('asunto');

@@ -287,7 +287,7 @@ input.addEventListener('input', function() {
     timer = setTimeout(() => {
         const form = input.closest('form');
         form.submit();
-    }, 500);
+    }, 900);
 });
 </script>
 <script>

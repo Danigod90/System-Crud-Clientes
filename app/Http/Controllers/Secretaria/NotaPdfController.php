@@ -218,6 +218,7 @@ class NotaPdfController extends Controller
         if ($conNota->asunto_log && !$conNota->asunto_tec && !$yaImpreso) {
             $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$conNota->asesor_asignado])->first();
             \App\Models\EntradaSinNota::create([
+                'numero_entrada'  => $conNota->codigo_org,
                 'nombre_completo' => $conNota->nombre_organizacion,
                 'telefono'        => $conNota->telefono_representante ?? null,
                 'tipo_charla'     => 'Materiales Entregados',

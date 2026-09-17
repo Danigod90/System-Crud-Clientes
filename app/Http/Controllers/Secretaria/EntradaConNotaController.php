@@ -321,10 +321,12 @@ return redirect()->route('secretaria.con-nota.show', ['conNota' => $conNota, 'vo
     $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$conNota->asesor_asignado])->first();
 
     \App\Models\EntradaSinNota::create([
+    'numero_entrada'  => $conNota->codigo_org,
     'nombre_completo' => $conNota->nombre_organizacion,
     'tipo_charla'     => 'Materiales Entregados',
     'asesor_id'       => $asesor?->id,
     'user_id'         => auth()->id(),
+    'fecha'           => now()->format('Y-m-d'),
 ]);
 
     return redirect()->route('secretaria.con-nota.show', $conNota)

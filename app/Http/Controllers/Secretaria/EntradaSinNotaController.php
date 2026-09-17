@@ -91,6 +91,7 @@ class EntradaSinNotaController extends Controller
             'telefono'        => $request->telefono,
             'tipo_charla'     => $request->tipo_charla,
             'asesor_id'       => $request->asesor_id,
+            'fecha'           => $request->fecha,
         ]);
 
         return redirect()->route('secretaria.sin-nota.show', $sinNota)
@@ -210,6 +211,13 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
 
     $entrada = \App\Models\EntradaConNota::findOrFail($id);
 
+    // Evita duplicados si el formulario se envía más de una vez (doble clic,
+    // reintento de red, "volver atrás" del navegador, etc.)
+    if ($entrada->log_estado === 'entregada') {
+        return redirect()->route('secretaria.sin-nota.log')
+            ->with('success', 'Esta entrega ya había sido registrada.');
+    }
+
     $entrada->update([
         'log_estado'      => 'entregada',
         'entregado_por'   => $request->entregado_por,
@@ -222,6 +230,7 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
     $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$entrada->asesor_asignado])->first();
 
     EntradaSinNota::create([
+        'numero_entrada'  => $entrada->codigo_org,
         'nombre_completo' => $entrada->nombre_organizacion,
         'telefono'        => $entrada->telefono_representante ?? null,
         'tipo_charla'     => 'Materiales Entregados',
@@ -261,7 +270,7 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
   public function imprimirLogistica(Request $request, $id)
 {
     $request->validate([
-        'entregado_por'   => 'required|string|max:255',
+        'entregado_por'   => 'nullable|string|max:255',
         'fecha_entrega'   => 'required|date',
         'persona_retira'  => 'required|string|max:255',
         'telefono_retira' => 'required|string|max:30',
@@ -269,18 +278,31 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
 
     $entrada = \App\Models\EntradaConNota::findOrFail($id);
 
+    // Este botón se puede volver a usar después de entregado (para
+    // reimprimir el recibo), así que no bloqueamos la acción completa como
+    // en "Entregar" — pero el registro del reporte de "Materiales
+    // Entregados" solo debe crearse la primera vez, si no, cada reimpresión
+    // (o un doble clic) generaría uno nuevo.
+    $yaImpreso = !is_null($entrada->log_impreso_at);
+
+    // Desde Gestión de Log (Secretaria Sin Nota) se pide el nombre a mano,
+    // porque quien opera el sistema puede no ser quien entrega físicamente.
+    // Desde el perfil del asesor o secretaria con nota, en cambio, no se
+    // manda ese dato y se toma directo de la sesión (es la misma persona).
     $entrada->update([
         'log_estado'      => 'entregada',
-        'entregado_por'   => $request->entregado_por,
+        'entregado_por'   => $request->filled('entregado_por') ? $request->entregado_por : auth()->user()->name,
         'fecha_entrega'   => $request->fecha_entrega,
         'persona_retira'  => $request->persona_retira,
         'telefono_retira' => $request->telefono_retira,
-        'log_impreso_at'  => now(),
+        'log_impreso_at'  => $entrada->log_impreso_at ?? now(),
     ]);
 
+    if (!$yaImpreso) {
     $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$entrada->asesor_asignado])->first();
 
     EntradaSinNota::create([
+        'numero_entrada'  => $entrada->codigo_org,
         'nombre_completo' => $entrada->nombre_organizacion,
         'telefono'        => $entrada->telefono_representante ?? null,
         'tipo_charla'     => 'Materiales Entregados',
@@ -288,6 +310,7 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
         'user_id'         => auth()->id(),
         'fecha'           => \Carbon\Carbon::parse($request->fecha_entrega)->format('Y-m-d'),
     ]);
+    }
 
     $notaPdfController = new NotaPdfController();
     return $notaPdfController->reciboLogistica($entrada);
