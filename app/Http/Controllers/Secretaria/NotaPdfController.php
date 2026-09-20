@@ -236,9 +236,7 @@ class NotaPdfController extends Controller
                 'Panel Logístico',
                 $conNota->id
             ));
-            if ($secretaria->notifications()->count() > 8) {
-                $secretaria->notifications()->latest()->skip(8)->take(100)->delete();
-            }
+            \App\Services\NotificationPruner::prune($secretaria);
         }
 
         // Si piden JSON (desde el modal), devolver el HTML

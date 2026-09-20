@@ -157,9 +157,7 @@ if (auth()->user()->hasRole('Asesor')) {
             'Mesa de Entrada',
             $entrada->id
         ));
-        if ($secretaria->notifications()->count() > 8) {
-            $secretaria->notifications()->latest()->skip(8)->take(100)->delete();
-        }
+        \App\Services\NotificationPruner::prune($secretaria);
     }
     return redirect()->route('asesor.organizacion.edit', $entrada)
         ->with('success', 'Mesa de entrada registrada correctamente.');
@@ -172,8 +170,8 @@ if (auth()->user()->hasRole('Asesor')) {
             'Mis Organizaciones',
             $entrada->id
         ));
-        if ($usuario && $usuario->notifications()->count() > 8) {
-            $usuario->notifications()->latest()->skip(8)->take(100)->delete();
+        if ($usuario) {
+            \App\Services\NotificationPruner::prune($usuario);
         }
     }
 
@@ -185,9 +183,7 @@ if (auth()->user()->hasRole('Asesor')) {
             'Mis Organizaciones',
             $entrada->id
         ));
-        if ($supervisor->notifications()->count() > 8) {
-            $supervisor->notifications()->latest()->skip(8)->take(100)->delete();
-        }
+        \App\Services\NotificationPruner::prune($supervisor);
     }
 
     return redirect()->route('secretaria.con-nota.show', $entrada)

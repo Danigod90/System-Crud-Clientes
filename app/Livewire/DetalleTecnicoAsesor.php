@@ -289,9 +289,7 @@ class DetalleTecnicoAsesor extends Component
                 'Panel Técnico',
                 $this->entrada->id
             ));
-            if ($tecnico->notifications()->count() > 8) {
-                $tecnico->notifications()->latest()->skip(8)->take(100)->delete();
-            }
+            \App\Services\NotificationPruner::prune($tecnico);
         }
     }
 
@@ -304,9 +302,7 @@ class DetalleTecnicoAsesor extends Component
                 'Panel Técnico',
                 $this->entrada->id
             ));
-            if ($tecnico->notifications()->count() > 8) {
-                $tecnico->notifications()->latest()->skip(8)->take(100)->delete();
-            }
+            \App\Services\NotificationPruner::prune($tecnico);
         }
     }
 

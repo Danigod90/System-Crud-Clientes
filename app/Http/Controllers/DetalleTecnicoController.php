@@ -87,9 +87,7 @@ if ($request->has('nota_asesor')) $detalle->nota_asesor = $request->nota_asesor;
                 'Panel Técnico',
                 $entrada->id
             ));
-            if ($tecnico->notifications()->count() > 8) {
-                $tecnico->notifications()->latest()->skip(8)->take(100)->delete();
-            }
+            \App\Services\NotificationPruner::prune($tecnico);
         }
 
         return redirect()->back()->with('success', 'Datos técnicos guardados y enviados a técnica correctamente.');
@@ -123,9 +121,7 @@ if ($request->has('nota_asesor')) $detalle->nota_asesor = $request->nota_asesor;
         'Panel Técnico',
         $entrada->id
     ));
-   if ($tecnico->notifications()->count() > 8) {
-    $tecnico->notifications()->latest()->skip(8)->take(100)->delete();
-}
+   \App\Services\NotificationPruner::prune($tecnico);
 }
 
     return redirect()->back()->with('success', 'Enviado a técnica correctamente.');
@@ -492,9 +488,7 @@ foreach ($secretarias as $secretaria) {
         'Panel Logístico',
         $entrada->id
     ));
-    if ($secretaria->notifications()->count() > 8) {
-        $secretaria->notifications()->latest()->skip(8)->take(100)->delete();
-    }
+    \App\Services\NotificationPruner::prune($secretaria);
 }
 
 // Si piden JSON (desde el modal), devolver el HTML del recibo
@@ -532,8 +526,8 @@ return new \Illuminate\Http\Response($dompdf->output(), 200, [
     'Mis Organizaciones',
     $entrada->id
 ));
-if ($usuario && $usuario->notifications()->count() > 8) {
-    $usuario->notifications()->latest()->skip(8)->take(100)->delete();
+if ($usuario) {
+    \App\Services\NotificationPruner::prune($usuario);
 }
     }
 
