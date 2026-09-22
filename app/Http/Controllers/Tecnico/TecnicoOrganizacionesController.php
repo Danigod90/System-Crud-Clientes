@@ -13,8 +13,26 @@ class TecnicoOrganizacionesController extends Controller
     $query = EntradaConNota::with(['detalleTecnico'])
         ->where('asunto_tec', true);
 
+    // Las elecciones suspendidas siguen apareciendo en el listado general
+    // ("Mis Organizaciones", sin filtro) para que el técnico las vea con
+    // su marca en rojo. Solo se excluyen de los filtros que representan
+    // trabajo PENDIENTE (Enviado a Técnica, Pendiente, Por Imprimir) —
+    // ahí sí ya no corresponde hacer nada. "Impreso" y "Realizado" no se
+    // tocan: si el trabajo ya se hizo antes de suspenderse, sigue siendo
+    // un registro válido de trabajo terminado.
+    if ($request->filled('estado')) {
+        if ($request->estado === 'suspendida') {
+            $query->where('eleccion_suspendida', true);
+        } elseif (in_array($request->estado, ['enviado', 'pendiente', 'por_imprimir'])) {
+            $query->where('eleccion_suspendida', false);
+        }
+    }
+
     if ($request->filled('organizacion')) {
-        $query->where('nombre_organizacion', 'like', '%' . $request->organizacion . '%');
+        $query->where(function ($sub) use ($request) {
+            $sub->where('nombre_organizacion', 'like', '%' . $request->organizacion . '%')
+                ->orWhere('codigo_org', 'like', '%' . $request->organizacion . '%');
+        });
     }
 
     if ($request->filled('asesor')) {

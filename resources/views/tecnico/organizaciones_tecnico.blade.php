@@ -52,6 +52,7 @@
                                 <option value="pendiente" {{ request('estado') == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
                                 <option value="realizado" {{ request('estado') == 'realizado' ? 'selected' : '' }}>Realizado</option>
                                 <option value="impreso" {{ request('estado') == 'impreso' ? 'selected' : '' }}>Impreso</option>
+                                <option value="suspendida" {{ request('estado') == 'suspendida' ? 'selected' : '' }}>Suspendidas</option>
                             </select>
                         </div>
                         <div>
@@ -159,19 +160,26 @@
                             {{ $entrada->detalleTecnico?->impreso_at?->format('d/m/Y H:i') ?? '—' }}
                         </td>
                         <td class="border border-gray-200 px-2 py-2" style="white-space:nowrap;">
-                            @if($entrada->asunto_log)
-                                @php $logDot = in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? '#16a34a' : '#eab308'; @endphp
-                                <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
-                                    <span style="font-size:11px; color:#6b7280;">Log</span>
-                                    <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>
+                            @if($entrada->eleccion_suspendida)
+                                <span style="display:inline-flex; align-items:center; gap:4px;">
+                                    <span style="font-size:11px; color:#dc2626; font-weight:600;">Suspendido</span>
+                                    <span style="width:9px; height:9px; border-radius:50%; background:#dc2626; display:inline-block;"></span>
                                 </span>
-                            @endif
-                            @if($entrada->asunto_tec)
-                                @php $tecDot = $entrada->detalleTecnico?->tec_realizado ? '#16a34a' : '#eab308'; @endphp
-                                <span style="display:inline-flex; align-items:center; gap:3px;">
-                                    <span style="font-size:11px; color:#6b7280;">Tec</span>
-                                    <span style="width:9px; height:9px; border-radius:50%; background:{{ $tecDot }}; display:inline-block;"></span>
-                                </span>
+                            @else
+                                @if($entrada->asunto_log)
+                                    @php $logDot = in_array($entrada->log_estado ?? 'pendiente', ['entregada', 'realizado']) ? '#16a34a' : '#eab308'; @endphp
+                                    <span style="display:inline-flex; align-items:center; gap:3px; margin-right:8px;">
+                                        <span style="font-size:11px; color:#6b7280;">Log</span>
+                                        <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>
+                                    </span>
+                                @endif
+                                @if($entrada->asunto_tec)
+                                    @php $tecDot = $entrada->detalleTecnico?->tec_realizado ? '#16a34a' : '#eab308'; @endphp
+                                    <span style="display:inline-flex; align-items:center; gap:3px;">
+                                        <span style="font-size:11px; color:#6b7280;">Tec</span>
+                                        <span style="width:9px; height:9px; border-radius:50%; background:{{ $tecDot }}; display:inline-block;"></span>
+                                    </span>
+                                @endif
                             @endif
                         </td>
                         <td class="border border-gray-200 px-2 py-2">
