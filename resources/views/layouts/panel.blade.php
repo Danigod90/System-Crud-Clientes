@@ -11,6 +11,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
     <style>
+    #chat-input:empty:before { content: attr(data-placeholder); color: #9ca3af; }
+    #chat-input img[data-sticker] { display: inline-block; }
     @keyframes humo {
         0%   { background-position: 0% 50%; }
         50%  { background-position: 100% 50%; }
@@ -697,8 +699,9 @@ let notifInterval = setInterval(actualizarNotificaciones, 30000);
                     <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
                 </label>
                 <input type="file" id="chat-file" style="display:none;" onchange="chatArchivoSeleccionado(this)">
-                <input type="text" id="chat-input" placeholder="Escribí un mensaje..." onkeydown="if(event.key==='Enter')enviarMensaje()"
-                    style="flex:1; border:1px solid #e5e7eb; border-radius:8px; padding:5px 8px; font-size:11px; outline:none; background:#f9fafb;">
+                <div id="chat-input" contenteditable="true" data-placeholder="Escribí un mensaje..."
+                    onkeydown="if(event.key==='Enter'){event.preventDefault(); enviarMensaje();}"
+                    style="flex:1; border:1px solid #e5e7eb; border-radius:8px; padding:5px 8px; font-size:11px; outline:none; background:#f9fafb; max-height:70px; overflow-y:auto; line-height:20px;"></div>
                 <button onclick="enviarMensaje()" style="background:#1e3a5f; border:none; border-radius:8px; width:28px; height:28px; cursor:pointer; display:flex; align-items:center; justify-content:center;">
                     <svg width="13" height="13" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                 </button>
@@ -883,7 +886,44 @@ async function cargarMensajes(id, scroll) {
     // después de refrescar (si no, cada actualización de fondo te tira el scroll arriba)
     const estabaAbajo = (cont.scrollTop + cont.clientHeight) >= (cont.scrollHeight - 30);
 
-    cont.innerHTML = msgs.map(m => {
+    // Varios stickers seguidos de la misma persona (sin texto en medio, como
+    // pasa cuando se eligen varios juntos antes de enviar) se agrupan en una
+    // sola fila, uno al lado del otro, en vez de aparecer apilados como
+    // mensajes separados.
+    const grupos = [];
+    for (const m of msgs) {
+        const esStickerSolo = m.archivo_tipo === 'sticker' && !m.mensaje;
+        const ultimoGrupo = grupos[grupos.length - 1];
+        const ultimoItem = ultimoGrupo?.items?.[ultimoGrupo.items.length - 1];
+        // Solo se agrupan si además de ser de la misma persona, se mandaron
+        // casi juntos (pocos segundos de diferencia) — así una tanda nueva
+        // de stickers, mandada más tarde, arranca en su propia fila en vez
+        // de pegarse a la anterior.
+        const seMandaronJuntos = ultimoItem && (m.ts - ultimoItem.ts) <= 5;
+        if (esStickerSolo && ultimoGrupo && ultimoGrupo.tipo === 'stickers' && ultimoGrupo.es_mio === m.es_mio && seMandaronJuntos) {
+            ultimoGrupo.items.push(m);
+        } else if (esStickerSolo) {
+            grupos.push({ tipo: 'stickers', es_mio: m.es_mio, nombre: m.nombre, items: [m] });
+        } else {
+            grupos.push({ tipo: 'normal', item: m });
+        }
+    }
+
+    cont.innerHTML = grupos.map(g => {
+        if (g.tipo === 'stickers') {
+            const ultimo = g.items[g.items.length - 1];
+            return `
+            <div style="display:flex; flex-direction:column; align-items:${g.es_mio ? 'flex-end' : 'flex-start'};">
+                ${!g.es_mio ? `<div style="font-size:9px; color:#9ca3af; margin-bottom:2px;">${g.nombre}</div>` : ''}
+                <div style="display:flex; flex-wrap:wrap; gap:2px; justify-content:${g.es_mio ? 'flex-end' : 'flex-start'};">
+                    ${g.items.map(it => `<img src="${it.archivo}" style="width:40px; height:40px;">`).join('')}
+                </div>
+                <div style="font-size:9px; color:#d1d5db; margin-top:2px;">${ultimo.hora}</div>
+            </div>
+            `;
+        }
+
+        const m = g.item;
         if (m.archivo_tipo === 'zumbido') {
             return `
                 <div style="text-align:center; margin:4px 0;">
@@ -897,7 +937,7 @@ async function cargarMensajes(id, scroll) {
         <div style="display:flex; flex-direction:column; align-items:${m.es_mio ? 'flex-end' : 'flex-start'};">
             ${!m.es_mio ? `<div style="font-size:9px; color:#9ca3af; margin-bottom:2px;">${m.nombre}</div>` : ''}
             ${m.mensaje ? `<div style="background:${m.es_mio ? '#dbeafe' : '#fff'}; border:1px solid #e5e7eb; border-radius:8px; padding:5px 8px; font-size:11px; color:#374151; max-width:85%; line-height:1.5;">${m.mensaje}</div>` : ''}
-            ${m.archivo && m.archivo_tipo === 'sticker' ? `<img src="${m.archivo}" style="width:56px; height:56px; margin-top:2px;">` : ''}
+            ${m.archivo && m.archivo_tipo === 'sticker' ? `<img src="${m.archivo}" style="width:40px; height:40px; margin-top:2px;">` : ''}
             ${m.archivo && m.archivo_tipo !== 'sticker' ? `<a href="/chat/archivo/${m.id}" style="display:flex; align-items:center; gap:4px; background:#f3f4f6; border:1px solid #e5e7eb; border-radius:6px; padding:4px 8px; font-size:10px; color:#374151; text-decoration:none; margin-top:2px;">📎 ${m.archivo_nombre}</a>` : ''}
             <div style="font-size:9px; color:#d1d5db; margin-top:2px;">${m.hora}</div>
         </div>
@@ -1061,26 +1101,79 @@ async function enviarZumbido() {
 // Se re-evalúa solo, sin depender de que el chat esté abierto ni de recargar (F5)
 setInterval(actualizarBotonZumbido, 5000);
 
-async function enviarMensaje() {
-    const input = document.getElementById('chat-input');
-    const mensaje = input.value.trim();
-    if (!mensaje && !chatArchivoFile) return;
-    if (!convActualId) return;
-
+async function enviarUnMensaje(mensaje, archivo, sticker) {
     const formData = new FormData();
     if (mensaje) formData.append('mensaje', mensaje);
-    if (chatArchivoFile) formData.append('archivo', chatArchivoFile);
-
-    input.value = '';
-    chatArchivoFile = null;
-    document.getElementById('chat-file').value = '';
-    input.placeholder = 'Escribí un mensaje...'; // saca la "sombra" del nombre del archivo ya enviado
+    if (archivo) formData.append('archivo', archivo);
+    if (sticker) formData.append('sticker', sticker);
 
     await fetch(`/chat/enviar/${convActualId}`, {
         method: 'POST',
         headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
         body: formData
     });
+}
+
+// Recorre el cuadro de escritura (que ahora es "contenteditable", no un
+// input común) y arma una lista ordenada de texto/stickers tal como quedaron
+// escritos, para poder mandarlos respetando ese mismo orden.
+function extraerSegmentosInput(el) {
+    const segmentos = [];
+    let textoActual = '';
+    const flush = () => {
+        const t = textoActual.trim();
+        if (t) segmentos.push({ tipo: 'texto', valor: t });
+        textoActual = '';
+    };
+    const recorrer = (nodo) => {
+        nodo.childNodes.forEach(n => {
+            if (n.nodeType === Node.TEXT_NODE) {
+                textoActual += n.textContent;
+            } else if (n.tagName === 'IMG' && n.dataset.sticker) {
+                flush();
+                segmentos.push({ tipo: 'sticker', archivo: n.dataset.sticker });
+            } else if (n.tagName === 'BR') {
+                textoActual += ' ';
+            } else {
+                recorrer(n);
+            }
+        });
+    };
+    recorrer(el);
+    flush();
+    return segmentos;
+}
+
+async function enviarMensaje() {
+    const input = document.getElementById('chat-input');
+    const segmentos = extraerSegmentosInput(input);
+    if (segmentos.length === 0 && !chatArchivoFile) return;
+    if (!convActualId) return;
+
+    document.getElementById('chat-sticker-picker').style.display = 'none';
+
+    const archivo = chatArchivoFile;
+
+    input.innerHTML = '';
+    chatArchivoFile = null;
+    document.getElementById('chat-file').value = '';
+    input.setAttribute('data-placeholder', 'Escribí un mensaje...'); // saca la "sombra" del nombre del archivo ya enviado
+
+    // El archivo adjunto (si hay) viaja junto con el primer bloque de texto,
+    // igual que antes. Cada sticker se manda como su propio mensaje, en el
+    // orden exacto en que aparecían escritos en el cuadro.
+    let archivoUsado = false;
+    for (const seg of segmentos) {
+        if (seg.tipo === 'texto') {
+            await enviarUnMensaje(seg.valor, !archivoUsado ? archivo : null, null);
+            archivoUsado = true;
+        } else {
+            await enviarUnMensaje(null, null, seg.archivo);
+        }
+    }
+    if (!archivoUsado && archivo) {
+        await enviarUnMensaje(null, archivo, null);
+    }
 
     await cargarMensajes(convActualId, true);
     cargarConversaciones();
@@ -1089,7 +1182,7 @@ async function enviarMensaje() {
 function chatArchivoSeleccionado(input) {
     chatArchivoFile = input.files[0];
     if (chatArchivoFile) {
-        document.getElementById('chat-input').placeholder = '📎 ' + chatArchivoFile.name;
+        document.getElementById('chat-input').setAttribute('data-placeholder', '📎 ' + chatArchivoFile.name);
     }
 }
 
@@ -1106,29 +1199,94 @@ async function toggleStickerPicker() {
         const res = await fetch('/chat/stickers');
         listaStickers = await res.json();
     }
-    picker.innerHTML = listaStickers.map(s => `
-        <img src="${s.url}" onclick="enviarSticker('${s.archivo}')"
-            style="width:100%; aspect-ratio:1; cursor:pointer; border-radius:6px; transition:transform 0.1s;"
-            onmouseover="this.style.transform='scale(1.12)'" onmouseout="this.style.transform='scale(1)'">
-    `).join('');
+    renderizarPickerStickers();
     picker.style.display = 'grid';
 }
 
-async function enviarSticker(archivo) {
+// "Más usados" se guarda en este navegador (por persona), no en el
+// servidor — cada uno ve arriba sus propios 5 stickers más usados, y se va
+// actualizando solo cada vez que manda alguno.
+function usoStickersGuardado() {
+    try {
+        return JSON.parse(localStorage.getItem('chatStickersUso') || '{}');
+    } catch (e) {
+        return {};
+    }
+}
+
+function registrarUsoSticker(archivo) {
+    const uso = usoStickersGuardado();
+    uso[archivo] = (uso[archivo] || 0) + 1;
+    try { localStorage.setItem('chatStickersUso', JSON.stringify(uso)); } catch (e) {}
+}
+
+function stickersMasUsados(cantidad = 5) {
+    const uso = usoStickersGuardado();
+    return Object.entries(uso)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, cantidad)
+        .map(([archivo]) => (listaStickers || []).find(s => s.archivo === archivo))
+        .filter(Boolean);
+}
+
+function renderizarPickerStickers() {
+    const picker = document.getElementById('chat-sticker-picker');
+    const masUsados = stickersMasUsados();
+
+    const imgHtml = s => `
+        <img src="${s.url}" onclick="agregarStickerSeleccionado('${s.archivo}', '${s.url}')"
+            style="width:100%; aspect-ratio:1; cursor:pointer; border-radius:6px; transition:transform 0.1s;"
+            onmouseover="this.style.transform='scale(1.12)'" onmouseout="this.style.transform='scale(1)'">
+    `;
+
+    let html = '';
+    if (masUsados.length > 0) {
+        html += `
+            <div style="grid-column:1/-1; font-size:9px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin:2px 0;">Más usados</div>
+            ${masUsados.map(imgHtml).join('')}
+            <div style="grid-column:1/-1; border-top:1px solid #f3f4f6; margin:4px 0 2px;"></div>
+        `;
+    }
+    html += listaStickers.map(imgHtml).join('');
+    picker.innerHTML = html;
+}
+
+// Elegir un sticker lo inserta directo en el cuadro de escritura, como si
+// fuera texto — se puede seguir eligiendo más (el picker queda abierto) y
+// se puede borrar con Backspace/Delete igual que cualquier otro contenido.
+// Recién se manda cuando el usuario aprieta enviar (o Enter).
+function agregarStickerSeleccionado(archivo, url) {
     if (!convActualId) return;
-    document.getElementById('chat-sticker-picker').style.display = 'none';
+    const input = document.getElementById('chat-input');
+    input.focus();
 
-    const formData = new FormData();
-    formData.append('sticker', archivo);
+    chatArchivoFile = null; // un solo tipo de adjunto a la vez
+    document.getElementById('chat-file').value = '';
 
-    await fetch(`/chat/enviar/${convActualId}`, {
-        method: 'POST',
-        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
-        body: formData
-    });
+    registrarUsoSticker(archivo);
 
-    await cargarMensajes(convActualId, true);
-    cargarConversaciones();
+    const img = document.createElement('img');
+    img.src = url;
+    img.dataset.sticker = archivo;
+    img.style.cssText = 'width:20px; height:20px; vertical-align:middle; margin:0 1px; user-select:none;';
+
+    const sel = window.getSelection();
+    if (sel.rangeCount && input.contains(sel.anchorNode)) {
+        const range = sel.getRangeAt(0);
+        range.deleteContents();
+        range.insertNode(img);
+        range.setStartAfter(img);
+        range.setEndAfter(img);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    } else {
+        input.appendChild(img);
+        const range = document.createRange();
+        range.setStartAfter(img);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
 }
 
 async function abrirUsuarios() {

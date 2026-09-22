@@ -111,6 +111,7 @@ class ChatController extends Controller
                 'es_mio'         => $m->user_id === $user->id,
                 'hace'           => $m->created_at->diffForHumans(),
                 'hora'           => $m->created_at->format('H:i'),
+                'ts'             => $m->created_at->timestamp,
             ]);
 
         // Marcar como leído
@@ -267,6 +268,12 @@ class ChatController extends Controller
                 'user1_id' => $user->id,
                 'user2_id' => $userId,
             ]);
+        } else {
+            // Si ya existía pero el usuario actual la había cerrado antes,
+            // que vuelva a aparecer en su lista al reabrirla desde acá.
+            ChatLectura::where('conversacion_id', $conv->id)
+                ->where('user_id', $user->id)
+                ->update(['oculta' => false]);
         }
 
         return response()->json(['conversacion_id' => $conv->id]);
