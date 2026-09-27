@@ -240,7 +240,7 @@
                 {{-- TICKER ELECCIONES --}}
                 @isset($elecciones)
                 @if($elecciones->count() > 0)
-                @php $primera = $elecciones->first(); $diasPrimera = (int) now()->startOfDay()->diffInDays($primera->fecha_eleccion->startOfDay(), false); @endphp
+                @php $primera = $elecciones->first(); $diasPrimera = (int) now()->startOfDay()->diffInDays((clone $primera->fecha_eleccion)->startOfDay(), false); @endphp
                 <div onclick="toggleElecciones()" id="ticker-box"
                      style="display:flex; align-items:center; gap:8px; background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px; padding:5px 12px; cursor:pointer; min-width:180px; max-width:260px;">
                     <svg width="13" height="13" fill="none" stroke="#0369a1" stroke-width="1.8" viewBox="0 0 24 24" style="flex-shrink:0;">
@@ -265,18 +265,18 @@
                 @if($cp && $cp->count() > 0)
                 @php
                     $primeraCharla = $cp->first();
-                    $fechaCharla = $primeraCharla->charla->fecha_hora ?? null;
-                    $estadoCharla = $primeraCharla->charla->estado ?? null;
+                    $fechaCharla = $primeraCharla->charla_relevante?->fecha_hora ?? null;
+                    $estadoCharla = $primeraCharla->charla_relevante?->estado ?? null;
                     $charlaVencida = $estadoCharla === 'vencida';
-                    $diasCharla = $fechaCharla ? (int) now()->startOfDay()->diffInDays($fechaCharla->startOfDay(), false) : null;
+                    $diasCharla = $fechaCharla ? (int) now()->startOfDay()->diffInDays((clone $fechaCharla)->startOfDay(), false) : null;
                     $charlaBgBadge = $charlaVencida ? '#f3f4f6' : '#fef9c3';
                     $charlaColorBadge = $charlaVencida ? '#4b5563' : '#854d0e';
                     $charlaTextoBadge = $charlaVencida ? 'Vencida' : ($fechaCharla ? $diasCharla . ' días' : '- - - -');
                     $charlaEsHoy = $cp->contains(function($item) {
-                        $f = $item->charla->fecha_hora ?? null;
-                        $e = $item->charla->estado ?? null;
+                        $f = $item->charla_relevante?->fecha_hora ?? null;
+                        $e = $item->charla_relevante?->estado ?? null;
                         if (!$f || $e === 'vencida') return false;
-                        return (int) now()->startOfDay()->diffInDays($f->startOfDay(), false) === 0;
+                        return (int) now()->startOfDay()->diffInDays((clone $f)->startOfDay(), false) === 0;
                     });
                 @endphp
                 <div onclick="toggleCharlas()" id="ticker-box-charla" class="{{ $charlaEsHoy ? 'ticker-hoy' : '' }}"
@@ -300,7 +300,7 @@
                     $fechaObs = $primerObs->observador->fecha_hora ?? null;
                     $estadoObs = $primerObs->observador->estado ?? null;
                     $obsVencido = $estadoObs === 'vencida';
-                    $diasObs = $fechaObs ? (int) now()->startOfDay()->diffInDays($fechaObs->startOfDay(), false) : null;
+                    $diasObs = $fechaObs ? (int) now()->startOfDay()->diffInDays((clone $fechaObs)->startOfDay(), false) : null;
                     $obsBgBadge = $obsVencido ? '#f3f4f6' : '#e0e7ff';
                     $obsColorBadge = $obsVencido ? '#4b5563' : '#3730a3';
                     $obsTextoBadge = $obsVencido ? 'Vencida' : ($fechaObs ? $diasObs . ' días' : '- - - -');
@@ -308,7 +308,7 @@
                         $f = $item->observador->fecha_hora ?? null;
                         $e = $item->observador->estado ?? null;
                         if (!$f || $e === 'vencida') return false;
-                        return (int) now()->startOfDay()->diffInDays($f->startOfDay(), false) === 0;
+                        return (int) now()->startOfDay()->diffInDays((clone $f)->startOfDay(), false) === 0;
                     });
                 @endphp
                 <div onclick="toggleObservadores()" id="ticker-box-observador" class="{{ $obsEsHoy ? 'ticker-hoy' : '' }}"
@@ -365,7 +365,7 @@
     </div>
     @isset($elecciones)
     @forelse($elecciones as $e)
-    @php $dias = (int) now()->startOfDay()->diffInDays($e->fecha_eleccion->startOfDay(), false); @endphp
+    @php $dias = (int) now()->startOfDay()->diffInDays((clone $e->fecha_eleccion)->startOfDay(), false); @endphp
     <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 14px; border-bottom:1px solid #f9fafb;">
         <div>
             <div style="font-size:12px; font-weight:500; color:#111827;">{{ $e->nombre_organizacion }}</div>
@@ -392,18 +392,27 @@
     </div>
     @forelse($cp as $c)
     @php
-        $cf = $c->charla->fecha_hora ?? null;
-        $ce = $c->charla->estado ?? null;
+        $cf = $c->charla_relevante?->fecha_hora ?? null;
+        $ce = $c->charla_relevante?->estado ?? null;
         $cVencida = $ce === 'vencida';
-        $dc = $cf ? (int) now()->startOfDay()->diffInDays($cf->startOfDay(), false) : null;
+        $dc = $cf ? (int) now()->startOfDay()->diffInDays((clone $cf)->startOfDay(), false) : null;
         $cBg = $cVencida ? '#f3f4f6' : '#fef9c3';
         $cColor = $cVencida ? '#4b5563' : '#854d0e';
         $cTexto = $cVencida ? 'Vencida' : ($cf ? $dc . ' días' : '- - - -');
+        $cTipoLabel = match($c->charla_relevante?->char_tipo ?? null) {
+            'proceso_electoral' => 'Proceso Electoral',
+            'mmrv' => 'MMRV',
+            'ambos' => 'Proceso + MMRV',
+            default => null,
+        };
     @endphp
     <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 14px; border-bottom:1px solid #f9fafb;">
         <div>
             <div style="font-size:12px; font-weight:500; color:#111827;">{{ $c->nombre_organizacion }}</div>
             <div style="font-size:10.5px; color:#6b7280;">{{ $cf ? $cf->format('d M Y H:i') : 'Sin fecha' }} — {{ $c->asesor_asignado ?? '—' }}</div>
+            @if($cTipoLabel)
+            <div style="font-size:10px; color:#9ca3af; margin-top:1px;">{{ $cTipoLabel }}</div>
+            @endif
         </div>
         <span style="font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:20px; flex-shrink:0; background:{{ $cBg }}; color:{{ $cColor }};">
             {{ $cTexto }}
@@ -427,7 +436,7 @@
         $of = $o->observador->fecha_hora ?? null;
         $oe = $o->observador->estado ?? null;
         $oVencido = $oe === 'vencida';
-        $od = $of ? (int) now()->startOfDay()->diffInDays($of->startOfDay(), false) : null;
+        $od = $of ? (int) now()->startOfDay()->diffInDays((clone $of)->startOfDay(), false) : null;
         $oBg = $oVencido ? '#f3f4f6' : '#e0e7ff';
         $oColor = $oVencido ? '#4b5563' : '#3730a3';
         $oTexto = $oVencido ? 'Vencida' : ($of ? $od . ' días' : '- - - -');
@@ -538,7 +547,7 @@ updateMarquee('ticker-nombre', 'ticker-nombre-inner');
 @if($elecciones->count() > 1)
 @php
     $tickerData = $elecciones->map(function($e) {
-        $dias = (int) now()->startOfDay()->diffInDays($e->fecha_eleccion->startOfDay(), false);
+        $dias = (int) now()->startOfDay()->diffInDays((clone $e->fecha_eleccion)->startOfDay(), false);
         $bg = $dias <= 7 ? '#fee2e2' : ($dias <= 15 ? '#fef3c7' : '#d1fae5');
         $color = $dias <= 7 ? '#991b1b' : ($dias <= 15 ? '#92400e' : '#065f46');
         return ['nombre' => $e->nombre_organizacion, 'dias' => $dias, 'bg' => $bg, 'color' => $color];
@@ -575,10 +584,10 @@ updateMarquee('ticker-charla-nombre', 'ticker-charla-nombre-inner');
 @if($cp && $cp->count() > 1)
 @php
     $charlasData = $cp->map(function($c) {
-        $cf = $c->charla->fecha_hora ?? null;
-        $ce = $c->charla->estado ?? null;
+        $cf = $c->charla_relevante?->fecha_hora ?? null;
+        $ce = $c->charla_relevante?->estado ?? null;
         $vencida = $ce === 'vencida';
-        $dias = $cf ? (int) now()->startOfDay()->diffInDays($cf->startOfDay(), false) : null;
+        $dias = $cf ? (int) now()->startOfDay()->diffInDays((clone $cf)->startOfDay(), false) : null;
         return [
             'nombre' => $c->nombre_organizacion,
             'bg' => $vencida ? '#f3f4f6' : '#fef9c3',
@@ -625,7 +634,7 @@ updateMarquee('ticker-observador-nombre', 'ticker-observador-nombre-inner');
         $of = $o->observador->fecha_hora ?? null;
         $oe = $o->observador->estado ?? null;
         $vencido = $oe === 'vencida';
-        $dias = $of ? (int) now()->startOfDay()->diffInDays($of->startOfDay(), false) : null;
+        $dias = $of ? (int) now()->startOfDay()->diffInDays((clone $of)->startOfDay(), false) : null;
         return [
             'nombre' => $o->nombre_organizacion,
             'bg' => $vencido ? '#f3f4f6' : '#e0e7ff',

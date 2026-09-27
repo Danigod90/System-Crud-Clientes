@@ -30,6 +30,16 @@ class MisOrganizacionesController extends Controller
             $estado = str_replace('char_', '', $asunto);
             $query->where('asunto_char', true)
                   ->whereHas('charla', fn($q) => $q->where('estado', $estado));
+        } elseif ($asunto === 'obs_pendiente') {
+            $query->where('asunto_obs', true)
+                  ->where(fn($q) => $q
+                      ->whereHas('observador', fn($q2) => $q2->where('estado', 'pendiente'))
+                      ->orWhereDoesntHave('observador')
+                  );
+        } elseif (in_array($asunto, ['obs_realizada', 'obs_suspendida', 'obs_cancelada'])) {
+            $estado = str_replace('obs_', '', $asunto);
+            $query->where('asunto_obs', true)
+                  ->whereHas('observador', fn($q) => $q->where('estado', $estado));
         } elseif ($asunto === 'suspendida') {
             $query->where('eleccion_suspendida', 1);
         } elseif ($asunto === 'tec_sin_enviar') {
@@ -70,12 +80,13 @@ class MisOrganizacionesController extends Controller
             ->whereDoesntHave('charla')
             ->orWhereHas('charla', fn($q2) => $q2->whereIn('estado', ['pendiente', 'vencida']))
         )
-        ->with('charla')
-        ->orderByRaw("(SELECT fecha_hora FROM charlas WHERE charlas.entrada_con_nota_id = entradas_con_nota.id ORDER BY charlas.created_at ASC LIMIT 1) IS NULL")
+        ->with('charlas')
+        ->orderByRaw("COALESCE((SELECT CASE WHEN estado='vencida' THEN 1 WHEN fecha_hora IS NULL THEN 2 ELSE 0 END FROM charlas WHERE charlas.entrada_con_nota_id = entradas_con_nota.id ORDER BY CASE WHEN estado='vencida' THEN 1 WHEN fecha_hora IS NULL THEN 2 ELSE 0 END ASC, fecha_hora ASC LIMIT 1), 2)")
         ->orderBy(
             \App\Models\Charla::select('fecha_hora')
                 ->whereColumn('entrada_con_nota_id', 'entradas_con_nota.id')
-                ->oldest()
+                ->orderByRaw("CASE WHEN estado='vencida' THEN 1 WHEN fecha_hora IS NULL THEN 2 ELSE 0 END ASC")
+                ->orderBy('fecha_hora')
                 ->limit(1)
         )
         ->take(5)
@@ -88,10 +99,12 @@ class MisOrganizacionesController extends Controller
             ->orWhereHas('observador', fn($q2) => $q2->whereIn('estado', ['pendiente', 'vencida']))
         )
         ->with('observador')
-        ->orderByRaw("(SELECT fecha_hora FROM observadores WHERE observadores.entrada_con_nota_id = entradas_con_nota.id LIMIT 1) IS NULL")
+        ->orderByRaw("COALESCE((SELECT CASE WHEN estado='vencida' THEN 1 WHEN fecha_hora IS NULL THEN 2 ELSE 0 END FROM observadores WHERE observadores.entrada_con_nota_id = entradas_con_nota.id ORDER BY CASE WHEN estado='vencida' THEN 1 WHEN fecha_hora IS NULL THEN 2 ELSE 0 END ASC, fecha_hora ASC LIMIT 1), 2)")
         ->orderBy(
             \App\Models\Observador::select('fecha_hora')
                 ->whereColumn('entrada_con_nota_id', 'entradas_con_nota.id')
+                ->orderByRaw("CASE WHEN estado='vencida' THEN 1 WHEN fecha_hora IS NULL THEN 2 ELSE 0 END ASC")
+                ->orderBy('fecha_hora')
                 ->limit(1)
         )
         ->take(5)
@@ -126,12 +139,13 @@ public function edit(EntradaConNota $entrada)
             ->whereDoesntHave('charla')
             ->orWhereHas('charla', fn($q2) => $q2->whereIn('estado', ['pendiente', 'vencida']))
         )
-        ->with('charla')
-        ->orderByRaw("(SELECT fecha_hora FROM charlas WHERE charlas.entrada_con_nota_id = entradas_con_nota.id ORDER BY charlas.created_at ASC LIMIT 1) IS NULL")
+        ->with('charlas')
+        ->orderByRaw("COALESCE((SELECT CASE WHEN estado='vencida' THEN 1 WHEN fecha_hora IS NULL THEN 2 ELSE 0 END FROM charlas WHERE charlas.entrada_con_nota_id = entradas_con_nota.id ORDER BY CASE WHEN estado='vencida' THEN 1 WHEN fecha_hora IS NULL THEN 2 ELSE 0 END ASC, fecha_hora ASC LIMIT 1), 2)")
         ->orderBy(
             \App\Models\Charla::select('fecha_hora')
                 ->whereColumn('entrada_con_nota_id', 'entradas_con_nota.id')
-                ->oldest()
+                ->orderByRaw("CASE WHEN estado='vencida' THEN 1 WHEN fecha_hora IS NULL THEN 2 ELSE 0 END ASC")
+                ->orderBy('fecha_hora')
                 ->limit(1)
         )
         ->take(5)
@@ -144,10 +158,12 @@ public function edit(EntradaConNota $entrada)
             ->orWhereHas('observador', fn($q2) => $q2->whereIn('estado', ['pendiente', 'vencida']))
         )
         ->with('observador')
-        ->orderByRaw("(SELECT fecha_hora FROM observadores WHERE observadores.entrada_con_nota_id = entradas_con_nota.id LIMIT 1) IS NULL")
+        ->orderByRaw("COALESCE((SELECT CASE WHEN estado='vencida' THEN 1 WHEN fecha_hora IS NULL THEN 2 ELSE 0 END FROM observadores WHERE observadores.entrada_con_nota_id = entradas_con_nota.id ORDER BY CASE WHEN estado='vencida' THEN 1 WHEN fecha_hora IS NULL THEN 2 ELSE 0 END ASC, fecha_hora ASC LIMIT 1), 2)")
         ->orderBy(
             \App\Models\Observador::select('fecha_hora')
                 ->whereColumn('entrada_con_nota_id', 'entradas_con_nota.id')
+                ->orderByRaw("CASE WHEN estado='vencida' THEN 1 WHEN fecha_hora IS NULL THEN 2 ELSE 0 END ASC")
+                ->orderBy('fecha_hora')
                 ->limit(1)
         )
         ->take(5)

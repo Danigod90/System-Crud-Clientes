@@ -116,6 +116,7 @@ Route::middleware(['auth'])->prefix('asesor')->name('asesor.')->group(function (
     Route::delete('charla/{charla}', [\App\Http\Controllers\Asesor\CharlaController::class, 'destroy'])->name('charla.destroy');
     Route::post('observador/{entrada}', [\App\Http\Controllers\Asesor\ObservadorController::class, 'store'])->name('observador.store');
     Route::patch('observador/{observador}/estado', [\App\Http\Controllers\Asesor\ObservadorController::class, 'updateEstado'])->name('observador.estado');
+    Route::delete('observador/{observador}', [\App\Http\Controllers\Asesor\ObservadorController::class, 'destroy'])->name('observador.destroy');
     Route::post('prioridad/{entrada}', [\App\Http\Controllers\Asesor\PrioridadAsesorController::class, 'toggle'])->name('prioridad.toggle');
     Route::get('calculadora-dhondt', [\App\Http\Controllers\Asesor\UtilidadesController::class, 'dhondt'])->name('calculadora.dhondt');
     Route::get('manuales', [\App\Http\Controllers\Asesor\ManualController::class, 'index'])->name('manuales.index');

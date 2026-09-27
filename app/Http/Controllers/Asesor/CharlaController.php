@@ -17,7 +17,7 @@ class CharlaController extends Controller
         'fecha_hora'  => 'nullable|date',
         'direccion'   => 'nullable|string|max:255',
         'descripcion' => 'nullable|string|max:1000',
-        'char_tipo'   => 'nullable|in:proceso_electoral,mmrv,ambos',
+        'char_tipo'   => 'required|in:proceso_electoral,mmrv,ambos',
     ]);
 
     $nuevosDatos = [

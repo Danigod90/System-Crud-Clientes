@@ -77,6 +77,29 @@ class EntradaConNota extends Model
         return $this->hasMany(Charla::class, 'entrada_con_nota_id')->oldest();
     }
 
+    /**
+     * Para el tinker: si hay más de una charla cargada (máximo 2), muestra la
+     * que sigue pendiente o vencida en vez de siempre la más vieja — evita
+     * mostrar una charla ya realizada mientras hay otra esperando fecha. Entre
+     * las activas, prioriza: 1) pendiente con fecha (la más próxima primero),
+     * 2) vencida, 3) pendiente sin fecha cargada todavía.
+     */
+    public function getCharlaRelevanteAttribute()
+    {
+        $charlas = $this->relationLoaded('charlas') ? $this->charlas : $this->charlas()->get();
+        $activas = $charlas->filter(fn($c) => in_array($c->estado, ['pendiente', 'vencida']));
+
+        if ($activas->isNotEmpty()) {
+            return $activas->sortBy(function($c) {
+                $grupo = $c->estado === 'vencida' ? 1 : ($c->fecha_hora ? 0 : 2);
+                $ts = $c->fecha_hora ? $c->fecha_hora->timestamp : PHP_INT_MAX;
+                return $grupo * 10000000000 + $ts;
+            })->first();
+        }
+
+        return $charlas->first();
+    }
+
     public function observador()
     {
         return $this->hasOne(Observador::class, 'entrada_con_nota_id');

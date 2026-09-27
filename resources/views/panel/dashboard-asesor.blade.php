@@ -263,7 +263,7 @@ $realizadoPrio = (bool) ($ent->detalleTecnico?->tec_realizado ?? false);
     </div>
     </a>
 
-    <a href="{{ route('asesor.mis-organizaciones') }}?asunto=obs" style="text-decoration:none;">
+    <a href="{{ route('asesor.mis-organizaciones') }}?asunto=obs_pendiente" style="text-decoration:none;">
     <div class="card-stat" style="background:#16a34a; border-radius:12px; padding:20px; color:white; cursor:pointer; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div>

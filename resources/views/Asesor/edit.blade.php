@@ -330,27 +330,28 @@ if (request()->has('volver')) {
 </select>
     </div>
     <div>
-        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Tipo de charla</label>
-        <select name="char_tipo" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
-            <option value="">-- Seleccionar --</option>
-            <option value="proceso_electoral">Proceso Electoral</option>
-            <option value="mmrv">MMRV</option>
-            <option value="ambos">Proceso + MMRV</option>
+        <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Tipo de charla *</label>
+        <select name="char_tipo" required style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
+            <option value="" {{ !$ch->char_tipo ? 'selected' : '' }} disabled>-- Seleccionar --</option>
+            <option value="proceso_electoral" {{ $ch->char_tipo == 'proceso_electoral' ? 'selected' : '' }}>Proceso Electoral</option>
+            <option value="mmrv" {{ $ch->char_tipo == 'mmrv' ? 'selected' : '' }}>MMRV</option>
+            <option value="ambos" {{ $ch->char_tipo == 'ambos' ? 'selected' : '' }}>Proceso + MMRV</option>
         </select>
     </div>
     <div>
         <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora</label>
         <input type="datetime-local" name="fecha_hora"
+               value="{{ $ch->fecha_hora?->format('Y-m-d\TH:i') }}"
                style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
     </div>
     <div>
         <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Descripción</label>
-        <input type="text" name="descripcion" placeholder="Opcional..."
+        <input type="text" name="descripcion" placeholder="Opcional..." value="{{ $ch->descripcion }}"
                style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
     </div>
-    <div id="nueva-direccion" style="display:none; grid-column:span 2;">
+    <div id="editar-direccion-{{ $ch->id }}" style="display:{{ $ch->modalidad == 'presencial_externa' ? 'block' : 'none' }}; grid-column:span 2;">
         <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Dirección</label>
-        <input type="text" name="direccion" placeholder="Dirección del lugar..."
+        <input type="text" name="direccion" placeholder="Dirección del lugar..." value="{{ $ch->direccion }}"
                style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
     </div>
 </div>
@@ -369,6 +370,11 @@ if (request()->has('volver')) {
 
         {{-- CAMBIAR ESTADO --}}
         <div style="border-top:1px solid #f3f4f6; margin-top:12px; padding-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+            @if($ch->estado === 'realizada')
+            <span style="display:inline-flex; align-items:center; gap:5px; background:#dcfce7; color:#16a34a; padding:6px 12px; border-radius:8px; font-size:12px; font-weight:600;">
+                ✓ Realizada
+            </span>
+            @else
             <form method="POST" action="{{ route('asesor.charla.estado', $ch) }}">
                 @csrf @method('PATCH')
                 <input type="hidden" name="estado" value="realizada">
@@ -400,6 +406,7 @@ if (request()->has('volver')) {
         🗑 Eliminar
     </button>
 </form>
+            @endif
         </div>
 
     </div>
@@ -421,9 +428,9 @@ if (request()->has('volver')) {
 </select>
                 </div>
                 <div>
-                    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Tipo de charla</label>
-                    <select name="char_tipo" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
-                        <option value="">-- Seleccionar --</option>
+                    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.5px;">Tipo de charla *</label>
+                    <select name="char_tipo" required style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
+                        <option value="" selected disabled>-- Seleccionar --</option>
                         <option value="proceso_electoral">Proceso Electoral</option>
                         <option value="mmrv">MMRV</option>
                         <option value="ambos">Proceso + MMRV</option>
@@ -558,6 +565,12 @@ if (request()->has('volver')) {
             <div style="border-top:1px solid #f3f4f6; margin-top:16px; padding-top:16px;">
                 <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px;">Cambiar estado</p>
                 <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                    @if($entrada->observador->estado === 'realizada')
+                    <span style="display:inline-flex; align-items:center; gap:6px; background:#dcfce7; color:#16a34a; padding:8px 16px; border-radius:8px; font-size:13px; font-weight:600;">
+                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                        Realizada
+                    </span>
+                    @else
                     <form method="POST" action="{{ route('asesor.observador.estado', $entrada->observador) }}">
                         @csrf @method('PATCH')
                         <input type="hidden" name="estado" value="realizada">
@@ -585,6 +598,14 @@ if (request()->has('volver')) {
                             Cancelada
                         </button>
                     </form>
+                    <form method="POST" action="{{ route('asesor.observador.destroy', $entrada->observador) }}">
+                        @csrf @method('DELETE')
+                        <button type="submit" onclick="return confirm('¿Eliminar este observador?')"
+                                style="display:inline-flex; align-items:center; gap:6px; background:#6b7280; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                            🗑 Eliminar
+                        </button>
+                    </form>
+                    @endif
                 </div>
             </div>
             @endif
@@ -771,6 +792,10 @@ function mostrarFormNuevaCharla() {
 
 function toggleDireccionNueva(val) {
     document.getElementById('nueva-direccion').style.display = val === 'presencial_externa' ? 'block' : 'none';
+}
+function toggleDireccionEditar(select, id) {
+    const div = document.getElementById('editar-direccion-' + id);
+    if (div) div.style.display = select.value === 'presencial_externa' ? 'block' : 'none';
 }
 function toggleEditarCharla(id) {
     const edit = document.getElementById('edit-' + id);

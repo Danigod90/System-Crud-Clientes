@@ -50,4 +50,10 @@ class ObservadorController extends Controller
 
         return redirect()->back()->with('success', 'Estado actualizado correctamente.');
     }
+
+    public function destroy(Observador $observador)
+    {
+        $observador->delete();
+        return redirect()->back()->with('success', 'Observadores eliminado correctamente.');
+    }
 }
