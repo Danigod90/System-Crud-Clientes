@@ -20,7 +20,12 @@
     }
     * { scrollbar-width: none; -ms-overflow-style: none; }
     *::-webkit-scrollbar { display: none; }
-    #ticker-nombre, #ticker-dias, #ticker-charla-nombre { transition: opacity 0.3s ease; }
+    #ticker-nombre, #ticker-dias, #ticker-charla-nombre, #ticker-observador-nombre { transition: opacity 0.3s ease; }
+    @keyframes ticker-parpadeo {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(220,38,38,0.35); }
+        50% { box-shadow: 0 0 0 6px rgba(220,38,38,0); }
+    }
+    .ticker-hoy { animation: ticker-parpadeo 1.4s ease-in-out infinite; }
     @keyframes vaiven {
         0%, 15% { transform: translateX(0); }
         50% { transform: translateX(var(--scroll-x, 0)); }
@@ -244,7 +249,7 @@
                         <line x1="8" y1="2" x2="8" y2="6"/>
                         <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
-                    <span style="font-size:11px; color:#0369a1; font-weight:600; white-space:nowrap; flex-shrink:0;">Próxima:</span>
+                    <span style="font-size:11px; color:#0369a1; font-weight:600; white-space:nowrap; flex-shrink:0;">Elección:</span>
                     <span id="ticker-nombre" style="font-size:12px; color:#0c4a6e; font-weight:500; overflow:hidden; white-space:nowrap; flex:1; position:relative;"><span id="ticker-nombre-inner" style="display:inline-block; white-space:nowrap;">{{ $primera->nombre_organizacion }}</span></span>
                     <span id="ticker-dias" style="font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px; flex-shrink:0;
                         background:{{ $diasPrimera <= 7 ? '#fee2e2' : ($diasPrimera <= 15 ? '#fef3c7' : '#d1fae5') }};
@@ -258,16 +263,64 @@
                 {{-- TICKER CHARLAS --}}
                 @php $cp = $charlasPendientes ?? null; @endphp
                 @if($cp && $cp->count() > 0)
-                @php $primeraCharla = $cp->first(); $diasCharla = (int) now()->startOfDay()->diffInDays($primeraCharla->fecha_hora->startOfDay(), false); @endphp
-                <div onclick="toggleCharlas()" id="ticker-box-charla"
+                @php
+                    $primeraCharla = $cp->first();
+                    $fechaCharla = $primeraCharla->charla->fecha_hora ?? null;
+                    $estadoCharla = $primeraCharla->charla->estado ?? null;
+                    $charlaVencida = $estadoCharla === 'vencida';
+                    $diasCharla = $fechaCharla ? (int) now()->startOfDay()->diffInDays($fechaCharla->startOfDay(), false) : null;
+                    $charlaBgBadge = $charlaVencida ? '#f3f4f6' : '#fef9c3';
+                    $charlaColorBadge = $charlaVencida ? '#4b5563' : '#854d0e';
+                    $charlaTextoBadge = $charlaVencida ? 'Vencida' : ($fechaCharla ? $diasCharla . ' días' : '- - - -');
+                    $charlaEsHoy = $cp->contains(function($item) {
+                        $f = $item->charla->fecha_hora ?? null;
+                        $e = $item->charla->estado ?? null;
+                        if (!$f || $e === 'vencida') return false;
+                        return (int) now()->startOfDay()->diffInDays($f->startOfDay(), false) === 0;
+                    });
+                @endphp
+                <div onclick="toggleCharlas()" id="ticker-box-charla" class="{{ $charlaEsHoy ? 'ticker-hoy' : '' }}"
                      style="display:flex; align-items:center; gap:8px; background:#fefce8; border:1px solid #fde68a; border-radius:8px; padding:5px 12px; cursor:pointer; min-width:180px; max-width:260px;">
                     <svg width="13" height="13" fill="none" stroke="#854d0e" stroke-width="1.8" viewBox="0 0 24 24" style="flex-shrink:0;">
                         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                     </svg>
                     <span style="font-size:11px; color:#854d0e; font-weight:600; white-space:nowrap; flex-shrink:0;">Charla:</span>
-                    <span id="ticker-charla-nombre" style="font-size:12px; color:#713f12; font-weight:500; overflow:hidden; white-space:nowrap; flex:1; position:relative;"><span id="ticker-charla-nombre-inner" style="display:inline-block; white-space:nowrap;">{{ $primeraCharla->entrada->nombre_organizacion ?? '—' }}</span></span>
-                    <span style="font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px; flex-shrink:0; background:#fef9c3; color:#854d0e;">
-                        {{ $diasCharla }} días
+                    <span id="ticker-charla-nombre" style="font-size:12px; color:#713f12; font-weight:500; overflow:hidden; white-space:nowrap; flex:1; position:relative;"><span id="ticker-charla-nombre-inner" style="display:inline-block; white-space:nowrap;">{{ $primeraCharla->nombre_organizacion }}</span></span>
+                    <span id="ticker-charla-dias" style="font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px; flex-shrink:0; background:{{ $charlaBgBadge }}; color:{{ $charlaColorBadge }};">
+                        {{ $charlaTextoBadge }}
+                    </span>
+                </div>
+                @endif
+
+                {{-- TICKER OBSERVADORES --}}
+                @php $op = $observadoresPendientes ?? null; @endphp
+                @if($op && $op->count() > 0)
+                @php
+                    $primerObs = $op->first();
+                    $fechaObs = $primerObs->observador->fecha_hora ?? null;
+                    $estadoObs = $primerObs->observador->estado ?? null;
+                    $obsVencido = $estadoObs === 'vencida';
+                    $diasObs = $fechaObs ? (int) now()->startOfDay()->diffInDays($fechaObs->startOfDay(), false) : null;
+                    $obsBgBadge = $obsVencido ? '#f3f4f6' : '#e0e7ff';
+                    $obsColorBadge = $obsVencido ? '#4b5563' : '#3730a3';
+                    $obsTextoBadge = $obsVencido ? 'Vencida' : ($fechaObs ? $diasObs . ' días' : '- - - -');
+                    $obsEsHoy = $op->contains(function($item) {
+                        $f = $item->observador->fecha_hora ?? null;
+                        $e = $item->observador->estado ?? null;
+                        if (!$f || $e === 'vencida') return false;
+                        return (int) now()->startOfDay()->diffInDays($f->startOfDay(), false) === 0;
+                    });
+                @endphp
+                <div onclick="toggleObservadores()" id="ticker-box-observador" class="{{ $obsEsHoy ? 'ticker-hoy' : '' }}"
+                     style="display:flex; align-items:center; gap:8px; background:#eef2ff; border:1px solid #c7d2fe; border-radius:8px; padding:5px 12px; cursor:pointer; min-width:180px; max-width:260px;">
+                    <svg width="13" height="13" fill="none" stroke="#3730a3" stroke-width="1.8" viewBox="0 0 24 24" style="flex-shrink:0;">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                        <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    <span style="font-size:11px; color:#3730a3; font-weight:600; white-space:nowrap; flex-shrink:0;">Observador:</span>
+                    <span id="ticker-observador-nombre" style="font-size:12px; color:#312e81; font-weight:500; overflow:hidden; white-space:nowrap; flex:1; position:relative;"><span id="ticker-observador-nombre-inner" style="display:inline-block; white-space:nowrap;">{{ $primerObs->nombre_organizacion }}</span></span>
+                    <span id="ticker-observador-dias" style="font-size:10px; font-weight:600; padding:2px 7px; border-radius:20px; flex-shrink:0; background:{{ $obsBgBadge }}; color:{{ $obsColorBadge }};">
+                        {{ $obsTextoBadge }}
                     </span>
                 </div>
                 @endif
@@ -338,18 +391,58 @@
         <span style="font-size:11px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px;">Charlas Pendientes</span>
     </div>
     @forelse($cp as $c)
-    @php $dc = (int) now()->startOfDay()->diffInDays($c->fecha_hora->startOfDay(), false); @endphp
+    @php
+        $cf = $c->charla->fecha_hora ?? null;
+        $ce = $c->charla->estado ?? null;
+        $cVencida = $ce === 'vencida';
+        $dc = $cf ? (int) now()->startOfDay()->diffInDays($cf->startOfDay(), false) : null;
+        $cBg = $cVencida ? '#f3f4f6' : '#fef9c3';
+        $cColor = $cVencida ? '#4b5563' : '#854d0e';
+        $cTexto = $cVencida ? 'Vencida' : ($cf ? $dc . ' días' : '- - - -');
+    @endphp
     <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 14px; border-bottom:1px solid #f9fafb;">
         <div>
-            <div style="font-size:12px; font-weight:500; color:#111827;">{{ $c->entrada->nombre_organizacion ?? '—' }}</div>
-            <div style="font-size:10.5px; color:#6b7280;">{{ $c->fecha_hora->format('d M Y H:i') }} — {{ $c->entrada->asesor_asignado ?? '—' }}</div>
+            <div style="font-size:12px; font-weight:500; color:#111827;">{{ $c->nombre_organizacion }}</div>
+            <div style="font-size:10.5px; color:#6b7280;">{{ $cf ? $cf->format('d M Y H:i') : 'Sin fecha' }} — {{ $c->asesor_asignado ?? '—' }}</div>
         </div>
-        <span style="font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:20px; flex-shrink:0; background:#fef9c3; color:#854d0e;">
-            {{ $dc }} días
+        <span style="font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:20px; flex-shrink:0; background:{{ $cBg }}; color:{{ $cColor }};">
+            {{ $cTexto }}
         </span>
     </div>
     @empty
     <div style="padding:16px; text-align:center; font-size:12px; color:#9ca3af;">Sin charlas pendientes.</div>
+    @endforelse
+</div>
+@endif
+
+{{-- DROPDOWN OBSERVADORES --}}
+@php $op = $observadoresPendientes ?? null; @endphp
+@if($op && $op->count() > 0)
+<div id="observadoresMenu" style="display:none; position:fixed; top:52px; right:80px; background:#fff; border:1px solid #e5e7eb; border-radius:12px; box-shadow:0 8px 24px rgba(0,0,0,0.12); width:290px; z-index:99999; overflow:hidden;">
+    <div style="padding:10px 14px; border-bottom:1px solid #f3f4f6;">
+        <span style="font-size:11px; font-weight:600; color:#374151; text-transform:uppercase; letter-spacing:0.5px;">Observadores</span>
+    </div>
+    @forelse($op as $o)
+    @php
+        $of = $o->observador->fecha_hora ?? null;
+        $oe = $o->observador->estado ?? null;
+        $oVencido = $oe === 'vencida';
+        $od = $of ? (int) now()->startOfDay()->diffInDays($of->startOfDay(), false) : null;
+        $oBg = $oVencido ? '#f3f4f6' : '#e0e7ff';
+        $oColor = $oVencido ? '#4b5563' : '#3730a3';
+        $oTexto = $oVencido ? 'Vencida' : ($of ? $od . ' días' : '- - - -');
+    @endphp
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 14px; border-bottom:1px solid #f9fafb;">
+        <div>
+            <div style="font-size:12px; font-weight:500; color:#111827;">{{ $o->nombre_organizacion }}</div>
+            <div style="font-size:10.5px; color:#6b7280;">{{ $of ? $of->format('d M Y H:i') : 'Sin fecha' }} — {{ $o->asesor_asignado ?? '—' }}</div>
+        </div>
+        <span style="font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:20px; flex-shrink:0; background:{{ $oBg }}; color:{{ $oColor }};">
+            {{ $oTexto }}
+        </span>
+    </div>
+    @empty
+    <div style="padding:16px; text-align:center; font-size:12px; color:#9ca3af;">Sin observadores pendientes.</div>
     @endforelse
 </div>
 @endif
@@ -435,6 +528,9 @@ function updateMarquee(outerId, innerId) {
     }
 }
 
+let charlaBlinkDetenido = false;
+let observadorBlinkDetenido = false;
+
 @isset($elecciones)
 @if($elecciones->count() > 0)
 updateMarquee('ticker-nombre', 'ticker-nombre-inner');
@@ -479,21 +575,88 @@ updateMarquee('ticker-charla-nombre', 'ticker-charla-nombre-inner');
 @if($cp && $cp->count() > 1)
 @php
     $charlasData = $cp->map(function($c) {
-        return ['nombre' => $c->entrada->nombre_organizacion ?? '—'];
+        $cf = $c->charla->fecha_hora ?? null;
+        $ce = $c->charla->estado ?? null;
+        $vencida = $ce === 'vencida';
+        $dias = $cf ? (int) now()->startOfDay()->diffInDays($cf->startOfDay(), false) : null;
+        return [
+            'nombre' => $c->nombre_organizacion,
+            'bg' => $vencida ? '#f3f4f6' : '#fef9c3',
+            'color' => $vencida ? '#4b5563' : '#854d0e',
+            'texto' => $vencida ? 'Vencida' : ($cf ? $dias . ' días' : '- - - -'),
+            'esHoy' => !$vencida && $dias === 0,
+        ];
     });
 @endphp
 const charlasItems = @json($charlasData);
 let charlasIdx = 0;
 const tickerCharlaNombre = document.getElementById('ticker-charla-nombre');
 const tickerCharlaNombreInner = document.getElementById('ticker-charla-nombre-inner');
+const tickerCharlaDias = document.getElementById('ticker-charla-dias');
+const tickerBoxCharla = document.getElementById('ticker-box-charla');
 if (tickerCharlaNombre && charlasItems.length > 1) {
     setInterval(() => {
         tickerCharlaNombre.style.opacity = '0';
+        if (tickerCharlaDias) tickerCharlaDias.style.opacity = '0';
         setTimeout(() => {
             charlasIdx = (charlasIdx + 1) % charlasItems.length;
-            tickerCharlaNombreInner.textContent = charlasItems[charlasIdx].nombre;
+            const item = charlasItems[charlasIdx];
+            tickerCharlaNombreInner.textContent = item.nombre;
+            if (tickerCharlaDias) {
+                tickerCharlaDias.textContent = item.texto;
+                tickerCharlaDias.style.background = item.bg;
+                tickerCharlaDias.style.color = item.color;
+                tickerCharlaDias.style.opacity = '1';
+            }
             tickerCharlaNombre.style.opacity = '1';
             updateMarquee('ticker-charla-nombre', 'ticker-charla-nombre-inner');
+        }, 300);
+    }, 8000);
+}
+@endif
+
+@php $op = $observadoresPendientes ?? null; @endphp
+@if($op && $op->count() > 0)
+updateMarquee('ticker-observador-nombre', 'ticker-observador-nombre-inner');
+@endif
+@if($op && $op->count() > 1)
+@php
+    $observadoresData = $op->map(function($o) {
+        $of = $o->observador->fecha_hora ?? null;
+        $oe = $o->observador->estado ?? null;
+        $vencido = $oe === 'vencida';
+        $dias = $of ? (int) now()->startOfDay()->diffInDays($of->startOfDay(), false) : null;
+        return [
+            'nombre' => $o->nombre_organizacion,
+            'bg' => $vencido ? '#f3f4f6' : '#e0e7ff',
+            'color' => $vencido ? '#4b5563' : '#3730a3',
+            'texto' => $vencido ? 'Vencida' : ($of ? $dias . ' días' : '- - - -'),
+            'esHoy' => !$vencido && $dias === 0,
+        ];
+    });
+@endphp
+const observadoresItems = @json($observadoresData);
+let observadoresIdx = 0;
+const tickerObservadorNombre = document.getElementById('ticker-observador-nombre');
+const tickerObservadorNombreInner = document.getElementById('ticker-observador-nombre-inner');
+const tickerObservadorDias = document.getElementById('ticker-observador-dias');
+const tickerBoxObservador = document.getElementById('ticker-box-observador');
+if (tickerObservadorNombre && observadoresItems.length > 1) {
+    setInterval(() => {
+        tickerObservadorNombre.style.opacity = '0';
+        if (tickerObservadorDias) tickerObservadorDias.style.opacity = '0';
+        setTimeout(() => {
+            observadoresIdx = (observadoresIdx + 1) % observadoresItems.length;
+            const item = observadoresItems[observadoresIdx];
+            tickerObservadorNombreInner.textContent = item.nombre;
+            if (tickerObservadorDias) {
+                tickerObservadorDias.textContent = item.texto;
+                tickerObservadorDias.style.background = item.bg;
+                tickerObservadorDias.style.color = item.color;
+                tickerObservadorDias.style.opacity = '1';
+            }
+            tickerObservadorNombre.style.opacity = '1';
+            updateMarquee('ticker-observador-nombre', 'ticker-observador-nombre-inner');
         }, 300);
     }, 8000);
 }
@@ -506,6 +669,8 @@ function closeAll() {
     if (el) el.style.display = 'none';
     const ch = document.getElementById('charlasMenu');
     if (ch) ch.style.display = 'none';
+    const ob = document.getElementById('observadoresMenu');
+    if (ob) ob.style.display = 'none';
 }
 
 function posicionarMenuBajoBoton(menu, boton) {
@@ -523,6 +688,22 @@ function toggleCharlas() {
     if (!visible) {
         posicionarMenuBajoBoton(ch, document.getElementById('ticker-box-charla'));
         ch.style.display = 'block';
+        charlaBlinkDetenido = true;
+        const box = document.getElementById('ticker-box-charla');
+        if (box) box.classList.remove('ticker-hoy');
+    }
+}
+
+function toggleObservadores() {
+    const ob = document.getElementById('observadoresMenu');
+    const visible = ob.style.display === 'block';
+    closeAll();
+    if (!visible) {
+        posicionarMenuBajoBoton(ob, document.getElementById('ticker-box-observador'));
+        ob.style.display = 'block';
+        observadorBlinkDetenido = true;
+        const box = document.getElementById('ticker-box-observador');
+        if (box) box.classList.remove('ticker-hoy');
     }
 }
 
@@ -586,6 +767,7 @@ function toggleMenu() {
 document.addEventListener('click', function(e) {
     if (!e.target.closest('#eleccionesMenu') && !e.target.closest('#ticker-box') &&
         !e.target.closest('#charlasMenu') && !e.target.closest('#ticker-box-charla') &&
+        !e.target.closest('#observadoresMenu') && !e.target.closest('#ticker-box-observador') &&
         !e.target.closest('#notifMenu') && !e.target.closest('[onclick="toggleNotif()"]') &&
         !e.target.closest('#userMenu') && !e.target.closest('[onclick="toggleMenu()"]')) {
         closeAll();

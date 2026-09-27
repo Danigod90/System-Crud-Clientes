@@ -1,4 +1,4 @@
-<x-panel-layout title="Mesa de Entrada" :charlasPendientes="$charlasPendientes">
+<x-panel-layout title="Mesa de Entrada" :charlasPendientes="$charlasPendientes" :observadoresPendientes="$observadoresPendientes">
 <div class="px-4">
     <div class="max-w-7xl mx-auto">
 
@@ -219,7 +219,7 @@
             <span style="font-size:11px; color:#6b7280;">Char</span>
             <span style="display:inline-flex; align-items:center; gap:3px;">
                 @foreach($entrada->charlas as $i => $ch)
-                    @php $charDot = match($ch->estado) { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#dc2626', default => '#eab308' }; @endphp
+                    @php $charDot = match($ch->estado) { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#6b7280', default => '#eab308' }; @endphp
                     <span style="width:9px; height:9px; border-radius:50%; background:{{ $charDot }}; display:inline-block;"></span>
                     <sup style="font-size:8px; color:#6b7280;">{{ $i+1 }}</sup>
                 @endforeach
@@ -236,7 +236,7 @@
             <span style="font-size:11px; color:#6b7280;">Tec</span>
             <span style="width:9px; height:9px; border-radius:50%; background:{{ $tecDot }}; display:inline-block;"></span>
         @elseif($tipo === 'obs')
-            @php $obsDot = match($entrada->observador?->estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', default => '#eab308' }; @endphp
+            @php $obsDot = match($entrada->observador?->estado ?? 'pendiente') { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#6b7280', default => '#eab308' }; @endphp
             <span style="font-size:11px; color:#6b7280;">Obs</span>
             <span style="width:9px; height:9px; border-radius:50%; background:{{ $obsDot }}; display:inline-block;"></span>
         @elseif($tipo === 'inf')

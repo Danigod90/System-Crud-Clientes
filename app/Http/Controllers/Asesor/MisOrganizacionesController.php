@@ -64,11 +64,36 @@ class MisOrganizacionesController extends Controller
         $query->whereNull('fecha_eleccion');
     }
 
-    $charlasPendientes = \App\Models\Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', $nombreAsesor))
-        ->where('estado', 'pendiente')
-        ->whereNotNull('fecha_hora')
-        ->where('fecha_hora', '>=', now())
-        ->orderBy('fecha_hora')
+    $charlasPendientes = EntradaConNota::where('asesor_asignado', $nombreAsesor)
+        ->where('asunto_char', true)
+        ->where(fn($q) => $q
+            ->whereDoesntHave('charla')
+            ->orWhereHas('charla', fn($q2) => $q2->whereIn('estado', ['pendiente', 'vencida']))
+        )
+        ->with('charla')
+        ->orderByRaw("(SELECT fecha_hora FROM charlas WHERE charlas.entrada_con_nota_id = entradas_con_nota.id ORDER BY charlas.created_at ASC LIMIT 1) IS NULL")
+        ->orderBy(
+            \App\Models\Charla::select('fecha_hora')
+                ->whereColumn('entrada_con_nota_id', 'entradas_con_nota.id')
+                ->oldest()
+                ->limit(1)
+        )
+        ->take(5)
+        ->get();
+
+    $observadoresPendientes = EntradaConNota::where('asesor_asignado', $nombreAsesor)
+        ->where('asunto_obs', true)
+        ->where(fn($q) => $q
+            ->whereDoesntHave('observador')
+            ->orWhereHas('observador', fn($q2) => $q2->whereIn('estado', ['pendiente', 'vencida']))
+        )
+        ->with('observador')
+        ->orderByRaw("(SELECT fecha_hora FROM observadores WHERE observadores.entrada_con_nota_id = entradas_con_nota.id LIMIT 1) IS NULL")
+        ->orderBy(
+            \App\Models\Observador::select('fecha_hora')
+                ->whereColumn('entrada_con_nota_id', 'entradas_con_nota.id')
+                ->limit(1)
+        )
         ->take(5)
         ->get();
 
@@ -87,7 +112,7 @@ class MisOrganizacionesController extends Controller
 
     $entradas = $query->latest()->paginate(15)->withQueryString();
 
-    return view('asesor.mis-organizaciones', compact('entradas', 'asesores', 'charlasPendientes', 'prioridades'));
+    return view('asesor.mis-organizaciones', compact('entradas', 'asesores', 'charlasPendientes', 'observadoresPendientes', 'prioridades'));
 }
 public function edit(EntradaConNota $entrada)
 {
@@ -95,15 +120,40 @@ public function edit(EntradaConNota $entrada)
     $asesor = \App\Models\Asesor::where('user_id', $user->id)->first();
     $nombreAsesor = $asesor ? $asesor->nombre . ' ' . $asesor->apellido : $user->name;
 
-    $charlasPendientes = \App\Models\Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', $nombreAsesor))
-        ->where('estado', 'pendiente')
-        ->whereNotNull('fecha_hora')
-        ->where('fecha_hora', '>=', now())
-        ->orderBy('fecha_hora')
+    $charlasPendientes = EntradaConNota::where('asesor_asignado', $nombreAsesor)
+        ->where('asunto_char', true)
+        ->where(fn($q) => $q
+            ->whereDoesntHave('charla')
+            ->orWhereHas('charla', fn($q2) => $q2->whereIn('estado', ['pendiente', 'vencida']))
+        )
+        ->with('charla')
+        ->orderByRaw("(SELECT fecha_hora FROM charlas WHERE charlas.entrada_con_nota_id = entradas_con_nota.id ORDER BY charlas.created_at ASC LIMIT 1) IS NULL")
+        ->orderBy(
+            \App\Models\Charla::select('fecha_hora')
+                ->whereColumn('entrada_con_nota_id', 'entradas_con_nota.id')
+                ->oldest()
+                ->limit(1)
+        )
+        ->take(5)
+        ->get();
+
+    $observadoresPendientes = EntradaConNota::where('asesor_asignado', $nombreAsesor)
+        ->where('asunto_obs', true)
+        ->where(fn($q) => $q
+            ->whereDoesntHave('observador')
+            ->orWhereHas('observador', fn($q2) => $q2->whereIn('estado', ['pendiente', 'vencida']))
+        )
+        ->with('observador')
+        ->orderByRaw("(SELECT fecha_hora FROM observadores WHERE observadores.entrada_con_nota_id = entradas_con_nota.id LIMIT 1) IS NULL")
+        ->orderBy(
+            \App\Models\Observador::select('fecha_hora')
+                ->whereColumn('entrada_con_nota_id', 'entradas_con_nota.id')
+                ->limit(1)
+        )
         ->take(5)
         ->get();
 
     $entrada->load('charla', 'documentos.user');
-    return view('asesor.edit', compact('entrada', 'charlasPendientes'));
+    return view('asesor.edit', compact('entrada', 'charlasPendientes', 'observadoresPendientes'));
 }
 }

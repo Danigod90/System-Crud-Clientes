@@ -1,4 +1,4 @@
-<x-panel-layout :title="$titulo" :charlasPendientes="$charlasPendientes">
+<x-panel-layout :title="$titulo" :charlasPendientes="$charlasPendientes" :observadoresPendientes="$observadoresPendientes">
 
 <style>
 .manual-row { transition: background 0.15s; }

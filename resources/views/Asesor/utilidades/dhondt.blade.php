@@ -1,4 +1,4 @@
-<x-panel-layout title="Calculadora D'Hondt" :charlasPendientes="$charlasPendientes">
+<x-panel-layout title="Calculadora D'Hondt" :charlasPendientes="$charlasPendientes" :observadoresPendientes="$observadoresPendientes">
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');

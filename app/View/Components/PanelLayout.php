@@ -11,11 +11,13 @@ class PanelLayout extends Component
     public string $title = 'Dashboard',
     public $elecciones = null,
     public $charlasPendientes = null,
+    public $observadoresPendientes = null,
 ) {}
 
   public function render()
 {
     view()->share('charlasPendientes', $this->charlasPendientes);
+    view()->share('observadoresPendientes', $this->observadoresPendientes);
     view()->share('elecciones', $this->elecciones);
     view()->share('title', $this->title);
     return view('layouts.panel');

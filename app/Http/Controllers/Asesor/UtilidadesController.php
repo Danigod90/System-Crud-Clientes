@@ -11,7 +11,8 @@ class UtilidadesController extends Controller
     {
         $user = Auth::user();
         $charlasPendientes = $user->charlasPendientes ?? collect();
+        $observadoresPendientes = collect();
 
-        return view('asesor.utilidades.dhondt', compact('charlasPendientes'));
+        return view('asesor.utilidades.dhondt', compact('charlasPendientes', 'observadoresPendientes'));
     }
 }

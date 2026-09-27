@@ -1,4 +1,4 @@
-<x-panel-layout title="Ver Entrada — {{ $conNota->codigo_org }}" :charlasPendientes="$charlasPendientes">
+<x-panel-layout title="Ver Entrada — {{ $conNota->codigo_org }}" :charlasPendientes="$charlasPendientes" :observadoresPendientes="$observadoresPendientes">
 
 <div class="px-2 py-2">
     <div style="max-width:760px; margin:0 auto;">
@@ -460,7 +460,7 @@
         'realizada'  => '#16a34a',
         'cancelada'  => '#dc2626',
         'suspendida' => '#f97316',
-        'vencida'    => '#dc2626',
+        'vencida'    => '#6b7280',
         default      => '#eab308',
     };
     $tipoLabel = match($ch->char_tipo ?? '') {
@@ -521,6 +521,7 @@
                     'realizada'  => '#16a34a',
                     'cancelada'  => '#dc2626',
                     'suspendida' => '#f97316',
+                    'vencida'    => '#6b7280',
                     default      => '#eab308',
                 };
             @endphp

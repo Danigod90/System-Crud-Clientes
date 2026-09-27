@@ -1,4 +1,4 @@
-<x-panel-layout title="Panel General" :elecciones="$elecciones" :charlasPendientes="$charlasPendientes">
+<x-panel-layout title="Panel General" :elecciones="$elecciones" :charlasPendientes="$charlasPendientes" :observadoresPendientes="$observadoresPendientes">
 <style>
 .card-stat {
     transition: transform 0.2s ease, box-shadow 0.2s ease;

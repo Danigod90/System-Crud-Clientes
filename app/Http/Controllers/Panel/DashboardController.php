@@ -35,31 +35,68 @@ if ($rol === 'Secretaria Sin Nota') {
         ->take(5)
         ->get();
     $charlasPendientes = collect();
-    return view('panel.dashboard-sin-nota', compact('stats', 'elecciones', 'charlasPendientes'));
+    $observadoresPendientes = collect();
+    return view('panel.dashboard-sin-nota', compact('stats', 'elecciones', 'charlasPendientes', 'observadoresPendientes'));
 }
     if ($rol === 'Asesor') {
         $asesor = \App\Models\Asesor::where('user_id', $user->id)->first();
         $nombreAsesor = $asesor ? $asesor->nombre . ' ' . $asesor->apellido : $user->name;
         $entradas = EntradaConNota::with(['charla', 'charlas', 'detalleTecnico'])->where('asesor_asignado', $nombreAsesor)->latest()->take(10)->get();
-        $elecciones = EntradaConNota::where('asesor_asignado', $nombreAsesor)
+
+        // El tinker de Elecciones se comparte entre todos los asesores (igual que
+        // en Secretaría/Técnico), para que cualquiera vea rápido qué elección
+        // tiene cada colega sin tener que filtrar. La tarjeta de "elecciones
+        // próximas" del dashboard sigue contando solo las propias.
+        $eleccionesPropiasCount = EntradaConNota::where('asesor_asignado', $nombreAsesor)
             ->whereNotNull('fecha_eleccion')
+            ->where('fecha_eleccion', '>=', now())
+            ->where('fecha_eleccion', '<=', now()->addDays(30))
+            ->where('mostrar_en_ticker', true)
+            ->count();
+
+        $elecciones = EntradaConNota::whereNotNull('fecha_eleccion')
             ->where('fecha_eleccion', '>=', now())
             ->where('fecha_eleccion', '<=', now()->addDays(30))
             ->where('mostrar_en_ticker', true)
             ->orderBy('fecha_eleccion')
             ->take(5)
             ->get();
-        $charlasPendientes = \App\Models\Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', $nombreAsesor))
-            ->where('estado', 'pendiente')
-            ->whereNotNull('fecha_hora')
-            ->where('fecha_hora', '>=', now())
-            ->orderBy('fecha_hora')
+        $charlasPendientes = EntradaConNota::where('asesor_asignado', $nombreAsesor)
+            ->where('asunto_char', true)
+            ->where(fn($q) => $q
+                ->whereDoesntHave('charla')
+                ->orWhereHas('charla', fn($q2) => $q2->whereIn('estado', ['pendiente', 'vencida']))
+            )
+            ->with('charla')
+            ->orderByRaw("(SELECT fecha_hora FROM charlas WHERE charlas.entrada_con_nota_id = entradas_con_nota.id ORDER BY charlas.created_at ASC LIMIT 1) IS NULL")
+            ->orderBy(
+                \App\Models\Charla::select('fecha_hora')
+                    ->whereColumn('entrada_con_nota_id', 'entradas_con_nota.id')
+                    ->oldest()
+                    ->limit(1)
+            )
+            ->take(5)
+            ->get();
+
+        $observadoresPendientes = EntradaConNota::where('asesor_asignado', $nombreAsesor)
+            ->where('asunto_obs', true)
+            ->where(fn($q) => $q
+                ->whereDoesntHave('observador')
+                ->orWhereHas('observador', fn($q2) => $q2->whereIn('estado', ['pendiente', 'vencida']))
+            )
+            ->with('observador')
+            ->orderByRaw("(SELECT fecha_hora FROM observadores WHERE observadores.entrada_con_nota_id = entradas_con_nota.id LIMIT 1) IS NULL")
+            ->orderBy(
+                \App\Models\Observador::select('fecha_hora')
+                    ->whereColumn('entrada_con_nota_id', 'entradas_con_nota.id')
+                    ->limit(1)
+            )
             ->take(5)
             ->get();
         $stats = [
     'organizaciones'      => EntradaConNota::where('asesor_asignado', $nombreAsesor)->count(),
     'charlas_pendientes'  => Charla::whereHas('entrada', fn($q) => $q->where('asesor_asignado', $nombreAsesor))->where('estado', 'pendiente')->count(),
-    'elecciones_proximas' => $elecciones->count(),
+    'elecciones_proximas' => $eleccionesPropiasCount,
     'sin_fecha'           => EntradaConNota::where('asesor_asignado', $nombreAsesor)->whereNull('fecha_eleccion')->count(),
     'tec_pendientes' => EntradaConNota::where('asesor_asignado', $nombreAsesor)
         ->where('asunto_tec', true)
@@ -82,7 +119,7 @@ if ($rol === 'Secretaria Sin Nota') {
 ];
         session(['charlasPendientes' => $charlasPendientes]);
         $prioridades = \App\Models\PrioridadTecnica::with(['entrada.detalleTecnico'])->orderBy('orden')->get();
-return view('panel.dashboard-asesor', compact('entradas', 'elecciones', 'stats', 'charlasPendientes', 'prioridades'));
+return view('panel.dashboard-asesor', compact('entradas', 'elecciones', 'stats', 'charlasPendientes', 'observadoresPendientes', 'prioridades'));
     }
 
     $asesorFiltro = $request->get('asesor');
@@ -118,13 +155,37 @@ return view('panel.dashboard-asesor', compact('entradas', 'elecciones', 'stats',
             ->orWhereDoesntHave('observador')
         )->count(),
 ];
-$charlasPendientes = \App\Models\Charla::where('estado', 'pendiente')
-        ->whereNotNull('fecha_hora')
-        ->where('fecha_hora', '>=', now())
-        ->orderBy('fecha_hora')
+$charlasPendientes = EntradaConNota::where('asunto_char', true)
+        ->where(fn($q) => $q
+            ->whereDoesntHave('charla')
+            ->orWhereHas('charla', fn($q2) => $q2->whereIn('estado', ['pendiente', 'vencida']))
+        )
+        ->with('charla')
+        ->orderByRaw("(SELECT fecha_hora FROM charlas WHERE charlas.entrada_con_nota_id = entradas_con_nota.id ORDER BY charlas.created_at ASC LIMIT 1) IS NULL")
+        ->orderBy(
+            \App\Models\Charla::select('fecha_hora')
+                ->whereColumn('entrada_con_nota_id', 'entradas_con_nota.id')
+                ->oldest()
+                ->limit(1)
+        )
         ->take(5)
         ->get();
 
-    return view('panel.dashboard', compact('entradas', 'elecciones', 'stats', 'asesores', 'charlasPendientes'));
+    $observadoresPendientes = EntradaConNota::where('asunto_obs', true)
+        ->where(fn($q) => $q
+            ->whereDoesntHave('observador')
+            ->orWhereHas('observador', fn($q2) => $q2->whereIn('estado', ['pendiente', 'vencida']))
+        )
+        ->with('observador')
+        ->orderByRaw("(SELECT fecha_hora FROM observadores WHERE observadores.entrada_con_nota_id = entradas_con_nota.id LIMIT 1) IS NULL")
+        ->orderBy(
+            \App\Models\Observador::select('fecha_hora')
+                ->whereColumn('entrada_con_nota_id', 'entradas_con_nota.id')
+                ->limit(1)
+        )
+        ->take(5)
+        ->get();
+
+    return view('panel.dashboard', compact('entradas', 'elecciones', 'stats', 'asesores', 'charlasPendientes', 'observadoresPendientes'));
 }
 }

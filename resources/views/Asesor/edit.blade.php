@@ -1,4 +1,4 @@
-<x-panel-layout title="Editar Organización — {{ $entrada->codigo_org }}" :charlasPendientes="$charlasPendientes">
+<x-panel-layout title="Editar Organización — {{ $entrada->codigo_org }}" :charlasPendientes="$charlasPendientes" :observadoresPendientes="$observadoresPendientes">
     @php
 if (request()->has('volver')) {
     session(['volver_organizacion' => request('volver')]);
@@ -239,7 +239,7 @@ if (request()->has('volver')) {
                         'realizada'  => '#16a34a',
                         'cancelada'  => '#dc2626',
                         'suspendida' => '#f97316',
-                        'vencida'    => '#dc2626',
+                        'vencida'    => '#6b7280',
                         default      => '#eab308',
                     };
                 @endphp
@@ -266,7 +266,7 @@ if (request()->has('volver')) {
             'realizada'  => '#16a34a',
             'cancelada'  => '#dc2626',
             'suspendida' => '#f97316',
-            'vencida'    => '#dc2626',
+            'vencida'    => '#6b7280',
             default      => '#eab308',
         };
         $tipoLabel = match($ch->char_tipo ?? '') {
@@ -473,6 +473,7 @@ if (request()->has('volver')) {
                                 'realizada'  => '#16a34a',
                                 'cancelada'  => '#dc2626',
                                 'suspendida' => '#f97316',
+                                'vencida'    => '#6b7280',
                                 default      => '#eab308',
                             };
                         @endphp

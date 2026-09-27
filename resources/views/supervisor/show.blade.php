@@ -124,7 +124,7 @@
         @if($entrada->asunto_char && $entrada->charlas->count() > 0)
         @foreach($entrada->charlas as $i => $ch)
         @php
-            $dotColor = match($ch->estado) { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', default => '#eab308' };
+            $dotColor = match($ch->estado) { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#6b7280', default => '#eab308' };
             $tipoLabel = match($ch->char_tipo ?? '') { 'proceso_electoral' => 'Charla sobre Proceso Electoral', 'mmrv' => 'Charla para MMRV', 'ambos' => 'Charla sobre Proceso - Charla MMRV', default => '—' };
         @endphp
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
@@ -163,7 +163,7 @@
 
         {{-- OBSERVADORES --}}
         @if($entrada->asunto_obs && $entrada->observador)
-        @php $obsDot = match($entrada->observador->estado) { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', default => '#eab308' }; @endphp
+        @php $obsDot = match($entrada->observador->estado) { 'realizada' => '#16a34a', 'cancelada' => '#dc2626', 'suspendida' => '#f97316', 'vencida' => '#6b7280', default => '#eab308' }; @endphp
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
             <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:8px;">
                 Observadores

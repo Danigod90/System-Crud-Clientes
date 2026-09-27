@@ -14,10 +14,11 @@ class ManualController extends Controller
         $categoria = request()->routeIs('tecnico.manuales.*') ? 'tecnico' : 'general';
         $manuales = Manual::with('user')->where('categoria', $categoria)->orderBy('created_at', 'desc')->get();
         $charlasPendientes = auth()->user()->charlasPendientes ?? collect();
+        $observadoresPendientes = collect();
         $routePrefix = $categoria === 'tecnico' ? 'tecnico.manuales' : 'asesor.manuales';
         $titulo = $categoria === 'tecnico' ? 'Manuales Técnicos' : 'Manuales';
         $subtitulo = $categoria === 'tecnico' ? 'Documentos y recursos para técnicos' : 'Documentos y recursos para asesores';
-        return view('asesor.utilidades.manuales', compact('manuales', 'charlasPendientes', 'routePrefix', 'titulo', 'subtitulo'));
+        return view('asesor.utilidades.manuales', compact('manuales', 'charlasPendientes', 'observadoresPendientes', 'routePrefix', 'titulo', 'subtitulo'));
     }
 
     public function store(Request $request)
