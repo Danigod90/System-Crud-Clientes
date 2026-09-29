@@ -21,21 +21,15 @@ class AppServiceProvider extends ServiceProvider
         View::composer('layouts.panel', function ($view) {
     if (!Auth::check()) return;
 
-    $user = Auth::user();
-    $rol = $user->roles->first()?->name;
-
-    $query = EntradaConNota::whereNotNull('fecha_eleccion')
+    // El tinker de Elecciones se comparte entre todos los roles (Secretaria,
+    // Tecnico y Asesor), sin filtrar por asesor asignado.
+    $elecciones = EntradaConNota::whereNotNull('fecha_eleccion')
         ->where('fecha_eleccion', '>=', now()->startOfDay())
         ->where('fecha_eleccion', '<=', now()->addDays(30))
         ->where('mostrar_en_ticker', true)
         ->orderBy('fecha_eleccion')
-        ->take(10);
-
-    if ($rol === 'Asesor') {
-        $query->where('asesor_asignado', $user->name);
-    }
-
-    $elecciones = $query->get();
+        ->take(10)
+        ->get();
 
     $view->with('elecciones', $elecciones);
 });
