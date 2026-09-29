@@ -12,7 +12,11 @@ use Illuminate\Support\Facades\Schedule;
 // Marca automáticamente como "vencida" las charlas y observadores pendientes
 // cuya fecha ya pasó (sin que nadie las haya marcado manualmente como
 // realizada/cancelada/suspendida).
-Schedule::command('estados:marcar-vencidos')->dailyAt('00:05');
+// NOTA: en producción esto NO se dispara vía este scheduler (nadie llama a
+// `schedule:run` cada minuto). Se ejecuta con una tarea de Windows
+// ("MarcarVencidosTSJE") que corre `php artisan estados:marcar-vencidos`
+// directamente al iniciar el servidor, ya que este solo está encendido de
+// 7:50 a 14:00 (lun-vie) y el horario de arranque varía día a día.
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
