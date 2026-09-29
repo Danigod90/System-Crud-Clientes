@@ -385,18 +385,18 @@ if (request()->has('volver')) {
             </form>
             <form method="POST" action="{{ route('asesor.charla.estado', $ch) }}">
                 @csrf @method('PATCH')
-                <input type="hidden" name="estado" value="suspendida">
-                <button type="submit" onclick="return confirm('¿Marcar como suspendida?')"
+                <input type="hidden" name="estado" value="{{ $ch->estado === 'suspendida' ? 'pendiente' : 'suspendida' }}">
+                <button type="submit" onclick="return confirm('{{ $ch->estado === 'suspendida' ? '¿Querés reactivar esta charla?' : '¿Marcar como suspendida?' }}')"
                         style="display:inline-flex; align-items:center; gap:5px; background:#f97316; color:white; padding:6px 12px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
-                    Suspendida
+                    {{ $ch->estado === 'suspendida' ? '↺ Reactivar' : 'Suspendida' }}
                 </button>
             </form>
             <form method="POST" action="{{ route('asesor.charla.estado', $ch) }}">
                 @csrf @method('PATCH')
-                <input type="hidden" name="estado" value="cancelada">
-                <button type="submit" onclick="return confirm('¿Confirmar cancelación?')"
+                <input type="hidden" name="estado" value="{{ $ch->estado === 'cancelada' ? 'pendiente' : 'cancelada' }}">
+                <button type="submit" onclick="return confirm('{{ $ch->estado === 'cancelada' ? '¿Querés reactivar esta charla?' : '¿Confirmar cancelación?' }}')"
                         style="display:inline-flex; align-items:center; gap:5px; background:#dc2626; color:white; padding:6px 12px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
-                    Cancelada
+                    {{ $ch->estado === 'cancelada' ? '↺ Reactivar' : 'Cancelada' }}
                 </button>
             </form>
             <form method="POST" action="{{ route('asesor.charla.destroy', $ch) }}">
@@ -582,20 +582,28 @@ if (request()->has('volver')) {
                     </form>
                     <form method="POST" action="{{ route('asesor.observador.estado', $entrada->observador) }}">
                         @csrf @method('PATCH')
-                        <input type="hidden" name="estado" value="suspendida">
-                        <button type="submit" onclick="return confirm('¿Marcar como suspendida?')"
+                        <input type="hidden" name="estado" value="{{ $entrada->observador->estado === 'suspendida' ? 'pendiente' : 'suspendida' }}">
+                        <button type="submit" onclick="return confirm('{{ $entrada->observador->estado === 'suspendida' ? '¿Querés reactivar este observador?' : '¿Marcar como suspendida?' }}')"
                                 style="display:inline-flex; align-items:center; gap:6px; background:#f97316; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                            @if($entrada->observador->estado === 'suspendida')
+                            ↺ Reactivar
+                            @else
                             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="9"/><line x1="14" y1="15" x2="14" y2="9"/></svg>
                             Suspendida
+                            @endif
                         </button>
                     </form>
                     <form method="POST" action="{{ route('asesor.observador.estado', $entrada->observador) }}">
                         @csrf @method('PATCH')
-                        <input type="hidden" name="estado" value="cancelada">
-                        <button type="submit" onclick="return confirm('¿Confirmar cancelación?')"
+                        <input type="hidden" name="estado" value="{{ $entrada->observador->estado === 'cancelada' ? 'pendiente' : 'cancelada' }}">
+                        <button type="submit" onclick="return confirm('{{ $entrada->observador->estado === 'cancelada' ? '¿Querés reactivar este observador?' : '¿Confirmar cancelación?' }}')"
                                 style="display:inline-flex; align-items:center; gap:6px; background:#dc2626; color:white; padding:8px 16px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                            @if($entrada->observador->estado === 'cancelada')
+                            ↺ Reactivar
+                            @else
                             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                             Cancelada
+                            @endif
                         </button>
                     </form>
                     <form method="POST" action="{{ route('asesor.observador.destroy', $entrada->observador) }}">

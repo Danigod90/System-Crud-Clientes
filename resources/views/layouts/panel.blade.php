@@ -406,17 +406,41 @@
             default => null,
         };
     @endphp
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 14px; border-bottom:1px solid #f9fafb;">
-        <div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; padding:9px 14px; border-bottom:1px solid #f9fafb; gap:6px;">
+        <div style="min-width:0; flex:1;">
             <div style="font-size:12px; font-weight:500; color:#111827;">{{ $c->nombre_organizacion }}</div>
             <div style="font-size:10.5px; color:#6b7280;">{{ $cf ? $cf->format('d M Y H:i') : 'Sin fecha' }} — {{ $c->asesor_asignado ?? '—' }}</div>
             @if($cTipoLabel)
             <div style="font-size:10px; color:#9ca3af; margin-top:1px;">{{ $cTipoLabel }}</div>
             @endif
         </div>
-        <span style="font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:20px; flex-shrink:0; background:{{ $cBg }}; color:{{ $cColor }};">
-            {{ $cTexto }}
-        </span>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0;">
+            <span style="font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:20px; flex-shrink:0; background:{{ $cBg }}; color:{{ $cColor }};">
+                {{ $cTexto }}
+            </span>
+            @if($c->charla_relevante)
+            <div style="display:flex; gap:4px;" onclick="event.stopPropagation()">
+                <form method="POST" action="{{ route('asesor.charla.estado', $c->charla_relevante) }}">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="estado" value="realizada">
+                    <button type="submit" title="Realizada" onclick="return confirm('¿Marcar esta charla como realizada?')"
+                            style="width:16px; height:16px; border-radius:50%; background:#16a34a; color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:9px; padding:0; line-height:1;">✓</button>
+                </form>
+                <form method="POST" action="{{ route('asesor.charla.estado', $c->charla_relevante) }}">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="estado" value="suspendida">
+                    <button type="submit" title="Suspendida" onclick="return confirm('¿Marcar esta charla como suspendida?')"
+                            style="width:16px; height:16px; border-radius:50%; background:#f97316; color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:9px; padding:0; line-height:1;">-</button>
+                </form>
+                <form method="POST" action="{{ route('asesor.charla.estado', $c->charla_relevante) }}">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="estado" value="cancelada">
+                    <button type="submit" title="Cancelada" onclick="return confirm('¿Confirmar la cancelación de esta charla?')"
+                            style="width:16px; height:16px; border-radius:50%; background:#dc2626; color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:9px; padding:0; line-height:1;">✕</button>
+                </form>
+            </div>
+            @endif
+        </div>
     </div>
     @empty
     <div style="padding:16px; text-align:center; font-size:12px; color:#9ca3af;">Sin charlas pendientes.</div>
@@ -441,14 +465,38 @@
         $oColor = $oVencido ? '#4b5563' : '#3730a3';
         $oTexto = $oVencido ? 'Vencida' : ($of ? $od . ' días' : '- - - -');
     @endphp
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:9px 14px; border-bottom:1px solid #f9fafb;">
-        <div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; padding:9px 14px; border-bottom:1px solid #f9fafb; gap:6px;">
+        <div style="min-width:0; flex:1;">
             <div style="font-size:12px; font-weight:500; color:#111827;">{{ $o->nombre_organizacion }}</div>
             <div style="font-size:10.5px; color:#6b7280;">{{ $of ? $of->format('d M Y H:i') : 'Sin fecha' }} — {{ $o->asesor_asignado ?? '—' }}</div>
         </div>
-        <span style="font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:20px; flex-shrink:0; background:{{ $oBg }}; color:{{ $oColor }};">
-            {{ $oTexto }}
-        </span>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0;">
+            <span style="font-size:10.5px; font-weight:500; padding:3px 9px; border-radius:20px; flex-shrink:0; background:{{ $oBg }}; color:{{ $oColor }};">
+                {{ $oTexto }}
+            </span>
+            @if($o->observador)
+            <div style="display:flex; gap:4px;" onclick="event.stopPropagation()">
+                <form method="POST" action="{{ route('asesor.observador.estado', $o->observador) }}">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="estado" value="realizada">
+                    <button type="submit" title="Realizada" onclick="return confirm('¿Marcar este observador como realizado?')"
+                            style="width:16px; height:16px; border-radius:50%; background:#16a34a; color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:9px; padding:0; line-height:1;">✓</button>
+                </form>
+                <form method="POST" action="{{ route('asesor.observador.estado', $o->observador) }}">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="estado" value="suspendida">
+                    <button type="submit" title="Suspendida" onclick="return confirm('¿Marcar este observador como suspendido?')"
+                            style="width:16px; height:16px; border-radius:50%; background:#f97316; color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:9px; padding:0; line-height:1;">-</button>
+                </form>
+                <form method="POST" action="{{ route('asesor.observador.estado', $o->observador) }}">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="estado" value="cancelada">
+                    <button type="submit" title="Cancelada" onclick="return confirm('¿Confirmar la cancelación de este observador?')"
+                            style="width:16px; height:16px; border-radius:50%; background:#dc2626; color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:9px; padding:0; line-height:1;">✕</button>
+                </form>
+            </div>
+            @endif
+        </div>
     </div>
     @empty
     <div style="padding:16px; text-align:center; font-size:12px; color:#9ca3af;">Sin observadores pendientes.</div>
