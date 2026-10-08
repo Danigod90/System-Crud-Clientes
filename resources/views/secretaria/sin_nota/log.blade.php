@@ -174,6 +174,15 @@
                                             <circle cx="12" cy="12" r="3"/>
                                         </svg>
                                     </button>
+                                    <button onclick="reimprimirRecibo({{ $entrada->id }}, this)"
+                                            title="Reimprimir recibo"
+                                            style="display:inline-flex; align-items:center; justify-content:center; background:#f0f9ff; border:1px solid #bae6fd; color:#0369a1; padding:3px 6px; border-radius:6px; font-size:11px; cursor:pointer; line-height:1;">
+                                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                            <polyline points="6 9 6 2 18 2 18 9"/>
+                                            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                                            <rect x="6" y="14" width="12" height="8"/>
+                                        </svg>
+                                    </button>
                                     @if($entrada->asunto_log)
                                         <button onclick="abrirModal({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}', {{ $urnas }}, {{ $cuartos }}, {{ $tintas }})"
                                                 style="background:#2563eb; color:white; border:none; padding:3px 8px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500; white-space:nowrap;">
@@ -214,6 +223,7 @@
                             <th style="padding:7px 12px; text-align:center; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Cuartos</th>
                             <th style="padding:7px 12px; text-align:center; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Tintas</th>
                             <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">Fecha devolución</th>
+                            <th style="padding:7px 12px;"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -241,9 +251,20 @@
                             <td style="padding:7px 12px; text-align:center; color:#374151; font-size:12px;">{{ $entrada->logDevolucion?->cuartos_devueltos ?? '—' }}</td>
                             <td style="padding:7px 12px; text-align:center; color:#374151; font-size:12px;">{{ $entrada->logDevolucion?->tintas_devueltas ?? '—' }}</td>
                             <td style="padding:7px 12px; color:#94a3b8; white-space:nowrap; font-size:11px;">{{ $entrada->logDevolucion?->created_at?->format('d/m/Y') ?? '—' }}</td>
+                            <td style="padding:7px 12px; white-space:nowrap;">
+                                <button onclick="reimprimirRecibo({{ $entrada->id }}, this)"
+                                        title="Reimprimir recibo"
+                                        style="display:inline-flex; align-items:center; justify-content:center; background:#f0f9ff; border:1px solid #bae6fd; color:#0369a1; padding:3px 6px; border-radius:6px; font-size:11px; cursor:pointer; line-height:1;">
+                                    <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                                        <polyline points="6 9 6 2 18 2 18 9"/>
+                                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+                                        <rect x="6" y="14" width="12" height="8"/>
+                                    </svg>
+                                </button>
+                            </td>
                         </tr>
                         @empty
-                        <tr><td colspan="11" style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">Sin devoluciones registradas todavía.</td></tr>
+                        <tr><td colspan="12" style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">Sin devoluciones registradas todavía.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -513,6 +534,26 @@ async function confirmarImprimirLog() {
     } catch(e) {
         alert('Error al cargar el recibo. Intentá de nuevo.');
         console.error(e);
+    }
+}
+
+// Reimpresión de solo lectura: muestra el recibo con los datos ya guardados,
+// sin modificar nada (sirve si falló la impresora, por ejemplo).
+async function reimprimirRecibo(id, btn) {
+    if (btn) { btn.disabled = true; btn.style.opacity = '0.6'; }
+    try {
+        const response = await fetch('/secretaria/sin-nota/log/' + id + '/reimprimir', {
+            headers: { 'Accept': 'application/json' }
+        });
+        if (!response.ok) throw new Error('HTTP ' + response.status);
+        const data = await response.json();
+        document.getElementById('recibo-log-html').innerHTML = data.html;
+        document.getElementById('modal-recibo-log').style.display = 'flex';
+    } catch (e) {
+        alert('No se pudo cargar el recibo. Intentá de nuevo.');
+        console.error(e);
+    } finally {
+        if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
     }
 }
 

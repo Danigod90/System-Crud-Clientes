@@ -205,19 +205,23 @@ $detalle->save();
 return redirect()->back()->with('success', 'Datos técnicos guardados correctamente.');
 }
 
-   public function imprimirLogistica($entrada_id)
+   // $registrar = false: reimpresión de solo lectura (no marca impreso, no
+   // toca fechas/estados ni notifica). Se usa desde Gestión de Log.
+   public function imprimirLogistica($entrada_id, bool $registrar = true)
 {
     $entrada = EntradaConNota::findOrFail($entrada_id);
 $entrada->refresh();
 $detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();
 
     // Marcar como impreso (la fecha de impresion solo se registra la primera vez)
-    $detalle->impreso = true;
-    if (is_null($detalle->impreso_at)) {
-        $detalle->impreso_at = now();
+    if ($registrar) {
+        $detalle->impreso = true;
+        if (is_null($detalle->impreso_at)) {
+            $detalle->impreso_at = now();
+        }
+        $detalle->save();
+        $detalle->refresh();
     }
-    $detalle->save();
-    $detalle->refresh();
 
     // Datos base
     $fecha      = now()->format('d/m/Y');
@@ -274,6 +278,24 @@ $estTintas   = !is_null($detalle->mat_final_tintas)   ? $detalle->mat_final_tint
     $logUrnas   = $entrada->log_urnas   ?? 0;
     $logCuartos = $entrada->log_cuartos ?? 0;
     $logTintas  = $entrada->log_tintas  ?? 0;
+
+    // Si el log ya se entregó antes (ej. por Log de Urgencia), se usan las
+    // cantidades realmente entregadas y se muestran los datos de esa entrega
+    // en lugar de dejar la sección [2] en blanco.
+    $logYaSalio = $entrada->asunto_log && !is_null($entrada->log_impreso_at);
+    if ($logYaSalio) {
+        $estUrnas   = $logUrnas;
+        $estCuartos = $logCuartos;
+        $estTintas  = $logTintas;
+    }
+    $e = fn($v) => htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8');
+    $entregaHtml = $logYaSalio ? '
+<div style="border:1px solid #bfdbfe; background:#eff6ff; padding:5px 8px; font-size:9px; margin-bottom:6px;">
+    <strong>Entrega ya registrada:</strong>
+    ' . ($entrada->fecha_entrega ? $e($entrada->fecha_entrega->format('d/m/Y H:i')) : '—') . ' &nbsp;|&nbsp;
+    <strong>Entregó:</strong> ' . $e($entrada->entregado_por ?? '—') . ' &nbsp;|&nbsp;
+    <strong>Retiró:</strong> ' . $e($entrada->persona_retira ?? '—') . ' (' . $e($entrada->telefono_retira ?? '—') . ')
+</div>' : '';
 
     // Padrón
    $padronDefSI = $detalle->padron_definitivo ? '[X]' : '[  ]';
@@ -447,7 +469,7 @@ $padronCINO  = $detalle->padron_con_cedula ? '[  ]' : '[X]';
     <strong>Código:</strong> ' . $codigo . ' &nbsp;&nbsp;
     <strong>Organización:</strong> ' . $org . '
 </div>
-<div class="dev-box"><strong>Fecha de entrega:</strong> _______ / _______ / _______</div>
+' . $entregaHtml . ($logYaSalio ? '' : '<div class="dev-box"><strong>Fecha de entrega:</strong> _______ / _______ / _______</div>') . '
 <div class="dev-box"><strong>Detalle:</strong> (' . str_pad($estUrnas, 2, '0', STR_PAD_LEFT) . ') urna(s) de plástico, (' . str_pad($estCuartos, 2, '0', STR_PAD_LEFT) . ') cuarto(s) oscuros, (' . str_pad($estTintas, 2, '0', STR_PAD_LEFT) . ') frasco(s) de tinta indeleble.</div>
 
 <table class="dev-grid">
@@ -467,6 +489,7 @@ $padronCINO  = $detalle->padron_con_cedula ? '[  ]' : '[X]';
 </html>';
 
 
+if ($registrar) {
 // Solo actualizar log_estado si tiene Log SIN Tec
 if ($entrada->asunto_log && !$entrada->asunto_tec) {
     $entrada->update([
@@ -476,7 +499,7 @@ if ($entrada->asunto_log && !$entrada->asunto_tec) {
 } else {
     // Log+Tec o Tec solo — solo marcar impreso, no cambiar estado
     $entrada->update([
-        'log_impreso_at' => now(),
+        'log_impreso_at' => $entrada->log_impreso_at ?? now(),
     ]);
 }
 
@@ -490,6 +513,7 @@ foreach ($secretarias as $secretaria) {
     ));
     \App\Services\NotificationPruner::prune($secretaria);
 }
+} // fin if ($registrar)
 
 // Si piden JSON (desde el modal), devolver el HTML del recibo
 if (request()->expectsJson()) {

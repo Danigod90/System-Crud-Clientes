@@ -75,11 +75,20 @@
         </div>
         @endif
 
+        @php
+            $logSalio = $entrada->asunto_log && !is_null($entrada->log_impreso_at);
+            $logFechaTxt = $entrada->fecha_entrega ? ' el ' . $entrada->fecha_entrega->format('d/m/Y H:i') : '';
+        @endphp
         @if((int) $cantidad_mesas > 0)
         <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin:0 0 10px;">
                 <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0;">Materiales a Entregar</p>
             </div>
+            @if($logSalio)
+            <div style="background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; border-radius:6px; padding:6px 10px; font-size:12px; margin-bottom:10px;">
+                ✓ Log ya entregado{{ $logFechaTxt }} — cuartos, urnas y tintas muestran lo entregado.
+            </div>
+            @endif
             <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:8px;">
                 <div style="text-align:center;">
                     <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Papeletas</p>
@@ -105,15 +114,15 @@
                 @if($entrada->asunto_log)
                 <div style="text-align:center;">
                     <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Cuartos Oscuros</p>
-                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $mat_final_cuartos ?? 0 }}</p>
+                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $logSalio ? ($entrada->log_cuartos ?? 0) : ($mat_final_cuartos ?? 0) }}</p>
                 </div>
                 <div style="text-align:center;">
                     <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Urnas</p>
-                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $mat_final_urnas ?? 0 }}</p>
+                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $logSalio ? ($entrada->log_urnas ?? 0) : ($mat_final_urnas ?? 0) }}</p>
                 </div>
                 <div style="text-align:center;">
                     <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Tintas</p>
-                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $mat_final_tintas ?? 0 }}</p>
+                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $logSalio ? ($entrada->log_tintas ?? 0) : ($mat_final_tintas ?? 0) }}</p>
                 </div>
                 @endif
             </div>
@@ -291,7 +300,19 @@
                         <p style="font-size:10px; color:#dc2626; margin:3px 0 0;">{{ $message }}</p>
                         @enderror
                     </div>
-                    @if($entrada->asunto_log)
+                    @php
+                        $logSalio    = $entrada->asunto_log && !is_null($entrada->log_impreso_at);
+                        $logFechaTxt = $entrada->fecha_entrega ? ' el ' . $entrada->fecha_entrega->format('d/m/Y H:i') : '';
+                    @endphp
+                    @if($entrada->asunto_log && $logSalio)
+                    @foreach(['Cuartos' => $entrada->log_cuartos, 'Urnas' => $entrada->log_urnas, 'Tintas' => $entrada->log_tintas] as $lblLog => $valLog)
+                    <div>
+                        <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">{{ $lblLog }}</label>
+                        <div style="width:100%; border:1px solid #a7f3d0; border-radius:6px; padding:6px 8px; font-size:14px; font-weight:700; color:#065f46; background:#ecfdf5; box-sizing:border-box; text-align:center;">{{ $valLog ?? 0 }}</div>
+                        <p style="font-size:10px; color:#065f46; margin:3px 0 0; text-align:center;">Log ya entregado{{ $logFechaTxt }}</p>
+                    </div>
+                    @endforeach
+                    @elseif($entrada->asunto_log)
                     <div>
                         <label style="display:block; font-size:11px; font-weight:600; color:#1e40af; margin-bottom:6px; text-transform:uppercase;">Cuartos</label>
                         <input type="number" wire:model="mat_final_cuartos" min="0"

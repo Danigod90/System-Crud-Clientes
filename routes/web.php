@@ -64,6 +64,7 @@ Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin|A
     // ── Rutas nuevas de entrega ───────────────────────────────
     Route::patch('sin-nota/log/{id}/entregar',          [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'entregar'])         ->name('sin-nota.log.entregar');
     Route::patch('sin-nota/log/{id}/editar-entrega',    [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'editarEntrega'])     ->name('sin-nota.log.editar-entrega');
+    Route::get('sin-nota/log/{id}/reimprimir',          [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'reimprimirRecibo'])   ->name('sin-nota.log.reimprimir');
     Route::get('sin-nota/log/{id}/imprimir-logistica',  [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'imprimirLogistica']) ->name('sin-nota.log.imprimir-logistica');
 
     Route::resource('sin-nota', \App\Http\Controllers\Secretaria\EntradaSinNotaController::class)
@@ -73,6 +74,9 @@ Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin|A
     // ── Con nota ─────────────────────────────────────────────
     Route::patch('con-nota/{conNota}/entregar-tec', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'entregarTec'])->name('con-nota.entregar-tec');
     Route::get('con-nota/export-pdf', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'exportPdf'])->name('con-nota.export-pdf');
+    Route::get('con-nota/buscar-log-urgencia', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'buscarLogUrgencia'])->name('con-nota.buscar-log-urgencia');
+    Route::post('con-nota/{conNota}/actualizar-cantidades-log', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'actualizarCantidadesLog'])->name('con-nota.actualizar-cantidades-log');
+    Route::get('con-nota/{conNota}/datos-log-urgencia', [\App\Http\Controllers\Secretaria\EntradaConNotaController::class, 'datosLogUrgencia'])->name('con-nota.datos-log-urgencia');
     Route::resource('con-nota', \App\Http\Controllers\Secretaria\EntradaConNotaController::class)
         ->only(['index', 'create', 'store', 'show', 'edit', 'update', 'destroy'])
         ->parameters(['con-nota' => 'conNota']);

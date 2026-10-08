@@ -88,6 +88,46 @@
 .notes-btn:hover::after {
     opacity: 1;
 }
+.urgencia-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #166534, #15803d);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(22,101,52,0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.urgencia-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 18px rgba(22,101,52,0.5);
+}
+.urgencia-btn::after {
+    content: "Entrega de Log";
+    position: absolute;
+    left: 52px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #111827;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+    z-index: 20;
+}
+.urgencia-btn:hover::after {
+    opacity: 1;
+}
 #notes-panel {
     position: absolute;
     top: 52px;
@@ -200,7 +240,18 @@
             <button type="button" onclick="agregarNota()" style="margin-top:6px; width:100%; background:#E0A030; color:#fff; border:none; border-radius:8px; padding:6px 0; font-size:11.5px; font-weight:600; cursor:pointer;">Agregar</button>
             <div id="notes-list"></div>
         </div>
+
+        <button type="button" class="urgencia-btn" onclick="abrirUrgencia()">
+            <svg width="19" height="19" fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m7.5 4.27 9 5.15"/>
+                <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+                <path d="m3.3 7 8.7 5 8.7-5"/>
+                <path d="M12 22V12"/>
+            </svg>
+        </button>
     </div>
+
+    @include('secretaria.partials.modal-log-urgencia')
 
     {{-- CARDS --}}
     <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:14px;">

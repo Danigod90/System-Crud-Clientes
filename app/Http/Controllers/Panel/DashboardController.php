@@ -36,7 +36,8 @@ if ($rol === 'Secretaria Sin Nota') {
         ->get();
     $charlasPendientes = collect();
     $observadoresPendientes = collect();
-    return view('panel.dashboard-sin-nota', compact('stats', 'elecciones', 'charlasPendientes', 'observadoresPendientes'));
+    $asesores = \App\Models\Asesor::orderBy('nombre')->get();
+    return view('panel.dashboard-sin-nota', compact('stats', 'elecciones', 'charlasPendientes', 'observadoresPendientes', 'asesores'));
 }
     if ($rol === 'Asesor') {
         $asesor = \App\Models\Asesor::where('user_id', $user->id)->first();

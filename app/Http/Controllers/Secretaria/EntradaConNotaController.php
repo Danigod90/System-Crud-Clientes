@@ -9,6 +9,104 @@ use Illuminate\Http\Request;
 
 class EntradaConNotaController extends Controller
 {
+    /**
+     * Búsqueda en vivo para el modal "Log de Urgencia": organizaciones con
+     * asunto_log activo y todavía no entregadas (sin importar si también
+     * tienen asunto_tec — ese es justo el caso que este botón resuelve).
+     */
+    public function buscarLogUrgencia(Request $request)
+    {
+        $q      = trim((string) $request->get('q', ''));
+        $asesor = trim((string) $request->get('asesor', ''));
+
+        $entradas = EntradaConNota::where('asunto_log', true)
+            ->whereNull('log_impreso_at')
+            ->where(fn($s) => $s->whereNull('eleccion_suspendida')->orWhere('eleccion_suspendida', false))
+            // También se descartan las ya entregadas por otro camino (ej.
+            // "Entregar" en Gestión de Log), que marcan log_estado pero no
+            // log_impreso_at.
+            ->where(fn($s) => $s->whereNull('log_estado')->orWhere('log_estado', 'pendiente'))
+            ->when($q !== '', fn($query) =>
+                $query->where(function ($sub) use ($q) {
+                    $sub->where('nombre_organizacion', 'like', '%' . $q . '%')
+                        ->orWhere('codigo_org', 'like', '%' . $q . '%');
+                })
+            )
+            ->when($asesor !== '', fn($query) =>
+                $query->where('asesor_asignado', $asesor)
+            )
+            ->with('detalleTecnico')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->take(20)
+            ->get();
+
+        // Cantidades a precargar (todavía no entregadas): si la org tiene
+        // técnica y el asesor ya cargó cuartos/urnas/tintas en los datos
+        // técnicos (mat_final_*), se usan esas; si no, las de logística
+        // (log_*, que cargó Secretaría o quedaron en 0).
+        $cantidad = function ($e, string $campoTec, string $campoLog): int {
+            $deTec = $e->asunto_tec ? $e->detalleTecnico?->{$campoTec} : null;
+            return (int) ($deTec ?? $e->{$campoLog} ?? 0);
+        };
+
+        $resultados = $entradas->map(fn($e) => [
+            'id'                  => $e->id,
+            'nombre_organizacion' => $e->nombre_organizacion,
+            'codigo_org'          => $e->codigo_org,
+            'asesor_asignado'     => $e->asesor_asignado ?? '—',
+            'fecha_eleccion'      => $e->fecha_eleccion?->format('d/m/Y') ?? '—',
+            'fecha_entrada'       => $e->created_at?->format('d/m/Y') ?? '—',
+            'asunto_texto'        => $e->asunto_texto,
+            'log_urnas'           => $cantidad($e, 'mat_final_urnas', 'log_urnas'),
+            'log_cuartos'         => $cantidad($e, 'mat_final_cuartos', 'log_cuartos'),
+            'log_tintas'          => $cantidad($e, 'mat_final_tintas', 'log_tintas'),
+            'tiene_tec'           => (bool) $e->asunto_tec,
+            'tec_realizado'       => (bool) $e->detalleTecnico?->tec_realizado,
+        ]);
+
+        return response()->json($resultados);
+    }
+
+    /**
+     * Corrige SOLO las cantidades (urnas/cuartos/tintas) de un log ya entregado
+     * y devuelve el recibo de reimpresión. No toca fecha, funcionario ni datos
+     * de quien retiró, y no genera registros ni notificaciones nuevas.
+     */
+    public function actualizarCantidadesLog(Request $request, EntradaConNota $conNota)
+    {
+        abort_unless($conNota->asunto_log && !is_null($conNota->log_impreso_at), 404);
+
+        $datos = $request->validate([
+            'log_urnas'   => 'required|integer|min:0',
+            'log_cuartos' => 'required|integer|min:0',
+            'log_tintas'  => 'required|integer|min:0',
+        ]);
+
+        $conNota->update($datos);
+
+        return app(\App\Http\Controllers\Secretaria\EntradaSinNotaController::class)
+            ->reimprimirRecibo($conNota->id);
+    }
+
+    /**
+     * Datos para reabrir el popup de Log de Urgencia en modo "Reimprimir":
+     * cantidades y datos de quien retiró, tal como quedaron guardados.
+     */
+    public function datosLogUrgencia(EntradaConNota $conNota)
+    {
+        return response()->json([
+            'id'              => $conNota->id,
+            'nombre'          => $conNota->nombre_organizacion,
+            'log_urnas'       => (int) ($conNota->log_urnas ?? 0),
+            'log_cuartos'     => (int) ($conNota->log_cuartos ?? 0),
+            'log_tintas'      => (int) ($conNota->log_tintas ?? 0),
+            'fecha_entrega'   => $conNota->fecha_entrega?->format('Y-m-d\TH:i'),
+            'persona_retira'  => $conNota->persona_retira,
+            'telefono_retira' => $conNota->telefono_retira,
+        ]);
+    }
+
     public function index(Request $request)
 {
     $asesores = Asesor::orderBy('nombre')->get();

@@ -267,6 +267,29 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
     }
 
     // ── Imprime logística (solo LOG) guardando funcionario/fecha
+    // ── Reimpresión de solo lectura del recibo (Gestión de Log) ──
+    // No guarda nada: no cambia estados, fechas, funcionario ni notifica.
+    // Sirve para volver a sacar el recibo si, por ejemplo, falló la impresora.
+    public function reimprimirRecibo($id)
+    {
+        $entrada = \App\Models\EntradaConNota::with('detalleTecnico')->findOrFail($id);
+
+        // Recibo completo de técnica: org solo técnica, o log + tec con
+        // técnica ya realizada. En cualquier otro caso, el de logística.
+        $usaTecnica = $entrada->asunto_tec
+            && $entrada->detalleTecnico
+            && (!$entrada->asunto_log || $entrada->detalleTecnico->tec_realizado);
+
+        if ($usaTecnica) {
+            return app(\App\Http\Controllers\DetalleTecnicoController::class)
+                ->imprimirLogistica($entrada->id, false);
+        }
+
+        abort_unless($entrada->asunto_log, 404);
+
+        return (new NotaPdfController())->reciboLogistica($entrada, false);
+    }
+
   public function imprimirLogistica(Request $request, $id)
 {
     $request->validate([
@@ -274,6 +297,9 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
         'fecha_entrega'   => 'required|date',
         'persona_retira'  => 'required|string|max:255',
         'telefono_retira' => 'required|string|max:30',
+        'log_urnas'       => 'nullable|integer|min:0',
+        'log_cuartos'     => 'nullable|integer|min:0',
+        'log_tintas'      => 'nullable|integer|min:0',
     ]);
 
     $entrada = \App\Models\EntradaConNota::findOrFail($id);
@@ -289,14 +315,30 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
     // porque quien opera el sistema puede no ser quien entrega físicamente.
     // Desde el perfil del asesor o secretaria con nota, en cambio, no se
     // manda ese dato y se toma directo de la sesión (es la misma persona).
-    $entrada->update([
-        'log_estado'      => 'entregada',
+    $datosActualizar = [
         'entregado_por'   => $request->filled('entregado_por') ? $request->entregado_por : auth()->user()->name,
         'fecha_entrega'   => $request->fecha_entrega,
         'persona_retira'  => $request->persona_retira,
         'telefono_retira' => $request->telefono_retira,
         'log_impreso_at'  => $entrada->log_impreso_at ?? now(),
-    ]);
+        // "log_estado" es el estado combinado que también usa Gestión de Log
+        // para el seguimiento de Técnica (entregarTec también lo pone en
+        // 'entregada'). Lo marcamos "entregada" siempre, aunque la org tenga
+        // también asunto_tec: los materiales de técnica no se devuelven, así
+        // que el combo puede pasar directo a "Entregados — esperando
+        // devolución" (de la parte log) en cuanto ésta se entrega. El avance
+        // de técnica se sigue controlando por su cuenta en otro lado
+        // (detalleTecnico->tec_realizado), no depende de este campo.
+        'log_estado'      => 'entregada',
+    ];
+
+    // Log de Urgencia: permite cargar las cantidades en el mismo paso,
+    // para cuando todavía no se cargaron por el formulario normal.
+    if ($request->filled('log_urnas'))   $datosActualizar['log_urnas']   = (int) $request->log_urnas;
+    if ($request->filled('log_cuartos')) $datosActualizar['log_cuartos'] = (int) $request->log_cuartos;
+    if ($request->filled('log_tintas'))  $datosActualizar['log_tintas']  = (int) $request->log_tintas;
+
+    $entrada->update($datosActualizar);
 
     if (!$yaImpreso) {
     $asesor = \App\Models\Asesor::whereRaw("CONCAT(nombre, ' ', apellido) = ?", [$entrada->asesor_asignado])->first();
@@ -310,6 +352,13 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
         'user_id'         => auth()->id(),
         'fecha'           => \Carbon\Carbon::parse($request->fecha_entrega)->format('Y-m-d'),
     ]);
+    }
+
+    // Log + Tec con técnica ya realizada: lo que se imprime es el recibo
+    // completo de técnica (con la sección de logística ya con los datos
+    // reales de esta entrega). Si técnica sigue pendiente, solo el de log.
+    if ($entrada->asunto_log && $entrada->asunto_tec && $entrada->detalleTecnico?->tec_realizado) {
+        return app(\App\Http\Controllers\DetalleTecnicoController::class)->imprimirLogistica($entrada->id);
     }
 
     $notaPdfController = new NotaPdfController();

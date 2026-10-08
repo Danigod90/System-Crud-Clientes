@@ -301,6 +301,10 @@ if (request()->has('volver')) {
                 <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:3px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora</label>
                 <p style="font-size:13px; font-weight:600; color:#111827; margin:0;">{{ $ch->fecha_hora?->format('d/m/Y H:i') ?? '—' }}</p>
             </div>
+            <div>
+                <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:3px; text-transform:uppercase; letter-spacing:0.5px;">Tipo de charla</label>
+                <p style="font-size:13px; font-weight:600; color:#111827; margin:0;">{{ $tipoLabel }}</p>
+            </div>
             @if($ch->direccion)
             <div style="grid-column:span 2;">
                 <label style="display:block; font-size:11px; font-weight:600; color:#9ca3af; margin-bottom:3px; text-transform:uppercase; letter-spacing:0.5px;">Dirección</label>

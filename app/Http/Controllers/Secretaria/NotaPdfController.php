@@ -83,9 +83,14 @@ class NotaPdfController extends Controller
         ]);
     }
 
-    public function reciboLogistica(EntradaConNota $conNota)
+    // $registrar = false: reimpresión de solo lectura (no cambia fechas, estados,
+    // funcionario ni notifica; muestra la fecha de entrega ya guardada).
+    public function reciboLogistica(EntradaConNota $conNota, bool $registrar = true)
     {
         $fechaCorta = now()->format('d/m/Y');
+        $fechaEntregaCorta = (!$registrar && $conNota->fecha_entrega)
+            ? $conNota->fecha_entrega->format('d/m/Y')
+            : $fechaCorta;
         $org        = strtoupper($conNota->nombre_organizacion);
         $codigo     = $conNota->codigo_org;
         $fechaElec  = $conNota->fecha_eleccion?->format('d/m/Y') ?? '—';
@@ -144,7 +149,7 @@ class NotaPdfController extends Controller
     <div class="org-meta">
         <strong>Asesor/a:</strong> ' . ($conNota->asesor_asignado ?? '—') . ' &nbsp;&nbsp;
         <strong>Fecha de Elección:</strong> ' . $fechaElec . ' &nbsp;&nbsp;
-        <strong>Fecha de Entrega:</strong> ' . $fechaCorta . '
+        <strong>Fecha de Entrega:</strong> ' . $fechaEntregaCorta . '
     </div>
 </div>
 
@@ -177,7 +182,7 @@ class NotaPdfController extends Controller
 
 <div class="dato"><strong>Código:</strong> ' . $codigo . ' &nbsp;&nbsp; <strong>Organización:</strong> ' . $org . '</div>
 <div class="dato"><strong>Detalle:</strong> (' . $urnas . ') urna(s) de plástico, (' . $cuartos . ') cuarto(s) oscuros, (' . $tintas . ') frasco(s) de tinta indeleble.</div>
-<div class="dato"><strong>Fecha de entrega:</strong> ' . $fechaCorta . '</div>
+<div class="dato"><strong>Fecha de entrega:</strong> ' . $fechaEntregaCorta . '</div>
 
 <table style="width:100%; border-collapse:collapse; margin:8px 0;">
     <tr>
@@ -196,6 +201,7 @@ class NotaPdfController extends Controller
 </body>
 </html>';
 
+        if ($registrar) {
         // Guardar si ya estaba impreso ANTES de actualizar
         $yaImpreso = !is_null($conNota->log_impreso_at);
 
@@ -238,6 +244,7 @@ class NotaPdfController extends Controller
             ));
             \App\Services\NotificationPruner::prune($secretaria);
         }
+        } // fin if ($registrar)
 
         // Si piden JSON (desde el modal), devolver el HTML
         if (request()->expectsJson()) {

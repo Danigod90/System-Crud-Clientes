@@ -63,15 +63,27 @@
                         </svg>
                         Imprimir Logístico
                     </button>
-                    @elseif($conNota->asunto_log && !$conNota->asunto_tec && $conNota->log_estado === 'entregada')
-                    <a href="{{ route('secretaria.con-nota.recibo-logistica', $conNota->id) }}" target="_blank"
-                       style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:8px 14px; border-radius:8px; font-size:13px; text-decoration:none;">
+                    @endif
+
+                    {{-- Reimprimir: abre el mismo popup que Log de Urgencia (con los datos
+                         guardados, editables). Solo log: cuando ya fue entregado. Log + tec:
+                         en cuanto el log salió (log_impreso_at), aunque técnica siga pendiente. --}}
+                    @php
+                        $mostrarReimprimir = $conNota->asunto_log && (
+                            (!$conNota->asunto_tec && $conNota->log_estado === 'entregada')
+                            || ($conNota->asunto_tec && !is_null($conNota->log_impreso_at))
+                        );
+                    @endphp
+                    @if($mostrarReimprimir)
+                    <button type="button" onclick="abrirReimprimirUrgencia({{ $conNota->id }})"
+                       style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:8px 14px; border-radius:8px; font-size:13px; border:none; cursor:pointer;">
                         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                             <polyline points="14 2 14 8 20 8"/>
                         </svg>
                         Reimprimir
-                    </a>
+                    </button>
+                    @include('secretaria.partials.modal-log-urgencia')
                     @endif
 
                     @if($conNota->asunto_log && !$conNota->asunto_tec && $conNota->log_estado === 'entregada')
@@ -341,9 +353,22 @@
         $estCuartos  = $mTec->mat_final_cuartos  !== null ? $mTec->mat_final_cuartos  : ($mTec->cantidad_mesas ?? 0);
         $estUrnas    = $mTec->mat_final_urnas    !== null ? $mTec->mat_final_urnas    : (($mTec->cantidad_mesas ?? 0) * ($mTec->cantidad_papeletas ?? 0));
         $estTintas   = $mTec->mat_final_tintas   !== null ? $mTec->mat_final_tintas   : ($mTec->cantidad_mesas ?? 0);
+        // Si el log ya se entregó (ej. por Log de Urgencia), se muestran las
+        // cantidades realmente entregadas, no la estimación de técnica.
+        $logSalio = $conNota->asunto_log && !is_null($conNota->log_impreso_at);
+        if ($logSalio) {
+            $estCuartos = $conNota->log_cuartos ?? 0;
+            $estUrnas   = $conNota->log_urnas   ?? 0;
+            $estTintas  = $conNota->log_tintas  ?? 0;
+        }
     @endphp
     <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px;">
         <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar</p>
+        @if($logSalio)
+        <div style="background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; border-radius:6px; padding:6px 10px; font-size:12px; margin-bottom:10px;">
+            ✓ Log ya entregado{{ $conNota->fecha_entrega ? ' el ' . $conNota->fecha_entrega->format('d/m/Y H:i') : '' }} — cuartos, urnas y tintas muestran lo entregado.
+        </div>
+        @endif
         <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:8px;">
     <div style="text-align:center;">
         <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Papeletas</p>

@@ -178,9 +178,23 @@ if (request()->has('volver')) {
     $cuartosRO   = $entrada->detalleTecnico->mat_final_cuartos  !== null ? $entrada->detalleTecnico->mat_final_cuartos  : $mesasRO;
     $urnasRO     = $entrada->detalleTecnico->mat_final_urnas     !== null ? $entrada->detalleTecnico->mat_final_urnas    : ($mesasRO * $papeletasRO);
     $tintasRO    = $entrada->detalleTecnico->mat_final_tintas    !== null ? $entrada->detalleTecnico->mat_final_tintas   : $mesasRO;
+    // Si el log ya se entregó (ej. por Log de Urgencia) se muestran las
+    // cantidades realmente entregadas, no la estimación.
+    $logSalio    = $entrada->asunto_log && !is_null($entrada->log_impreso_at);
+    $logFechaTxt = $entrada->fecha_entrega ? ' el ' . $entrada->fecha_entrega->format('d/m/Y H:i') : '';
+    if ($logSalio) {
+        $cuartosRO = $entrada->log_cuartos ?? 0;
+        $urnasRO   = $entrada->log_urnas   ?? 0;
+        $tintasRO  = $entrada->log_tintas  ?? 0;
+    }
 @endphp
         <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px;">
             <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar</p>
+            @if($logSalio)
+            <div style="background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; border-radius:6px; padding:6px 10px; font-size:12px; margin-bottom:10px;">
+                ✓ Log ya entregado{{ $logFechaTxt }} — cuartos, urnas y tintas muestran lo entregado.
+            </div>
+            @endif
            <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:4px; min-width:0;">
                 <div style="text-align:center;">
                     <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Papeletas</p>
@@ -312,6 +326,8 @@ if (request()->has('volver')) {
     $cuartosVal         = $efectivo('mat_final_cuartos', is_null($entrada->detalleTecnico->mat_final_cuartos) ? $mEstForm : $entrada->detalleTecnico->mat_final_cuartos);
     $urnasVal           = $efectivo('mat_final_urnas', is_null($entrada->detalleTecnico->mat_final_urnas) ? ($mEstForm * $pEstForm) : $entrada->detalleTecnico->mat_final_urnas);
     $tintasVal          = $efectivo('mat_final_tintas', is_null($entrada->detalleTecnico->mat_final_tintas) ? $mEstForm : $entrada->detalleTecnico->mat_final_tintas);
+    $logSalio    = $entrada->asunto_log && !is_null($entrada->log_impreso_at);
+    $logFechaTxt = $entrada->fecha_entrega ? ' el ' . $entrada->fecha_entrega->format('d/m/Y H:i') : '';
 @endphp
 <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px; margin-bottom:14px;">
     <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar — podés editar los valores</p>
@@ -352,6 +368,20 @@ if (request()->has('volver')) {
                 <option value="sin_padron" {{ $padronesFormatoVal == 'sin_padron' ? 'selected' : '' }}>Sin Padrón</option>
             </select>
         </div>
+        @if($logSalio ?? false)
+        {{-- Log ya entregado: se muestra lo entregado (solo lectura). Los valores
+             estimados se reenvían ocultos para que no se pierdan al guardar. --}}
+        <input type="hidden" name="mat_final_cuartos" value="{{ $cuartosVal }}">
+        <input type="hidden" name="mat_final_urnas"   value="{{ $urnasVal }}">
+        <input type="hidden" name="mat_final_tintas"  value="{{ $tintasVal }}">
+        @foreach(['Cuartos Oscuros' => $entrada->log_cuartos, 'Urnas' => $entrada->log_urnas, 'Tintas' => $entrada->log_tintas] as $lblLog => $valLog)
+        <div style="text-align:center;">
+            <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">{{ $lblLog }}</p>
+            <div style="width:100%; border:1px solid #a7f3d0; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#065f46; background:#ecfdf5; box-sizing:border-box; text-align:center;">{{ $valLog ?? 0 }}</div>
+            <p style="font-size:10px; color:#065f46; margin:3px 0 0;">Log ya entregado{{ $logFechaTxt ?? '' }}</p>
+        </div>
+        @endforeach
+        @else
         <div style="text-align:center;">
             <p style="font-size:11px; color:#6b7280; margin:0 0 4px;">Cuartos Oscuros</p>
             <input type="number" name="mat_final_cuartos" min="0"
@@ -370,6 +400,7 @@ if (request()->has('volver')) {
                 value="{{ $tintasVal }}"
                 style="width:100%; border:1px solid #bfdbfe; border-radius:6px; padding:6px 4px; font-size:14px; font-weight:700; color:#1e40af; background:#fff; box-sizing:border-box; text-align:center;">
         </div>
+        @endif
     </div>
 </div>
 
