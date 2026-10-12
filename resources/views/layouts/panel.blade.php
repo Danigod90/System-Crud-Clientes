@@ -232,6 +232,68 @@
                     <polyline points="14 2 14 8 20 8"/>
                 </svg>
                 <span style="font-size:15px; font-weight:500; color:#111827;">{{ $title ?? 'Dashboard' }}</span>
+
+                {{-- GADGET P / D (solo Secretaría Sin Nota): prestados y devueltos de logística --}}
+                @if(auth()->user()->hasRole('Secretaria Sin Nota'))
+                <div id="gadget-pd" style="flex-shrink:0; margin-left:14px;">
+                    <div style="display:grid; grid-template-columns:12px 32px 32px 32px; gap:2px; align-items:center;">
+                        <span></span>
+                        <span style="font-size:10px; font-weight:600; text-align:center; color:#6b7280;" title="Prestados">P</span>
+                        <span style="font-size:10px; font-weight:600; text-align:center; color:#6b7280;" title="Devueltos">D</span>
+                        <span style="font-size:10px; font-weight:600; text-align:center; color:#6b7280;" title="Falta devolver (sobre el total acumulado)">Falta</span>
+                        @foreach(['c' => ['C', 'Cuartos'], 'u' => ['U', 'Urnas'], 't' => ['T', 'Tintas']] as $k => [$letra, $nombre])
+                        <span style="font-size:10px; font-weight:600; color:#6b7280; text-align:center;" title="{{ $nombre }}">{{ $letra }}</span>
+                        <div id="gad-p-{{ $k }}" style="background:#fef3c7; border:1px solid #fde68a; color:#92400e; border-radius:5px; text-align:center; font-size:11px; font-weight:600; line-height:16px; cursor:default;">–</div>
+                        <div id="gad-d-{{ $k }}" style="background:#d1fae5; border:1px solid #a7f3d0; color:#065f46; border-radius:5px; text-align:center; font-size:11px; font-weight:600; line-height:16px; cursor:default;">–</div>
+                        <div id="gad-f-{{ $k }}" style="background:#fff; border:1px solid #e5e7eb; color:#111827; border-radius:5px; text-align:center; font-size:11px; font-weight:600; line-height:16px; cursor:default;">–</div>
+                        @endforeach
+                    </div>
+                    <div style="display:flex; justify-content:center; margin-top:3px;">
+                        <button type="button" id="gad-btn-total" onclick="gadgetPeriodo('total')" style="font-size:9px; padding:0 8px; line-height:14px; border:1px solid #e5e7eb; border-radius:5px 0 0 5px; background:#f3f4f6; color:#111827; font-weight:600; cursor:pointer;">total</button>
+                        <button type="button" id="gad-btn-mes" onclick="gadgetPeriodo('mes')" style="font-size:9px; padding:0 8px; line-height:14px; border:1px solid #e5e7eb; border-left:none; border-radius:0 5px 5px 0; background:#fff; color:#6b7280; font-weight:500; cursor:pointer;">mes</button>
+                    </div>
+                </div>
+                <script>
+                (function () {
+                    const url = '{{ route('secretaria.sin-nota.log-resumen') }}';
+                    let periodo = 'total';
+                    let datos = null;
+                    const campos = { c: 'cuartos', u: 'urnas', t: 'tintas' };
+
+                    function pintar() {
+                        if (!datos) return;
+                        const p = periodo === 'mes' ? datos.p_mes : datos.p_total;
+                        const d = periodo === 'mes' ? datos.d_mes : datos.d_total;
+                        Object.keys(campos).forEach(k => {
+                            const campo = campos[k];
+                            document.getElementById('gad-p-' + k).textContent = p[campo];
+                            document.getElementById('gad-d-' + k).textContent = d[campo];
+                            document.getElementById('gad-f-' + k).textContent = datos.falta[campo];
+                        });
+                    }
+
+                    window.gadgetPeriodo = function (nuevo) {
+                        periodo = nuevo;
+                        const on  = 'background:#f3f4f6; color:#111827; font-weight:600;';
+                        const off = 'background:#fff; color:#6b7280; font-weight:500;';
+                        document.getElementById('gad-btn-total').style.cssText += (nuevo === 'total' ? on : off);
+                        document.getElementById('gad-btn-mes').style.cssText   += (nuevo === 'mes' ? on : off);
+                        pintar();
+                    };
+
+                    async function cargar() {
+                        try {
+                            const r = await fetch(url, { headers: { 'Accept': 'application/json' } });
+                            if (!r.ok) return;
+                            datos = await r.json();
+                            pintar();
+                        } catch (e) { console.error(e); }
+                    }
+                    cargar();
+                    setInterval(cargar, 45000);
+                })();
+                </script>
+                @endif
             </div>
 
             {{-- DERECHA --}}

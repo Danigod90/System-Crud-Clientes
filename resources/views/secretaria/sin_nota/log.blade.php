@@ -58,9 +58,13 @@
                             $mTec    = $entrada->detalleTecnico;
                             $m       = $mTec->cantidad_mesas ?? 0;
                             $p       = $mTec->cantidad_papeletas ?? 0;
-                            $urnas   = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_urnas   ?? ($m * $p)) : ($entrada->asunto_log ? $entrada->log_urnas   : 0);
-                            $cuartos = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_cuartos ?? $m)        : ($entrada->asunto_log ? $entrada->log_cuartos : 0);
-                            $tintas  = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_tintas  ?? $m)        : ($entrada->asunto_log ? $entrada->log_tintas  : 0);
+                            // Si el log ya se entregó (log_impreso_at) se muestran las cantidades
+                            // realmente entregadas (log_*). Para combos que todavía no se entregaron,
+                            // las que cargó el asesor en los datos técnicos.
+                            $usaTecFila = $entrada->asunto_tec && $entrada->asunto_log && is_null($entrada->log_impreso_at);
+                            $urnas   = $usaTecFila ? ($mTec->mat_final_urnas   ?? ($m * $p)) : ($entrada->asunto_log ? ($entrada->log_urnas   ?? 0) : 0);
+                            $cuartos = $usaTecFila ? ($mTec->mat_final_cuartos ?? $m)        : ($entrada->asunto_log ? ($entrada->log_cuartos ?? 0) : 0);
+                            $tintas  = $usaTecFila ? ($mTec->mat_final_tintas  ?? $m)        : ($entrada->asunto_log ? ($entrada->log_tintas  ?? 0) : 0);
                         @endphp
                         <tr style="border-bottom:1px solid #f3f4f6;" data-org="{{ $entrada->codigo_org }} {{ $entrada->nombre_organizacion }}">
                             <td style="padding:7px 12px; color:#185FA5; font-weight:600; font-family:monospace; white-space:nowrap; font-size:11px;">{{ $entrada->codigo_org }}</td>
@@ -138,9 +142,13 @@
                             $mTec    = $entrada->detalleTecnico;
                             $m       = $mTec->cantidad_mesas ?? 0;
                             $p       = $mTec->cantidad_papeletas ?? 0;
-                            $urnas   = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_urnas   ?? ($m * $p)) : ($entrada->asunto_log ? $entrada->log_urnas   : 0);
-                            $cuartos = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_cuartos ?? $m)        : ($entrada->asunto_log ? $entrada->log_cuartos : 0);
-                            $tintas  = ($entrada->asunto_tec && $entrada->asunto_log) ? ($mTec->mat_final_tintas  ?? $m)        : ($entrada->asunto_log ? $entrada->log_tintas  : 0);
+                            // Si el log ya se entregó (log_impreso_at) se muestran las cantidades
+                            // realmente entregadas (log_*). Para combos que todavía no se entregaron,
+                            // las que cargó el asesor en los datos técnicos.
+                            $usaTecFila = $entrada->asunto_tec && $entrada->asunto_log && is_null($entrada->log_impreso_at);
+                            $urnas   = $usaTecFila ? ($mTec->mat_final_urnas   ?? ($m * $p)) : ($entrada->asunto_log ? ($entrada->log_urnas   ?? 0) : 0);
+                            $cuartos = $usaTecFila ? ($mTec->mat_final_cuartos ?? $m)        : ($entrada->asunto_log ? ($entrada->log_cuartos ?? 0) : 0);
+                            $tintas  = $usaTecFila ? ($mTec->mat_final_tintas  ?? $m)        : ($entrada->asunto_log ? ($entrada->log_tintas  ?? 0) : 0);
                             $fechaEntregaJs = $entrada->fecha_entrega ? $entrada->fecha_entrega->format('Y-m-d\TH:i') : '';
                         @endphp
                         <tr style="border-bottom:1px solid #f3f4f6;" data-org="{{ $entrada->codigo_org }} {{ $entrada->nombre_organizacion }}">
@@ -216,18 +224,34 @@
                             <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Organización</th>
                             <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Asunto</th>
                             <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Asesor</th>
-                            <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">Entregado por</th>
-                            <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">Fecha entrega</th>
-                            <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">Devuelto por</th>
-                            <th style="padding:7px 12px; text-align:center; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Urnas</th>
-                            <th style="padding:7px 12px; text-align:center; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Cuartos</th>
-                            <th style="padding:7px 12px; text-align:center; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">Tintas</th>
                             <th style="padding:7px 12px; text-align:left; font-size:10px; color:#6b7280; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">Fecha devolución</th>
                             <th style="padding:7px 12px;"></th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($devueltos as $entrada)
+                        @php
+                            $dev = $entrada->logDevolucion;
+                            // Cantidades entregadas: si el log ya se entregó se usan las reales (log_*);
+                            // para combos que aún no tengan log_impreso_at, las cargadas por el asesor.
+                            $mTecD = $entrada->detalleTecnico;
+                            $usaTecD = $entrada->asunto_tec && $entrada->asunto_log && is_null($entrada->log_impreso_at);
+                            $entUrnas   = $usaTecD ? ($mTecD->mat_final_urnas   ?? $entrada->log_urnas   ?? 0) : ($entrada->log_urnas   ?? 0);
+                            $entCuartos = $usaTecD ? ($mTecD->mat_final_cuartos ?? $entrada->log_cuartos ?? 0) : ($entrada->log_cuartos ?? 0);
+                            $entTintas  = $usaTecD ? ($mTecD->mat_final_tintas  ?? $entrada->log_tintas  ?? 0) : ($entrada->log_tintas  ?? 0);
+                            $detalleDev = [
+                                'org'         => $entrada->codigo_org . ' — ' . $entrada->nombre_organizacion,
+                                'entregado_por'  => $entrada->entregado_por ?? '—',
+                                'fecha_entrega'  => $entrada->fecha_entrega ? $entrada->fecha_entrega->format('d/m/Y H:i') : '—',
+                                'persona_retira' => $entrada->persona_retira ?? '—',
+                                'telefono_retira'=> $entrada->telefono_retira ?? '—',
+                                'devuelto_por'   => $dev?->devuelto_por ?? '—',
+                                'fecha_devolucion' => $dev?->created_at ? $dev->created_at->format('d/m/Y H:i') : '—',
+                                'ent' => [$entUrnas, $entCuartos, $entTintas],
+                                'dev' => [$dev?->urnas_devueltas ?? '—', $dev?->cuartos_devueltos ?? '—', $dev?->tintas_devueltas ?? '—'],
+                                'observaciones'  => $dev?->observaciones ?? '',
+                            ];
+                        @endphp
                         <tr style="border-bottom:1px solid #f3f4f6;" data-org="{{ $entrada->codigo_org }} {{ $entrada->nombre_organizacion }}">
                             <td style="padding:7px 12px; color:#185FA5; font-weight:600; font-family:monospace; white-space:nowrap; font-size:11px;">{{ $entrada->codigo_org }}</td>
                             <td style="padding:7px 12px; color:#1e293b; font-weight:500; font-size:12px;">{{ $entrada->nombre_organizacion }}</td>
@@ -244,27 +268,21 @@
                                 @endif
                             </td>
                             <td style="padding:7px 12px; color:#374151; font-size:12px; white-space:nowrap;">{{ $entrada->asesor_asignado ?? '—' }}</td>
-                            <td style="padding:7px 12px; color:#374151; font-size:12px;">{{ $entrada->entregado_por ?? '—' }}</td>
-                            <td style="padding:7px 12px; color:#94a3b8; white-space:nowrap; font-size:11px;">{{ $entrada->fecha_entrega ? $entrada->fecha_entrega->format('d/m/Y H:i') : '—' }}</td>
-                            <td style="padding:7px 12px; color:#374151; font-size:12px;">{{ $entrada->logDevolucion?->devuelto_por ?? '—' }}</td>
-                            <td style="padding:7px 12px; text-align:center; color:#374151; font-size:12px;">{{ $entrada->logDevolucion?->urnas_devueltas ?? '—' }}</td>
-                            <td style="padding:7px 12px; text-align:center; color:#374151; font-size:12px;">{{ $entrada->logDevolucion?->cuartos_devueltos ?? '—' }}</td>
-                            <td style="padding:7px 12px; text-align:center; color:#374151; font-size:12px;">{{ $entrada->logDevolucion?->tintas_devueltas ?? '—' }}</td>
-                            <td style="padding:7px 12px; color:#94a3b8; white-space:nowrap; font-size:11px;">{{ $entrada->logDevolucion?->created_at?->format('d/m/Y') ?? '—' }}</td>
+                            <td style="padding:7px 12px; color:#94a3b8; white-space:nowrap; font-size:11px;">{{ $dev?->created_at?->format('d/m/Y') ?? '—' }}</td>
                             <td style="padding:7px 12px; white-space:nowrap;">
-                                <button onclick="reimprimirRecibo({{ $entrada->id }}, this)"
-                                        title="Reimprimir recibo"
-                                        style="display:inline-flex; align-items:center; justify-content:center; background:#f0f9ff; border:1px solid #bae6fd; color:#0369a1; padding:3px 6px; border-radius:6px; font-size:11px; cursor:pointer; line-height:1;">
+                                <button type="button" onclick="abrirDetalleDevuelto(this)"
+                                        data-detalle="{{ json_encode($detalleDev, JSON_UNESCAPED_UNICODE) }}"
+                                        title="Ver detalle"
+                                        style="display:inline-flex; align-items:center; justify-content:center; background:#f8fafc; border:1px solid #e5e7eb; color:#6b7280; padding:3px 6px; border-radius:6px; font-size:11px; cursor:pointer; line-height:1;">
                                     <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-                                        <polyline points="6 9 6 2 18 2 18 9"/>
-                                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-                                        <rect x="6" y="14" width="12" height="8"/>
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
                                     </svg>
                                 </button>
                             </td>
                         </tr>
                         @empty
-                        <tr><td colspan="12" style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">Sin devoluciones registradas todavía.</td></tr>
+                        <tr><td colspan="7" style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">Sin devoluciones registradas todavía.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -386,6 +404,77 @@
                 <button type="submit" id="btn-guardar-detalle" style="display:none; padding:8px 18px; border-radius:8px; border:none; background:#2563eb; color:white; font-size:13px; cursor:pointer; font-weight:500;">Guardar cambios</button>
             </div>
         </form>
+    </div>
+</div>
+
+{{-- MODAL: DETALLE DE UNA ORGANIZACIÓN DEVUELTA (solo lectura) --}}
+<div id="modal-detalle-devuelto" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:50; align-items:center; justify-content:center;">
+    <div style="background:white; border-radius:12px; padding:28px; max-width:480px; width:92%; box-shadow:0 20px 60px rgba(0,0,0,0.3); max-height:88vh; overflow-y:auto;">
+        <h3 style="font-size:15px; font-weight:700; color:#1e293b; margin:0 0 2px;">Detalle de devolución</h3>
+        <p id="dd-org" style="font-size:12px; color:#64748b; margin:0 0 16px;"></p>
+
+        @php
+            $lblDD = 'font-size:10.5px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 2px;';
+            $valDD = 'font-size:13px; font-weight:600; color:#111827; margin:0;';
+            $tituloDD = 'font-size:11px; font-weight:700; color:#1d4ed8; text-transform:uppercase; letter-spacing:0.5px; margin:0 0 8px; padding-bottom:5px; border-bottom:1px solid #dbeafe;';
+        @endphp
+
+        <div style="margin-bottom:16px;">
+            <p style="{{ $tituloDD }}">Entrega</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div><p style="{{ $lblDD }}">Entregado por</p><p id="dd-entregado-por" style="{{ $valDD }}"></p></div>
+                <div><p style="{{ $lblDD }}">Fecha y hora</p><p id="dd-fecha-entrega" style="{{ $valDD }}"></p></div>
+            </div>
+        </div>
+
+        <div style="margin-bottom:16px;">
+            <p style="{{ $tituloDD }}">Retiro</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <div><p style="{{ $lblDD }}">Persona que retira</p><p id="dd-persona" style="{{ $valDD }}"></p></div>
+                <div><p style="{{ $lblDD }}">Teléfono</p><p id="dd-telefono" style="{{ $valDD }}"></p></div>
+            </div>
+        </div>
+
+        <div style="margin-bottom:18px;">
+            <p style="{{ $tituloDD }}">Devolución</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+                <div><p style="{{ $lblDD }}">Devuelto por</p><p id="dd-devuelto-por" style="{{ $valDD }}"></p></div>
+                <div><p style="{{ $lblDD }}">Fecha y hora</p><p id="dd-fecha-devolucion" style="{{ $valDD }}"></p></div>
+            </div>
+            <table style="width:100%; border-collapse:collapse; font-size:12px; text-align:center;">
+                <thead>
+                    <tr style="background:#f8fafc;">
+                        <th style="padding:5px 8px; text-align:left; font-size:10px; color:#6b7280; text-transform:uppercase;"></th>
+                        <th style="padding:5px 8px; font-size:10px; color:#6b7280; text-transform:uppercase;">Urnas</th>
+                        <th style="padding:5px 8px; font-size:10px; color:#6b7280; text-transform:uppercase;">Cuartos</th>
+                        <th style="padding:5px 8px; font-size:10px; color:#6b7280; text-transform:uppercase;">Tintas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-top:1px solid #f3f4f6;">
+                        <td style="padding:6px 8px; text-align:left; color:#6b7280;">Entregado</td>
+                        <td id="dd-ent-0" style="padding:6px 8px; font-weight:600;"></td>
+                        <td id="dd-ent-1" style="padding:6px 8px; font-weight:600;"></td>
+                        <td id="dd-ent-2" style="padding:6px 8px; font-weight:600;"></td>
+                    </tr>
+                    <tr style="border-top:1px solid #f3f4f6;">
+                        <td style="padding:6px 8px; text-align:left; color:#6b7280;">Devuelto</td>
+                        <td id="dd-dev-0" style="padding:6px 8px; font-weight:600; color:#15803d;"></td>
+                        <td id="dd-dev-1" style="padding:6px 8px; font-weight:600; color:#15803d;"></td>
+                        <td id="dd-dev-2" style="padding:6px 8px; font-weight:600; color:#15803d;"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="dd-obs-wrap" style="display:none; margin-top:10px;">
+                <p style="{{ $lblDD }}">Observaciones</p>
+                <p id="dd-obs" style="font-size:12.5px; color:#374151; margin:0;"></p>
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end;">
+            <button type="button" onclick="document.getElementById('modal-detalle-devuelto').style.display='none'"
+                    style="padding:8px 18px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:13px; cursor:pointer;">Cerrar</button>
+        </div>
     </div>
 </div>
 
@@ -601,6 +690,26 @@ function desactivarEdicionDetalle() {
     document.getElementById('btn-editar-detalle').style.display = 'inline-flex';
 }
 
+// Detalle (solo lectura) de una organización ya devuelta.
+function abrirDetalleDevuelto(btn) {
+    const d = JSON.parse(btn.dataset.detalle);
+    const set = (id, v) => { document.getElementById(id).textContent = (v === null || v === undefined || v === '') ? '—' : v; };
+    set('dd-org', d.org);
+    set('dd-entregado-por', d.entregado_por);
+    set('dd-fecha-entrega', d.fecha_entrega);
+    set('dd-persona', d.persona_retira);
+    set('dd-telefono', d.telefono_retira);
+    set('dd-devuelto-por', d.devuelto_por);
+    set('dd-fecha-devolucion', d.fecha_devolucion);
+    for (let i = 0; i < 3; i++) {
+        set('dd-ent-' + i, d.ent[i]);
+        set('dd-dev-' + i, d.dev[i]);
+    }
+    document.getElementById('dd-obs').textContent = d.observaciones || '';
+    document.getElementById('dd-obs-wrap').style.display = d.observaciones ? 'block' : 'none';
+    document.getElementById('modal-detalle-devuelto').style.display = 'flex';
+}
+
 function abrirModal(id, org, urnas, cuartos, tintas) {
     document.getElementById('modal-org').textContent  = org;
     document.getElementById('modal-urnas').value      = urnas;
@@ -617,7 +726,7 @@ function filtrarTablas(valor) {
     });
 }
 
-['modal-entregar', 'modal-imprimir-log', 'modal-detalle-entrega', 'modal-devolucion', 'modal-recibo-log'].forEach(id => {
+['modal-entregar', 'modal-imprimir-log', 'modal-detalle-entrega', 'modal-detalle-devuelto', 'modal-devolucion', 'modal-recibo-log'].forEach(id => {
     document.getElementById(id).addEventListener('click', function(e) {
         if (e.target === this) this.style.display = 'none';
     });

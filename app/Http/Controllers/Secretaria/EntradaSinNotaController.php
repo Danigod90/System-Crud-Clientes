@@ -171,6 +171,64 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
         return view('secretaria.sin_nota.log', compact('pendientes', 'entregados', 'devueltos'));
     }
 
+    // ── Resumen para el gadget P / D de la barra superior ──
+    // P = organizaciones con log ya entregado; D = ya devueltas.
+    // Cuenta organizaciones; las unidades (urnas/cuartos/tintas) van al tooltip.
+    public function resumenLog()
+    {
+        $ini = now()->startOfMonth();
+        $fin = now()->endOfMonth();
+
+        $prestados = \App\Models\EntradaConNota::where('asunto_log', true)
+            ->whereIn('log_estado', ['entregada', 'realizado'])
+            ->with('detalleTecnico')
+            ->get();
+
+        $devueltos = \App\Models\EntradaConNota::where('asunto_log', true)
+            ->where('log_estado', 'realizado')
+            ->with('logDevolucion')
+            ->get();
+
+        // Cantidades entregadas (mismo criterio que Gestión de Log)
+        $entregadas = function ($e, string $campoTec, string $campoLog): int {
+            $usaTec = $e->asunto_tec && is_null($e->log_impreso_at);
+            $deTec  = $usaTec ? $e->detalleTecnico?->{$campoTec} : null;
+            return (int) ($deTec ?? $e->{$campoLog} ?? 0);
+        };
+
+        $resumenP = fn($col) => [
+            'n'       => $col->count(),
+            'urnas'   => $col->sum(fn($e) => $entregadas($e, 'mat_final_urnas', 'log_urnas')),
+            'cuartos' => $col->sum(fn($e) => $entregadas($e, 'mat_final_cuartos', 'log_cuartos')),
+            'tintas'  => $col->sum(fn($e) => $entregadas($e, 'mat_final_tintas', 'log_tintas')),
+        ];
+        $resumenD = fn($col) => [
+            'n'       => $col->count(),
+            'urnas'   => (int) $col->sum(fn($e) => $e->logDevolucion?->urnas_devueltas ?? 0),
+            'cuartos' => (int) $col->sum(fn($e) => $e->logDevolucion?->cuartos_devueltos ?? 0),
+            'tintas'  => (int) $col->sum(fn($e) => $e->logDevolucion?->tintas_devueltas ?? 0),
+        ];
+
+        $pMes = $prestados->filter(fn($e) => $e->fecha_entrega && $e->fecha_entrega->between($ini, $fin));
+        $dMes = $devueltos->filter(fn($e) => $e->logDevolucion?->created_at?->between($ini, $fin));
+
+        $pTotal = $resumenP($prestados);
+        $dTotal = $resumenD($devueltos);
+
+        return response()->json([
+            'p_mes'   => $resumenP($pMes),
+            'p_total' => $pTotal,
+            'd_mes'   => $resumenD($dMes),
+            'd_total' => $dTotal,
+            // Lo que todavía no volvió (siempre sobre el total acumulado)
+            'falta'   => [
+                'urnas'   => max(0, $pTotal['urnas']   - $dTotal['urnas']),
+                'cuartos' => max(0, $pTotal['cuartos'] - $dTotal['cuartos']),
+                'tintas'  => max(0, $pTotal['tintas']  - $dTotal['tintas']),
+            ],
+        ]);
+    }
+
     public function storeDevolucion(Request $request, $id)
     {
         $request->validate([
