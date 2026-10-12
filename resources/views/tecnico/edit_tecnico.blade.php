@@ -190,9 +190,9 @@ if (request()->has('volver')) {
 @endphp
         <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px;">
             <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0 0 10px;">Materiales a Entregar</p>
-            @if($logSalio)
+            @if($entrada->logYaEntregado())
             <div style="background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; border-radius:6px; padding:6px 10px; font-size:12px; margin-bottom:10px;">
-                ✓ Log ya entregado{{ $logFechaTxt }} — cuartos, urnas y tintas muestran lo entregado.
+                ✓ Log ya entregado{{ $logFechaTxt }}{{ $logSalio ? ' — cuartos, urnas y tintas muestran lo entregado.' : '' }}
             </div>
             @endif
            <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:4px; min-width:0;">

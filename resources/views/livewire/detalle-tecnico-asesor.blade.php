@@ -84,9 +84,9 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin:0 0 10px;">
                 <p style="font-size:11px; font-weight:700; color:#1e40af; text-transform:uppercase; margin:0;">Materiales a Entregar</p>
             </div>
-            @if($logSalio)
+            @if($entrada->logYaEntregado())
             <div style="background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; border-radius:6px; padding:6px 10px; font-size:12px; margin-bottom:10px;">
-                ✓ Log ya entregado{{ $logFechaTxt }} — cuartos, urnas y tintas muestran lo entregado.
+                ✓ Log ya entregado{{ $logFechaTxt }}{{ $logSalio ? ' — cuartos, urnas y tintas muestran lo entregado.' : '' }}
             </div>
             @endif
             <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:8px;">
