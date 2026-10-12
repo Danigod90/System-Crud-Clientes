@@ -105,6 +105,28 @@ class EntradaConNota extends Model
         return $this->hasOne(Observador::class, 'entrada_con_nota_id');
     }
 
+    /**
+     * ¿El log ya fue entregado? Se decide por log_estado, NO por
+     * log_impreso_at: ese campo también lo marca la impresión del recibo de
+     * técnica en los combos log + tec, sin que se haya entregado nada.
+     */
+    public function logYaEntregado(): bool
+    {
+        return (bool) $this->asunto_log
+            && in_array($this->log_estado, ['entregada', 'realizado'], true);
+    }
+
+    /**
+     * ¿Hay cantidades "reales" de log entregadas (cargadas en el popup de
+     * Entrega de Log o por Secretaría)? Solo en ese caso conviene mostrar
+     * log_* en lugar de las cantidades que cargó el asesor (mat_final_*).
+     */
+    public function logConCantidadesReales(): bool
+    {
+        return $this->logYaEntregado()
+            && (((int) $this->log_urnas) + ((int) $this->log_cuartos) + ((int) $this->log_tintas)) > 0;
+    }
+
     public function detalleTecnico()
     {
         return $this->hasOne(DetalleTecnico::class, 'entrada_id');

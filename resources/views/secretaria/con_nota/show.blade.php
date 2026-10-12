@@ -71,7 +71,7 @@
                     @php
                         $mostrarReimprimir = $conNota->asunto_log && (
                             (!$conNota->asunto_tec && $conNota->log_estado === 'entregada')
-                            || ($conNota->asunto_tec && !is_null($conNota->log_impreso_at))
+                            || ($conNota->asunto_tec && $conNota->logConCantidadesReales())
                         );
                     @endphp
                     @if($mostrarReimprimir)
@@ -355,7 +355,7 @@
         $estTintas   = $mTec->mat_final_tintas   !== null ? $mTec->mat_final_tintas   : ($mTec->cantidad_mesas ?? 0);
         // Si el log ya se entregó (ej. por Log de Urgencia), se muestran las
         // cantidades realmente entregadas, no la estimación de técnica.
-        $logSalio = $conNota->asunto_log && !is_null($conNota->log_impreso_at);
+        $logSalio = $conNota->logConCantidadesReales();
         if ($logSalio) {
             $estCuartos = $conNota->log_cuartos ?? 0;
             $estUrnas   = $conNota->log_urnas   ?? 0;

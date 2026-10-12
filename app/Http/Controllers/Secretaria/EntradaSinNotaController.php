@@ -191,7 +191,7 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
 
         // Cantidades entregadas (mismo criterio que Gestión de Log)
         $entregadas = function ($e, string $campoTec, string $campoLog): int {
-            $usaTec = $e->asunto_tec && is_null($e->log_impreso_at);
+            $usaTec = $e->asunto_tec && !$e->logConCantidadesReales();
             $deTec  = $usaTec ? $e->detalleTecnico?->{$campoTec} : null;
             return (int) ($deTec ?? $e->{$campoLog} ?? 0);
         };
@@ -367,7 +367,9 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
     // en "Entregar" — pero el registro del reporte de "Materiales
     // Entregados" solo debe crearse la primera vez, si no, cada reimpresión
     // (o un doble clic) generaría uno nuevo.
-    $yaImpreso = !is_null($entrada->log_impreso_at);
+    // Ojo: log_impreso_at también lo marca la impresión del recibo de técnica,
+    // así que "ya entregado" se decide por log_estado.
+    $yaImpreso = $entrada->logYaEntregado();
 
     // Desde Gestión de Log (Secretaria Sin Nota) se pide el nombre a mano,
     // porque quien opera el sistema puede no ser quien entrega físicamente.

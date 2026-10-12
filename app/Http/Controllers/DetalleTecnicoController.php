@@ -282,7 +282,7 @@ $estTintas   = !is_null($detalle->mat_final_tintas)   ? $detalle->mat_final_tint
     // Si el log ya se entregó antes (ej. por Log de Urgencia), se usan las
     // cantidades realmente entregadas y se muestran los datos de esa entrega
     // en lugar de dejar la sección [2] en blanco.
-    $logYaSalio = $entrada->asunto_log && !is_null($entrada->log_impreso_at);
+    $logYaSalio = $entrada->logConCantidadesReales();
     if ($logYaSalio) {
         $estUrnas   = $logUrnas;
         $estCuartos = $logCuartos;

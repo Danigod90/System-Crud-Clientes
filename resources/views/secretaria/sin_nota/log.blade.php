@@ -61,7 +61,7 @@
                             // Si el log ya se entregó (log_impreso_at) se muestran las cantidades
                             // realmente entregadas (log_*). Para combos que todavía no se entregaron,
                             // las que cargó el asesor en los datos técnicos.
-                            $usaTecFila = $entrada->asunto_tec && $entrada->asunto_log && is_null($entrada->log_impreso_at);
+                            $usaTecFila = $entrada->asunto_tec && $entrada->asunto_log && !$entrada->logConCantidadesReales();
                             $urnas   = $usaTecFila ? ($mTec->mat_final_urnas   ?? ($m * $p)) : ($entrada->asunto_log ? ($entrada->log_urnas   ?? 0) : 0);
                             $cuartos = $usaTecFila ? ($mTec->mat_final_cuartos ?? $m)        : ($entrada->asunto_log ? ($entrada->log_cuartos ?? 0) : 0);
                             $tintas  = $usaTecFila ? ($mTec->mat_final_tintas  ?? $m)        : ($entrada->asunto_log ? ($entrada->log_tintas  ?? 0) : 0);
@@ -145,7 +145,7 @@
                             // Si el log ya se entregó (log_impreso_at) se muestran las cantidades
                             // realmente entregadas (log_*). Para combos que todavía no se entregaron,
                             // las que cargó el asesor en los datos técnicos.
-                            $usaTecFila = $entrada->asunto_tec && $entrada->asunto_log && is_null($entrada->log_impreso_at);
+                            $usaTecFila = $entrada->asunto_tec && $entrada->asunto_log && !$entrada->logConCantidadesReales();
                             $urnas   = $usaTecFila ? ($mTec->mat_final_urnas   ?? ($m * $p)) : ($entrada->asunto_log ? ($entrada->log_urnas   ?? 0) : 0);
                             $cuartos = $usaTecFila ? ($mTec->mat_final_cuartos ?? $m)        : ($entrada->asunto_log ? ($entrada->log_cuartos ?? 0) : 0);
                             $tintas  = $usaTecFila ? ($mTec->mat_final_tintas  ?? $m)        : ($entrada->asunto_log ? ($entrada->log_tintas  ?? 0) : 0);
@@ -235,7 +235,7 @@
                             // Cantidades entregadas: si el log ya se entregó se usan las reales (log_*);
                             // para combos que aún no tengan log_impreso_at, las cargadas por el asesor.
                             $mTecD = $entrada->detalleTecnico;
-                            $usaTecD = $entrada->asunto_tec && $entrada->asunto_log && is_null($entrada->log_impreso_at);
+                            $usaTecD = $entrada->asunto_tec && $entrada->asunto_log && !$entrada->logConCantidadesReales();
                             $entUrnas   = $usaTecD ? ($mTecD->mat_final_urnas   ?? $entrada->log_urnas   ?? 0) : ($entrada->log_urnas   ?? 0);
                             $entCuartos = $usaTecD ? ($mTecD->mat_final_cuartos ?? $entrada->log_cuartos ?? 0) : ($entrada->log_cuartos ?? 0);
                             $entTintas  = $usaTecD ? ($mTecD->mat_final_tintas  ?? $entrada->log_tintas  ?? 0) : ($entrada->log_tintas  ?? 0);

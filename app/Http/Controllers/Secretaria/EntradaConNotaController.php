@@ -20,7 +20,6 @@ class EntradaConNotaController extends Controller
         $asesor = trim((string) $request->get('asesor', ''));
 
         $entradas = EntradaConNota::where('asunto_log', true)
-            ->whereNull('log_impreso_at')
             ->where(fn($s) => $s->whereNull('eleccion_suspendida')->orWhere('eleccion_suspendida', false))
             // También se descartan las ya entregadas por otro camino (ej.
             // "Entregar" en Gestión de Log), que marcan log_estado pero no
@@ -75,7 +74,7 @@ class EntradaConNotaController extends Controller
      */
     public function actualizarCantidadesLog(Request $request, EntradaConNota $conNota)
     {
-        abort_unless($conNota->asunto_log && !is_null($conNota->log_impreso_at), 404);
+        abort_unless($conNota->logYaEntregado(), 404);
 
         $datos = $request->validate([
             'log_urnas'   => 'required|integer|min:0',

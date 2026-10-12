@@ -76,7 +76,7 @@
         @endif
 
         @php
-            $logSalio = $entrada->asunto_log && !is_null($entrada->log_impreso_at);
+            $logSalio = $entrada->logConCantidadesReales();
             $logFechaTxt = $entrada->fecha_entrega ? ' el ' . $entrada->fecha_entrega->format('d/m/Y H:i') : '';
         @endphp
         @if((int) $cantidad_mesas > 0)
@@ -301,7 +301,7 @@
                         @enderror
                     </div>
                     @php
-                        $logSalio    = $entrada->asunto_log && !is_null($entrada->log_impreso_at);
+                        $logSalio    = $entrada->logConCantidadesReales();
                         $logFechaTxt = $entrada->fecha_entrega ? ' el ' . $entrada->fecha_entrega->format('d/m/Y H:i') : '';
                     @endphp
                     @if($entrada->asunto_log && $logSalio)

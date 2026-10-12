@@ -180,7 +180,7 @@ if (request()->has('volver')) {
     $tintasRO    = $entrada->detalleTecnico->mat_final_tintas    !== null ? $entrada->detalleTecnico->mat_final_tintas   : $mesasRO;
     // Si el log ya se entregó (ej. por Log de Urgencia) se muestran las
     // cantidades realmente entregadas, no la estimación.
-    $logSalio    = $entrada->asunto_log && !is_null($entrada->log_impreso_at);
+    $logSalio    = $entrada->logConCantidadesReales();
     $logFechaTxt = $entrada->fecha_entrega ? ' el ' . $entrada->fecha_entrega->format('d/m/Y H:i') : '';
     if ($logSalio) {
         $cuartosRO = $entrada->log_cuartos ?? 0;
@@ -326,7 +326,7 @@ if (request()->has('volver')) {
     $cuartosVal         = $efectivo('mat_final_cuartos', is_null($entrada->detalleTecnico->mat_final_cuartos) ? $mEstForm : $entrada->detalleTecnico->mat_final_cuartos);
     $urnasVal           = $efectivo('mat_final_urnas', is_null($entrada->detalleTecnico->mat_final_urnas) ? ($mEstForm * $pEstForm) : $entrada->detalleTecnico->mat_final_urnas);
     $tintasVal          = $efectivo('mat_final_tintas', is_null($entrada->detalleTecnico->mat_final_tintas) ? $mEstForm : $entrada->detalleTecnico->mat_final_tintas);
-    $logSalio    = $entrada->asunto_log && !is_null($entrada->log_impreso_at);
+    $logSalio    = $entrada->logConCantidadesReales();
     $logFechaTxt = $entrada->fecha_entrega ? ' el ' . $entrada->fecha_entrega->format('d/m/Y H:i') : '';
 @endphp
 <div style="background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:12px 16px; margin-bottom:14px;">
