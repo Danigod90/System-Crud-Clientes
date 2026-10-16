@@ -228,12 +228,12 @@ $realizadoPrio = (bool) ($ent->detalleTecnico?->tec_realizado ?? false);
                     <span style="font-size:10px; font-weight:700; background:{{ $realizadoPrio ? '#16a34a' : '#dc2626' }}; color:#fff; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;">{{ $i+1 }}</span>
                     <span style="font-size:10px; font-weight:600; color:{{ $realizadoPrio ? '#16a34a' : '#dc2626' }}; font-family:monospace;">{{ $ent->codigo_org }}</span>
                     @if($realizadoPrio)
-                    <span style="margin-left:auto; font-size:9px; font-weight:700; color:#166534; background:#dcfce7; padding:2px 7px; border-radius:20px;">✓ Realizado</span>
+                    <span style="margin-left:auto; font-size:9px; font-weight:700; color:#166534; background:#dcfce7; padding:2px 7px; border-radius:20px;">Realizado</span>
                     @else
                     <span style="margin-left:auto; font-size:9px; font-weight:700; color:#991b1b; background:#fee2e2; padding:2px 7px; border-radius:20px;">Pendiente</span>
                     @endif
                 </div>
-                <p style="font-size:11px; font-weight:600; color:#111827; margin:0 0 4px; line-height:1.3; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">{{ $ent->nombre_organizacion }}</p>
+                <p title="{{ $ent->nombre_organizacion }}" style="font-size:11px; font-weight:600; color:#111827; margin:0 0 4px; line-height:1.3; overflow:hidden; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; cursor:default;">{{ $ent->nombre_organizacion }}</p>
                 <p style="font-size:10px; color:#6b7280; margin:0 0 4px;">{{ $ent->asesor_asignado ?? '—' }}</p>
                 <p style="font-size:10px; color:#6b7280; margin:0 0 6px;">📅 {{ $ent->fecha_eleccion?->format('d/m/Y') ?? 'Sin fecha' }}</p>
                 <div style="display:flex; gap:6px; flex-wrap:wrap;">
