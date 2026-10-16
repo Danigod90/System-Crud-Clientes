@@ -55,6 +55,10 @@
             ✓ Cantidades ya cargadas previamente — puedes editarlas.
         </p>
         <div style="margin-bottom:12px;">
+            <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Funcionario que entrega *</label>
+            <input type="text" id="urgencia-funcionario" required list="funcionarios-log-datalist" placeholder="Nombre completo..." style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; outline:none; box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:12px;">
             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora *</label>
             <input type="datetime-local" id="urgencia-fecha" required style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; outline:none; box-sizing:border-box;">
         </div>
@@ -131,6 +135,14 @@
         </div>
     </div>
 </div>
+
+<datalist id="funcionarios-log-datalist">
+    @isset($funcionariosLog)
+    @foreach($funcionariosLog as $nombreFunc)
+    <option value="{{ $nombreFunc }}"></option>
+    @endforeach
+    @endisset
+</datalist>
 
 <style>
     @keyframes girarUrgencia { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -232,6 +244,7 @@ function seleccionarUrgencia(id, nombre, datos) {
     document.getElementById('urgencia-tintas').value  = datos?.log_tintas  ?? 0;
     const hayPrecargado = ((datos?.log_urnas ?? 0) + (datos?.log_cuartos ?? 0) + (datos?.log_tintas ?? 0)) > 0;
     document.getElementById('urgencia-aviso-precargado').style.display = hayPrecargado ? 'block' : 'none';
+    document.getElementById('urgencia-funcionario').value = {!! json_encode(auth()->user()->name ?? '') !!};
     document.getElementById('urgencia-fecha').value = fechaLocalAhoraUrgencia();
     document.getElementById('urgencia-persona').value = '';
     document.getElementById('urgencia-telefono').value = '';
@@ -328,9 +341,11 @@ function volverABuscarUrgencia() {
 }
 
 function irAConfirmarUrgencia() {
+    const funcionario = document.getElementById('urgencia-funcionario').value.trim();
     const fecha    = document.getElementById('urgencia-fecha').value;
     const persona  = document.getElementById('urgencia-persona').value.trim();
     const telefono = document.getElementById('urgencia-telefono').value.trim();
+    if (!funcionario) { alert('Por favor ingresá el funcionario que entrega.'); return; }
     if (!fecha)    { alert('Por favor ingresá la fecha.'); return; }
     if (!persona)  { alert('Por favor ingresá el nombre de quien retira.'); return; }
     if (!telefono) { alert('Por favor ingresá el teléfono de quien retira.'); return; }
@@ -342,6 +357,7 @@ function irAConfirmarUrgencia() {
     document.getElementById('urgencia-resumen').innerHTML = `
         <strong>${escapeHtmlUrgencia(_urgenciaOrgNombre)}</strong><br>
         Urnas: ${urnas} — Cuartos: ${cuartos} — Tintas: ${tintas}<br>
+        Entrega: ${escapeHtmlUrgencia(funcionario)}<br>
         Retira: ${escapeHtmlUrgencia(persona)} (${escapeHtmlUrgencia(telefono)})<br>
         Fecha: ${fecha.replace('T', ' ')}
     `;
@@ -366,6 +382,7 @@ async function confirmarUrgencia() {
         + '</svg>Guardando...';
 
     const params = new URLSearchParams({
+        entregado_por:   document.getElementById('urgencia-funcionario').value.trim(),
         fecha_entrega:   document.getElementById('urgencia-fecha').value,
         persona_retira:  document.getElementById('urgencia-persona').value.trim(),
         telefono_retira: document.getElementById('urgencia-telefono').value.trim(),

@@ -10,6 +10,11 @@
         <h3 style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:4px; text-align:center;">Imprimir logística</h3>
         <p id="modal-log-org" style="font-size:12px; color:#64748b; margin-bottom:18px; text-align:center;"></p>
         <div style="margin-bottom:14px;">
+            <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Funcionario que entrega *</label>
+            <input type="text" id="log-imprimir-funcionario" required list="funcionarios-log-datalist-b" placeholder="Nombre completo..."
+                   style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+        </div>
+        <div style="margin-bottom:14px;">
             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha y hora *</label>
             <input type="datetime-local" id="log-fecha" required
                    style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
@@ -55,6 +60,14 @@
     </div>
 </div>
 
+<datalist id="funcionarios-log-datalist-b">
+    @isset($funcionariosLog)
+    @foreach($funcionariosLog as $nombreFunc)
+    <option value="{{ $nombreFunc }}"></option>
+    @endforeach
+    @endisset
+</datalist>
+
 <style>
     @keyframes girar { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
     .spinner-guardar { animation: girar 0.7s linear infinite; }
@@ -71,6 +84,7 @@ let _logEntradaId = null;
 function abrirModalImprimirLog(id, org) {
     _logEntradaId = id;
     document.getElementById('modal-log-org').textContent = org;
+    document.getElementById('log-imprimir-funcionario').value = {!! json_encode(auth()->user()->name ?? '') !!};
     document.getElementById('log-fecha').value = fechaLocalAhora();
     document.getElementById('log-persona-retira').value = '';
     document.getElementById('log-telefono-retira').value = '';
@@ -87,9 +101,11 @@ async function confirmarImprimirLog() {
     const btnImprimirLog = document.getElementById('btn-confirmar-imprimir-log');
     if (btnImprimirLog.disabled) return;
 
+    const funcionario     = document.getElementById('log-imprimir-funcionario').value.trim();
     const fecha           = document.getElementById('log-fecha').value;
     const personaRetira   = document.getElementById('log-persona-retira').value.trim();
     const telefonoRetira  = document.getElementById('log-telefono-retira').value.trim();
+    if (!funcionario)    { alert('Por favor ingresá el funcionario que entrega.'); return; }
     if (!fecha)          { alert('Por favor ingresá la fecha.'); return; }
     if (!personaRetira)  { alert('Por favor ingresá el nombre de quien retira.'); return; }
     if (!telefonoRetira) { alert('Por favor ingresá el teléfono de quien retira.'); return; }
@@ -103,7 +119,8 @@ async function confirmarImprimirLog() {
         + '</svg>Guardando...';
 
     const url = '/secretaria/sin-nota/log/' + _logEntradaId + '/imprimir-logistica'
-        + '?fecha_entrega=' + encodeURIComponent(fecha)
+        + '?entregado_por=' + encodeURIComponent(funcionario)
+        + '&fecha_entrega=' + encodeURIComponent(fecha)
         + '&persona_retira=' + encodeURIComponent(personaRetira)
         + '&telefono_retira=' + encodeURIComponent(telefonoRetira);
 

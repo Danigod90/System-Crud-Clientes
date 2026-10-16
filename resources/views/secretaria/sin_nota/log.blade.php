@@ -300,7 +300,7 @@
             @csrf @method('PATCH')
             <div style="margin-bottom:14px;">
                 <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Funcionario que entrega *</label>
-                <input type="text" name="entregado_por" id="entregar-funcionario" required placeholder="Nombre completo..."
+                <input type="text" name="entregado_por" id="entregar-funcionario" required list="funcionarios-log-datalist-c" placeholder="Nombre completo..."
                        style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
             </div>
             <div style="margin-bottom:14px;">
@@ -335,7 +335,7 @@
         <p id="modal-log-org" style="font-size:12px; color:#64748b; margin-bottom:18px; text-align:center;"></p>
         <div style="margin-bottom:14px;">
             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Funcionario que entrega *</label>
-            <input type="text" id="log-funcionario" required placeholder="Nombre completo..."
+            <input type="text" id="log-funcionario" required list="funcionarios-log-datalist-c" placeholder="Nombre completo..."
                    style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
         </div>
         <div style="margin-bottom:14px;">
@@ -380,7 +380,7 @@
             @csrf @method('PATCH')
             <div style="margin-bottom:14px;">
                 <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Funcionario que entrega *</label>
-                <input type="text" name="entregado_por" id="detalle-funcionario" required disabled
+                <input type="text" name="entregado_por" id="detalle-funcionario" required disabled list="funcionarios-log-datalist-c"
                        style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:8px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box; background:#f9fafb;">
             </div>
             <div style="margin-bottom:14px;">
@@ -406,6 +406,14 @@
         </form>
     </div>
 </div>
+
+<datalist id="funcionarios-log-datalist-c">
+    @isset($funcionariosLog)
+    @foreach($funcionariosLog as $nombreFunc)
+    <option value="{{ $nombreFunc }}"></option>
+    @endforeach
+    @endisset
+</datalist>
 
 {{-- MODAL: DETALLE DE UNA ORGANIZACIÓN DEVUELTA (solo lectura) --}}
 <div id="modal-detalle-devuelto" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:50; align-items:center; justify-content:center;">
@@ -554,7 +562,7 @@ function fechaLocalAhora() {
 function abrirModalEntregar(id, org) {
     document.getElementById('modal-entregar-org').textContent = org;
     document.getElementById('entregar-fecha').value = fechaLocalAhora();
-    document.getElementById('entregar-funcionario').value = '';
+    document.getElementById('entregar-funcionario').value = {!! json_encode(auth()->user()->name ?? '') !!};
     document.getElementById('entregar-persona-retira').value = '';
     document.getElementById('entregar-telefono-retira').value = '';
     document.getElementById('form-entregar').action = '/secretaria/sin-nota/log/' + id + '/entregar';
@@ -572,7 +580,7 @@ function abrirModalImprimirLog(id, org) {
     _logEntradaId = id;
     document.getElementById('modal-log-org').textContent = org;
     document.getElementById('log-fecha').value = fechaLocalAhora();
-    document.getElementById('log-funcionario').value = '';
+    document.getElementById('log-funcionario').value = {!! json_encode(auth()->user()->name ?? '') !!};
     document.getElementById('log-persona-retira').value = '';
     document.getElementById('log-telefono-retira').value = '';
     const btnImprimirLog = document.getElementById('btn-confirmar-imprimir-log');

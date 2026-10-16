@@ -449,6 +449,8 @@ $padronCINO  = $detalle->padron_con_cedula ? '[  ]' : '[X]';
     Recibo conforme y declaro que los datos que obran en el presente padrón están correctos y coinciden con los datos que he presentado para su confección por parte de la Dirección de Organizaciones Intermedias.
 </div>
 
+<div style="font-size:10.5px; margin-top:10px;"><strong>Funcionario que entrega:</strong> <span style="display:inline-block; border-bottom:1px solid #000; width:230px; margin-left:4px;">&nbsp;</span></div>
+
 <div style="margin-top:14px;">
     <div style="font-size:9px; font-weight:700; margin-bottom:24px;">Datos de quien retira:</div>
     <table style="width:100%; border-collapse:collapse;">

@@ -174,7 +174,7 @@ class NotaPdfController extends Controller
         <td>' . ($conNota->telefono_retira ? e($conNota->telefono_retira) : 'N° de Teléfono') . '</td>
     </tr>
 </table>
-<div style="font-size:10px; margin-top:10px; border-bottom:1px solid #000; padding-bottom:2px;">Nombre del funcionario que otorga: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+<div style="font-size:10px; margin-top:10px; border-bottom:1px solid #000; padding-bottom:2px;"><strong>Funcionario que entrega:</strong> ' . ($conNota->entregado_por ? e($conNota->entregado_por) : '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;') . '</div>
 
 <hr class="separador">
 
@@ -205,17 +205,23 @@ class NotaPdfController extends Controller
         // Guardar si ya estaba impreso ANTES de actualizar
         $yaImpreso = !is_null($conNota->log_impreso_at);
 
+        // No pisar un "entregado_por" que ya haya sido cargado antes de
+        // llegar acá (ej. por el formulario de Gestión de Log, que ahora
+        // pide el nombre a mano): solo se usa el usuario logueado como
+        // respaldo, si no hay nada cargado todavía.
+        $entregadoPor = $conNota->entregado_por ?: auth()->user()->name;
+
         if ($conNota->asunto_log && !$conNota->asunto_tec) {
             $conNota->update([
                 'log_impreso_at' => now(),
                 'log_estado'     => 'entregada',
-                'entregado_por'  => auth()->user()->name,
+                'entregado_por'  => $entregadoPor,
                 'fecha_entrega'  => now(),
             ]);
         } else {
             $conNota->update([
                 'log_impreso_at' => now(),
-                'entregado_por'  => auth()->user()->name,
+                'entregado_por'  => $entregadoPor,
                 'fecha_entrega'  => now(),
             ]);
         }

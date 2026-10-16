@@ -33,5 +33,21 @@ class AppServiceProvider extends ServiceProvider
 
     $view->with('elecciones', $elecciones);
 });
+
+        // Autocompletado de "Funcionario que entrega": nombres ya usados
+        // anteriormente, para no tener que escribir todo el nombre cada vez.
+        View::composer([
+            'secretaria.partials.modal-log-urgencia',
+            'secretaria.partials.modal-imprimir-logistica',
+            'secretaria.sin_nota.log',
+        ], function ($view) {
+            $nombres = EntradaConNota::whereNotNull('entregado_por')
+                ->where('entregado_por', '!=', '')
+                ->distinct()
+                ->orderBy('entregado_por')
+                ->pluck('entregado_por');
+
+            $view->with('funcionariosLog', $nombres);
+        });
     }
 }
