@@ -262,7 +262,7 @@
                 </span>
             </div>
 {{-- DETALLE DE LOGÍSTICA --}}
-            @if($conNota->asunto_log && !$conNota->asunto_tec)
+            @if($conNota->asunto_log && (!$conNota->asunto_tec || $conNota->logYaEntregado()))
             <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:20px; margin-top:14px; box-shadow:0 1px 4px rgba(0,0,0,0.05);">
                 <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:8px;">
                     Detalle Logístico
@@ -271,6 +271,11 @@
                         <span style="width:9px; height:9px; border-radius:50%; background:{{ $logDot }}; display:inline-block;"></span>
                         {{ ($conNota->log_estado ?? 'pendiente') === 'entregada' ? 'Entregada' : 'Pendiente' }}
                     </span>
+                    @if(($conNota->log_estado ?? 'pendiente') === 'entregada' && $conNota->fecha_entrega)
+                    <span style="font-size:11px; font-weight:500; color:#9ca3af; text-transform:none;">
+                        — {{ $conNota->fecha_entrega->format('d/m/Y H:i') }}
+                    </span>
+                    @endif
                 </h3>
                 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
                     <div style="text-align:center;">
