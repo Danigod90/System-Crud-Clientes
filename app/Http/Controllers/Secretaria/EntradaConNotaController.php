@@ -213,9 +213,19 @@ class EntradaConNotaController extends Controller
     'fecha_eleccion'         => 'nullable|date',
     'asesor_asignado'        => 'required|string|max:255',
     'via_ingreso'            => 'required|in:correo,presencial',
+    'asunto'                 => 'required|array|min:1',
     'asunto.*'               => 'in:char,log,tec,obs,inf',
     'direccion'              => 'nullable|string|max:255',
+], [
+    'asunto.required' => 'Elegí al menos un asunto.',
 ]);
+
+    // El asunto "inf" (informativo) es excluyente: no puede combinarse con otros.
+    if (in_array('inf', $request->asunto) && count($request->asunto) > 1) {
+        return back()->withInput()->withErrors([
+            'asunto' => 'El asunto "Informativo" no puede combinarse con otros asuntos. Desmarcá "Informativo" o los demás para continuar.',
+        ]);
+    }
 
     $entrada = EntradaConNota::create([
         'nombre_organizacion'    => $request->nombre_organizacion,
@@ -346,7 +356,16 @@ if (auth()->user()->hasRole('Asesor')) {
         'asunto'                 => 'required|array|min:1',
         'asunto.*'               => 'in:char,log,tec,obs,inf',
         'direccion'              => 'nullable|string|max:255',
+    ], [
+        'asunto.required' => 'Elegí al menos un asunto.',
     ]);
+
+    // El asunto "inf" (informativo) es excluyente: no puede combinarse con otros.
+    if (in_array('inf', $request->asunto) && count($request->asunto) > 1) {
+        return back()->withInput()->withErrors([
+            'asunto' => 'El asunto "Informativo" no puede combinarse con otros asuntos. Desmarcá "Informativo" o los demás para continuar.',
+        ]);
+    }
 
     $asesorAnterior = $conNota->asesor_asignado;
 

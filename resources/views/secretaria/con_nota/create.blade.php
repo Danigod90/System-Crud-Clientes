@@ -105,7 +105,16 @@
                 <h3 style="font-size:13px; font-weight:600; color:#374151; margin-bottom:6px; padding-bottom:10px; border-bottom:1px solid #f3f4f6; text-transform:uppercase; letter-spacing:0.5px;">Asunto solicitado *</h3>
                 <p style="font-size:11px; color:#9ca3af; margin-bottom:14px;">Seleccioná uno o más servicios que solicita la organización.</p>
 
-                @error('asunto')<p style="color:#ef4444; font-size:11px; margin-bottom:10px;">{{ $message }}</p>@enderror
+                @error('asunto')
+                <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:10px 14px; margin-bottom:14px; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" style="flex-shrink:0;">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="8" y1="8" x2="16" y2="16"/>
+                        <line x1="16" y1="8" x2="8" y2="16"/>
+                    </svg>
+                    <p style="color:#dc2626; font-size:13px; font-weight:600; margin:0;">{{ $message }}</p>
+                </div>
+                @enderror
 
                 <div style="display:grid; grid-template-columns:repeat(5,1fr); gap:10px;">
                     <label style="display:flex; align-items:center; gap:10px; border:1px solid #e5e7eb; border-radius:10px; padding:12px 14px; cursor:pointer;">
@@ -230,6 +239,36 @@
 checkLog.addEventListener('change', toggleLogistica);
 document.querySelector('input[name="asunto[]"][value="tec"]')?.addEventListener('change', toggleLogistica);
 toggleLogistica();
+
+// El asunto "inf" (informativo) es excluyente: no se puede combinar con otros.
+(function () {
+    const checks = document.querySelectorAll('input[name="asunto[]"]');
+    const checkInf = document.querySelector('input[name="asunto[]"][value="inf"]');
+    if (!checkInf || !checks.length) return;
+
+    // Se usa "click" (no "change"): el navegador puede restaurar checkboxes
+    // marcados de un envío anterior al recargar la página, y eso dispara
+    // "change" sin que el usuario haya tocado nada. "click" solo ocurre con
+    // una interacción real.
+    checks.forEach(ch => ch.addEventListener('click', function () {
+        if (this === checkInf && checkInf.checked) {
+            let huboOtros = false;
+            checks.forEach(other => {
+                if (other !== checkInf && other.checked) {
+                    other.checked = false;
+                    huboOtros = true;
+                }
+            });
+            if (huboOtros) {
+                if (typeof toggleLogistica === 'function') toggleLogistica();
+                alert('El asunto "Informativo" no puede combinarse con otros asuntos. Se desmarcaron los demás.');
+            }
+        } else if (this !== checkInf && this.checked && checkInf.checked) {
+            checkInf.checked = false;
+            alert('El asunto "Informativo" no puede combinarse con otros asuntos. Se desmarcó "Informativo".');
+        }
+    }));
+})();
 
    const form = document.getElementById('form-entrada');
 const btnGuardar = document.getElementById('btn-guardar');
