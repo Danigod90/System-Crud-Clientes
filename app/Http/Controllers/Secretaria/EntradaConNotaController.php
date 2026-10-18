@@ -380,9 +380,13 @@ if (auth()->user()->hasRole('Asesor')) {
         'asunto_char'            => in_array('char', $request->asunto ?? []),
         'asunto_log'             => in_array('log', $request->asunto ?? []),
         'asunto_tec'             => in_array('tec', $request->asunto ?? []),
-        'log_urnas'              => in_array('log', $request->asunto ?? []) ? (int)$request->log_urnas : 0,
-        'log_cuartos'            => in_array('log', $request->asunto ?? []) ? (int)$request->log_cuartos : 0,
-        'log_tintas'             => in_array('log', $request->asunto ?? []) ? (int)$request->log_tintas : 0,
+        // Las cantidades de logística ya no se cargan en este formulario: se
+        // cargan al momento de imprimir (popup de "Imprimir Logística"/"Entrega
+        // de Log"). Si no vienen en el request, se conserva lo que ya había
+        // en vez de resetear a 0.
+        'log_urnas'              => $request->filled('log_urnas')   ? (int) $request->log_urnas   : $conNota->log_urnas,
+        'log_cuartos'            => $request->filled('log_cuartos') ? (int) $request->log_cuartos : $conNota->log_cuartos,
+        'log_tintas'             => $request->filled('log_tintas')  ? (int) $request->log_tintas  : $conNota->log_tintas,
         'asunto_obs'             => in_array('obs', $request->asunto ?? []),
         'asunto_inf'             => in_array('inf', $request->asunto ?? []),
         'direccion'             => $request->direccion,

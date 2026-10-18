@@ -9,6 +9,23 @@
         <div style="font-size:32px; text-align:center; margin-bottom:10px;">🖨️</div>
         <h3 style="font-size:15px; font-weight:700; color:#1e293b; margin-bottom:4px; text-align:center;">Imprimir logística</h3>
         <p id="modal-log-org" style="font-size:12px; color:#64748b; margin-bottom:18px; text-align:center;"></p>
+        <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:10px;">
+            <div>
+                <label style="display:block; font-size:10.5px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase;">Urnas</label>
+                <input type="number" id="log-imprimir-urnas" min="0" value="0" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 8px; font-size:13px; outline:none; box-sizing:border-box;">
+            </div>
+            <div>
+                <label style="display:block; font-size:10.5px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase;">Cuartos</label>
+                <input type="number" id="log-imprimir-cuartos" min="0" value="0" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 8px; font-size:13px; outline:none; box-sizing:border-box;">
+            </div>
+            <div>
+                <label style="display:block; font-size:10.5px; font-weight:600; color:#6b7280; margin-bottom:4px; text-transform:uppercase;">Tintas</label>
+                <input type="number" id="log-imprimir-tintas" min="0" value="0" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 8px; font-size:13px; outline:none; box-sizing:border-box;">
+            </div>
+        </div>
+        <p id="log-imprimir-aviso-precargado" style="display:none; font-size:11px; color:#065f46; background:#ecfdf5; border:1px solid #a7f3d0; border-radius:6px; padding:5px 8px; margin:-2px 0 12px;">
+            ✓ Cantidades ya cargadas previamente — puedes editarlas.
+        </p>
         <div style="margin-bottom:14px;">
             <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Funcionario que entrega *</label>
             <input type="text" id="log-imprimir-funcionario" required list="funcionarios-log-datalist-b" placeholder="Nombre completo..."
@@ -81,9 +98,14 @@ function fechaLocalAhora() {
 }
 
 let _logEntradaId = null;
-function abrirModalImprimirLog(id, org) {
+function abrirModalImprimirLog(id, org, urnas, cuartos, tintas) {
     _logEntradaId = id;
     document.getElementById('modal-log-org').textContent = org;
+    document.getElementById('log-imprimir-urnas').value   = urnas   || 0;
+    document.getElementById('log-imprimir-cuartos').value = cuartos || 0;
+    document.getElementById('log-imprimir-tintas').value  = tintas  || 0;
+    const hayPrecargado = ((urnas || 0) + (cuartos || 0) + (tintas || 0)) > 0;
+    document.getElementById('log-imprimir-aviso-precargado').style.display = hayPrecargado ? 'block' : 'none';
     document.getElementById('log-imprimir-funcionario').value = {!! json_encode(auth()->user()->name ?? '') !!};
     document.getElementById('log-fecha').value = fechaLocalAhora();
     document.getElementById('log-persona-retira').value = '';
@@ -118,24 +140,37 @@ async function confirmarImprimirLog() {
         + '<path d="M21 12a9 9 0 0 0-9-9" stroke="#fff" stroke-width="3" stroke-linecap="round"/>'
         + '</svg>Guardando...';
 
+    const urnas   = document.getElementById('log-imprimir-urnas').value || 0;
+    const cuartos = document.getElementById('log-imprimir-cuartos').value || 0;
+    const tintas  = document.getElementById('log-imprimir-tintas').value || 0;
+
     const url = '/secretaria/sin-nota/log/' + _logEntradaId + '/imprimir-logistica'
         + '?entregado_por=' + encodeURIComponent(funcionario)
         + '&fecha_entrega=' + encodeURIComponent(fecha)
         + '&persona_retira=' + encodeURIComponent(personaRetira)
-        + '&telefono_retira=' + encodeURIComponent(telefonoRetira);
+        + '&telefono_retira=' + encodeURIComponent(telefonoRetira)
+        + '&log_urnas=' + encodeURIComponent(urnas)
+        + '&log_cuartos=' + encodeURIComponent(cuartos)
+        + '&log_tintas=' + encodeURIComponent(tintas);
 
-    document.getElementById('modal-imprimir-log').style.display = 'none';
-
+    // El modal se queda abierto (con el botón en "Guardando...") hasta que
+    // el recibo esté listo, para que no parezca que no pasó nada al tocar
+    // el botón.
     try {
         const response = await fetch(url, {
             headers: { 'Accept': 'application/json' }
         });
         const data = await response.json();
+        document.getElementById('modal-imprimir-log').style.display = 'none';
         document.getElementById('recibo-log-html').innerHTML = data.html;
         document.getElementById('modal-recibo-log').style.display = 'flex';
     } catch(e) {
         alert('Error al cargar el recibo. Intentá de nuevo.');
         console.error(e);
+        btnImprimirLog.disabled = false;
+        btnImprimirLog.style.opacity = '1';
+        btnImprimirLog.style.cursor = 'pointer';
+        btnImprimirLog.innerHTML = 'Confirmar e imprimir';
     }
 }
 

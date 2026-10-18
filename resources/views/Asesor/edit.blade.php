@@ -57,7 +57,7 @@ if (request()->has('volver')) {
                     </a>
                     @endif
                     @if($entrada->asunto_log && !$entrada->asunto_tec && $entrada->log_estado !== 'entregada')
-<button type="button" onclick="abrirModalImprimirLog({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}')"
+<button type="button" onclick="abrirModalImprimirLog({{ $entrada->id }}, '{{ addslashes($entrada->nombre_organizacion) }}', {{ (int) ($entrada->log_urnas ?? 0) }}, {{ (int) ($entrada->log_cuartos ?? 0) }}, {{ (int) ($entrada->log_tintas ?? 0) }})"
                        style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -65,15 +65,23 @@ if (request()->has('volver')) {
                         </svg>
                         Imprimir Logístico
                     </button>
-              @elseif($entrada->asunto_log && !$entrada->asunto_tec && $entrada->log_estado === 'entregada')
-<a href="{{ route('secretaria.con-nota.recibo-logistica', $entrada->id) }}" target="_blank"
-                       style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; text-decoration:none; font-weight:500;">
+              @endif
+                    @php
+                        $mostrarReimprimirAsesor = $entrada->asunto_log && (
+                            (!$entrada->asunto_tec && $entrada->log_estado === 'entregada')
+                            || ($entrada->asunto_tec && $entrada->logConCantidadesReales())
+                        );
+                    @endphp
+                    @if($mostrarReimprimirAsesor)
+                    <button type="button" onclick="abrirReimprimirUrgencia({{ $entrada->id }})"
+                       style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:6px 14px; border-radius:8px; font-size:12px; border:none; cursor:pointer; font-weight:500;">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                             <polyline points="14 2 14 8 20 8"/>
                         </svg>
                         Reimprimir
-                    </a>
+                    </button>
+                    @include('secretaria.partials.modal-log-urgencia')
               @endif
                     @if($entrada->asunto_log && !$entrada->asunto_tec && $entrada->log_estado === 'entregada')
                     <span style="display:inline-flex; align-items:center; gap:6px; background:#d1fae5; color:#065f46; padding:6px 14px; border-radius:8px; font-size:12px; font-weight:500;">

@@ -393,16 +393,19 @@ async function confirmarUrgencia() {
 
     const url = '/secretaria/sin-nota/log/' + _urgenciaOrgId + '/imprimir-logistica?' + params.toString();
 
-    document.getElementById('modal-urgencia-confirmar').style.display = 'none';
-
     try {
         const response = await fetch(url, { headers: { 'Accept': 'application/json' } });
         const data = await response.json();
+        document.getElementById('modal-urgencia-confirmar').style.display = 'none';
         document.getElementById('urgencia-recibo-html').innerHTML = data.html;
         document.getElementById('modal-urgencia-recibo').style.display = 'flex';
     } catch (e) {
         alert('Error al generar el recibo. Intentá de nuevo.');
         console.error(e);
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.style.cursor = 'pointer';
+        btn.innerHTML = 'Confirmar e imprimir';
     }
 }
 

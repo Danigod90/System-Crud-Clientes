@@ -619,18 +619,21 @@ async function confirmarImprimirLog() {
         + '&persona_retira=' + encodeURIComponent(personaRetira)
         + '&telefono_retira=' + encodeURIComponent(telefonoRetira);
 
-    document.getElementById('modal-imprimir-log').style.display = 'none';
-
     try {
         const response = await fetch(url, {
             headers: { 'Accept': 'application/json' }
         });
         const data = await response.json();
+        document.getElementById('modal-imprimir-log').style.display = 'none';
         document.getElementById('recibo-log-html').innerHTML = data.html;
         document.getElementById('modal-recibo-log').style.display = 'flex';
     } catch(e) {
         alert('Error al cargar el recibo. Intentá de nuevo.');
         console.error(e);
+        btnImprimirLog.disabled = false;
+        btnImprimirLog.style.opacity = '1';
+        btnImprimirLog.style.cursor = 'pointer';
+        btnImprimirLog.innerHTML = 'Confirmar e imprimir';
     }
 }
 

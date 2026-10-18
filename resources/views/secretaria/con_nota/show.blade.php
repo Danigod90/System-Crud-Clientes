@@ -55,7 +55,7 @@
                     @endif
 
                     @if($conNota->asunto_log && !$conNota->asunto_tec && $conNota->log_estado !== 'entregada')
-                    <button type="button" onclick="abrirModalImprimirLog({{ $conNota->id }}, '{{ addslashes($conNota->nombre_organizacion) }}')"
+                    <button type="button" onclick="abrirModalImprimirLog({{ $conNota->id }}, '{{ addslashes($conNota->nombre_organizacion) }}', {{ (int) ($conNota->log_urnas ?? 0) }}, {{ (int) ($conNota->log_cuartos ?? 0) }}, {{ (int) ($conNota->log_tintas ?? 0) }})"
                        style="display:inline-flex; align-items:center; gap:6px; background:#065f46; color:white; padding:8px 14px; border-radius:8px; font-size:13px; border:none; cursor:pointer;">
                         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
