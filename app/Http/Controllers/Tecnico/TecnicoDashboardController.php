@@ -62,4 +62,34 @@ class TecnicoDashboardController extends Controller
 
         return view('tecnico.dashboard_tecnico', compact('entradas', 'elecciones', 'stats', 'asesores', 'prioridades'));
     }
+
+    // Totales de materiales técnicos cargados en el sistema (papeletas,
+    // actas, padrones), con filtro opcional por año y/o mes. Sin filtros,
+    // es el total histórico. Cuenta lo cargado, esté impreso o no.
+    public function resumenMateriales(\Illuminate\Http\Request $request)
+    {
+        $anio = $request->get('anio');
+        $mes  = $request->get('mes');
+
+        $detalles = DetalleTecnico::whereHas('entrada', fn($q) => $q->where('asunto_tec', true))
+            ->when($anio, fn($q) => $q->whereYear('created_at', $anio))
+            ->when($mes, fn($q) => $q->whereMonth('created_at', $mes))
+            ->get();
+
+        $papeletas = $detalles->sum(function ($d) {
+            return $d->mat_final_papeletas ?? $d->cantidad_papeletas ?? 0;
+        });
+        $actas = $detalles->sum(function ($d) {
+            return $d->mat_final_actas ?? (($d->cantidad_mesas ?? 0) * 3);
+        });
+        $padrones = $detalles->sum(function ($d) {
+            return $d->mat_final_padrones ?? (($d->cantidad_mesas ?? 0) * 3);
+        });
+
+        return response()->json([
+            'papeletas' => (int) $papeletas,
+            'actas'     => (int) $actas,
+            'padrones'  => (int) $padrones,
+        ]);
+    }
 }

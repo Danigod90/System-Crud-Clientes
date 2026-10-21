@@ -22,6 +22,10 @@ class EntradaSinNotaController extends Controller
             $query->where('asesor_id', $request->asesor_id);
         }
 
+        if ($request->filled('tipo_charla')) {
+            $query->where('tipo_charla', $request->tipo_charla);
+        }
+
         if ($request->filled('fecha_desde')) {
             $query->whereDate('created_at', '>=', $request->fecha_desde);
         }
@@ -119,6 +123,10 @@ class EntradaSinNotaController extends Controller
 
         if ($request->filled('asesor_id')) {
             $query->where('asesor_id', $request->asesor_id);
+        }
+
+        if ($request->filled('tipo_charla')) {
+            $query->where('tipo_charla', $request->tipo_charla);
         }
 
         if ($request->filled('nombre')) {

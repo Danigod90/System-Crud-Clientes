@@ -29,11 +29,20 @@
         {{-- FILTROS --}}
         <form method="GET" action="{{ route('secretaria.sin-nota.index') }}">
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:16px 20px; margin-bottom:14px; box-shadow:0 1px 4px rgba(0,0,0,0.04);">
-            <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
+            <div style="display:grid; grid-template-columns:2fr 1fr 1fr 1fr 1fr; gap:12px; margin-bottom:12px;">
                 <div>
                     <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Nombre/s y Apellido/s</label>
                     <input type="text" name="nombre" value="{{ request('nombre') }}" placeholder="Buscar..."
                            style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+                </div>
+                <div>
+                    <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Asunto</label>
+                    <select name="tipo_charla" style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; background:#fff; box-sizing:border-box;">
+                        <option value="">Todos</option>
+                        <option value="Asesoramiento Electoral" {{ request('tipo_charla') == 'Asesoramiento Electoral' ? 'selected' : '' }}>Asesoramiento Electoral</option>
+                        <option value="Charla para Miembros de Mesa" {{ request('tipo_charla') == 'Charla para Miembros de Mesa' ? 'selected' : '' }}>Charla para Miembros de Mesa</option>
+                        <option value="Materiales Entregados" {{ request('tipo_charla') == 'Materiales Entregados' ? 'selected' : '' }}>Materiales Entregados</option>
+                    </select>
                 </div>
                 <div>
                     <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Asesor</label>
@@ -142,6 +151,7 @@ async function abrirModalPdfSinNota() {
     const params = new URLSearchParams({
         nombre:      '{{ request('nombre') }}',
         asesor_id:   '{{ request('asesor_id') }}',
+        tipo_charla: '{{ request('tipo_charla') }}',
         fecha_desde: '{{ request('fecha_desde') }}',
         fecha_hasta: '{{ request('fecha_hasta') }}',
     });

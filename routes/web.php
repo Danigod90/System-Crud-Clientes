@@ -145,6 +145,7 @@ Route::middleware(['auth'])->prefix('asesor')->name('asesor.')->group(function (
 
 Route::middleware(['auth', 'role:Tecnico|Admin'])->prefix('tecnico')->name('tecnico.')->group(function () {
     Route::get('dashboard', [\App\Http\Controllers\Tecnico\TecnicoDashboardController::class, 'index'])->name('dashboard');
+    Route::get('resumen-materiales', [\App\Http\Controllers\Tecnico\TecnicoDashboardController::class, 'resumenMateriales'])->name('resumen-materiales');
     Route::get('organizaciones', [\App\Http\Controllers\Tecnico\TecnicoOrganizacionesController::class, 'index'])->name('organizaciones');
     Route::get('organizacion/{entrada_id}/edit', [\App\Http\Controllers\Tecnico\TecnicoOrganizacionesController::class, 'edit'])->name('organizacion.edit');
     Route::post('detalle/{entrada_id}', [\App\Http\Controllers\DetalleTecnicoController::class, 'saveTecnico'])->name('detalle_tecnico.saveTecnico');

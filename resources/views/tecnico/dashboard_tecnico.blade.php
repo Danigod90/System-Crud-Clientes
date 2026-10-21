@@ -144,6 +144,61 @@ $realizadoPrio = (bool) ($ent->detalleTecnico?->tec_realizado ?? false);
 
 </div>
 
+    {{-- GADGET: TOTALES DE MATERIALES --}}
+    <div style="position:relative; background:rgba(255,255,255,0.95); border-radius:14px; border:1px solid rgba(255,255,255,0.9); padding:14px 18px; margin-bottom:14px; display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+        <div style="font-size:11px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:6px;">
+            Materiales cargados
+            <button type="button" onclick="toggleCalendarioMateriales()" title="Filtrar por período"
+                style="background:#f3f4f6; border:none; border-radius:6px; width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; color:#6b7280;">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+            </button>
+        </div>
+        <div id="mat-periodo-label" style="font-size:11px; color:#9ca3af;">Total histórico</div>
+        <div style="display:flex; gap:22px; margin-left:auto;">
+            <div style="text-align:center;">
+                <div style="font-size:10.5px; color:#6b7280; text-transform:uppercase;">Papeletas</div>
+                <div id="mat-papeletas" style="font-size:20px; font-weight:700; color:#1e40af;">0</div>
+            </div>
+            <div style="text-align:center;">
+                <div style="font-size:10.5px; color:#6b7280; text-transform:uppercase;">Actas</div>
+                <div id="mat-actas" style="font-size:20px; font-weight:700; color:#1e40af;">0</div>
+            </div>
+            <div style="text-align:center;">
+                <div style="font-size:10.5px; color:#6b7280; text-transform:uppercase;">Padrones</div>
+                <div id="mat-padrones" style="font-size:20px; font-weight:700; color:#1e40af;">0</div>
+            </div>
+        </div>
+
+        {{-- Mini popup: Total / Año / Mes --}}
+        <div id="calendario-materiales" style="display:none; position:absolute; top:calc(100% + 6px); left:14px; background:#fff; border:1px solid #e5e7eb; border-radius:10px; box-shadow:0 8px 24px rgba(0,0,0,0.15); padding:14px; z-index:50; width:220px;">
+            <div style="display:flex; gap:6px; margin-bottom:10px;">
+                <button type="button" id="mat-tab-total" onclick="setModoMateriales('total')" style="flex:1; padding:5px; border-radius:6px; border:1px solid #e5e7eb; background:#2563eb; color:#fff; font-size:11px; cursor:pointer;">Total</button>
+                <button type="button" id="mat-tab-anio" onclick="setModoMateriales('anio')" style="flex:1; padding:5px; border-radius:6px; border:1px solid #e5e7eb; background:#fff; color:#374151; font-size:11px; cursor:pointer;">Año</button>
+                <button type="button" id="mat-tab-mes" onclick="setModoMateriales('mes')" style="flex:1; padding:5px; border-radius:6px; border:1px solid #e5e7eb; background:#fff; color:#374151; font-size:11px; cursor:pointer;">Mes</button>
+            </div>
+            <div id="mat-campo-anio" style="display:none; margin-bottom:8px;">
+                <label style="display:block; font-size:10px; font-weight:600; color:#6b7280; margin-bottom:3px; text-transform:uppercase;">Año</label>
+                <select id="mat-select-anio" style="width:100%; border:1px solid #e5e7eb; border-radius:6px; padding:5px; font-size:12px;"></select>
+            </div>
+            <div id="mat-campo-mes" style="display:none; margin-bottom:8px;">
+                <label style="display:block; font-size:10px; font-weight:600; color:#6b7280; margin-bottom:3px; text-transform:uppercase;">Mes</label>
+                <select id="mat-select-mes" style="width:100%; border:1px solid #e5e7eb; border-radius:6px; padding:5px; font-size:12px; margin-bottom:6px;">
+                    <option value="1">Enero</option><option value="2">Febrero</option><option value="3">Marzo</option>
+                    <option value="4">Abril</option><option value="5">Mayo</option><option value="6">Junio</option>
+                    <option value="7">Julio</option><option value="8">Agosto</option><option value="9">Septiembre</option>
+                    <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
+                </select>
+                <select id="mat-select-mes-anio" style="width:100%; border:1px solid #e5e7eb; border-radius:6px; padding:5px; font-size:12px;"></select>
+            </div>
+            <button type="button" onclick="aplicarFiltroMateriales()" style="width:100%; padding:6px; border-radius:6px; border:none; background:#16a34a; color:#fff; font-size:12px; font-weight:500; cursor:pointer;">Aplicar</button>
+        </div>
+    </div>
+
     {{-- HEADER TABLA --}}
 <div style="background:rgba(255,255,255,0.95); border-radius:16px 16px 0 0; border:1px solid rgba(255,255,255,0.9); border-bottom:none;">
     <div style="padding:6px 16px; border-bottom:1px solid #e5e7eb; font-size:13px; font-weight:500; color:#111827; display:flex; justify-content:space-between; align-items:center;">
@@ -226,5 +281,84 @@ $realizadoPrio = (bool) ($ent->detalleTecnico?->tec_realizado ?? false);
     </table>
 </div>
 </div>
+
+<script>
+let _matModo = 'total';
+
+function toggleCalendarioMateriales() {
+    const pop = document.getElementById('calendario-materiales');
+    pop.style.display = pop.style.display === 'none' ? 'block' : 'none';
+}
+
+document.addEventListener('click', function(e) {
+    const pop = document.getElementById('calendario-materiales');
+    const btn = e.target.closest('button');
+    if (pop.style.display === 'block' && !pop.contains(e.target) && !(btn && btn.getAttribute('onclick') === 'toggleCalendarioMateriales()')) {
+        pop.style.display = 'none';
+    }
+});
+
+function setModoMateriales(modo) {
+    _matModo = modo;
+    ['total', 'anio', 'mes'].forEach(m => {
+        const tab = document.getElementById('mat-tab-' + m);
+        const activo = m === modo;
+        tab.style.background = activo ? '#2563eb' : '#fff';
+        tab.style.color = activo ? '#fff' : '#374151';
+    });
+    document.getElementById('mat-campo-anio').style.display = modo === 'anio' ? 'block' : 'none';
+    document.getElementById('mat-campo-mes').style.display = modo === 'mes' ? 'block' : 'none';
+}
+
+function poblarAniosMateriales() {
+    const actual = new Date().getFullYear();
+    const selects = [document.getElementById('mat-select-anio'), document.getElementById('mat-select-mes-anio')];
+    selects.forEach(sel => {
+        sel.innerHTML = '';
+        for (let y = actual + 1; y >= 2024; y--) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            if (y === actual) opt.selected = true;
+            sel.appendChild(opt);
+        }
+    });
+}
+
+async function cargarResumenMateriales(params) {
+    try {
+        const url = '{{ route('tecnico.resumen-materiales') }}' + (params ? '?' + params : '');
+        const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+        const data = await res.json();
+        document.getElementById('mat-papeletas').textContent = data.papeletas;
+        document.getElementById('mat-actas').textContent = data.actas;
+        document.getElementById('mat-padrones').textContent = data.padrones;
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function aplicarFiltroMateriales() {
+    let params = '';
+    let label = 'Total histórico';
+    if (_matModo === 'anio') {
+        const anio = document.getElementById('mat-select-anio').value;
+        params = 'anio=' + anio;
+        label = 'Año ' + anio;
+    } else if (_matModo === 'mes') {
+        const mes = document.getElementById('mat-select-mes').value;
+        const anio = document.getElementById('mat-select-mes-anio').value;
+        params = 'mes=' + mes + '&anio=' + anio;
+        const nombresMes = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+        label = nombresMes[mes - 1] + ' ' + anio;
+    }
+    document.getElementById('mat-periodo-label').textContent = label;
+    document.getElementById('calendario-materiales').style.display = 'none';
+    cargarResumenMateriales(params);
+}
+
+poblarAniosMateriales();
+cargarResumenMateriales('');
+</script>
 
 </x-panel-layout>
