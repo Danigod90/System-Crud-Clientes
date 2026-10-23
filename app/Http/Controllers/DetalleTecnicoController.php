@@ -261,8 +261,12 @@ $matActas    = !is_null($detalle->mat_final_actas) ? $detalle->mat_final_actas :
 $matActasFmt = $detalle->mat_final_actas_formato ? ucfirst($detalle->mat_final_actas_formato) : ($detalle->mat_actas_electorales_formato ? ucfirst($detalle->mat_actas_electorales_formato) : '');
 $matPadron   = !is_null($detalle->mat_final_padrones) ? $detalle->mat_final_padrones : (!is_null($detalle->mat_padron) ? $detalle->mat_padron : ($mesas * 3));
 $matPadronFmt = $detalle->mat_final_padrones_formato ? ucfirst($detalle->mat_final_padrones_formato) : ($detalle->mat_padron_formato ? ucfirst($detalle->mat_padron_formato) : '');
-$matBoletin  = !is_null($detalle->mat_final_papeletas) ? $detalle->mat_final_papeletas : (!is_null($detalle->mat_matriz_boletin) ? $detalle->mat_matriz_boletin : $papeletas);
-$matBoletinFmt = $detalle->mat_final_papeletas_formato ? ucfirst($detalle->mat_final_papeletas_formato) : ($detalle->mat_matriz_boletin_formato ? ucfirst($detalle->mat_matriz_boletin_formato) : '');
+// "No Realizar": en el sistema se guarda la cantidad real (sirve de
+// referencia para calcular actas), pero en el recibo impreso no se
+// considera que se hayan entregado papeletas, así que se muestra 0.
+$papeletasNoRealizar = $detalle->mat_final_papeletas_formato === 'no_realizar';
+$matBoletin  = $papeletasNoRealizar ? 0 : (!is_null($detalle->mat_final_papeletas) ? $detalle->mat_final_papeletas : (!is_null($detalle->mat_matriz_boletin) ? $detalle->mat_matriz_boletin : $papeletas));
+$matBoletinFmt = $papeletasNoRealizar ? 'No Realizada' : ($detalle->mat_final_papeletas_formato ? ucfirst($detalle->mat_final_papeletas_formato) : ($detalle->mat_matriz_boletin_formato ? ucfirst($detalle->mat_matriz_boletin_formato) : ''));
 $matProclamacion = $detalle->mat_actas_proclamacion ?? 3;
 $matCertificados = !is_null($detalle->mat_certificados) ? $detalle->mat_certificados : 1;
 $matCuentaVotos  = $detalle->mat_cuenta_votos ?? '—';

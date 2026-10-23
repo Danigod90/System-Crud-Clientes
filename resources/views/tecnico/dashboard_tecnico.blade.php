@@ -24,7 +24,7 @@
             @foreach($prioridades as $i => $p)
             @php
                 $ent = $p->entrada;
-                $pap = $ent->detalleTecnico?->mat_final_papeletas ?? $ent->detalleTecnico?->cantidad_papeletas ?? '—';
+                $pap = $ent->detalleTecnico?->mat_final_papeletas_formato === 'no_realizar' ? 0 : ($ent->detalleTecnico?->mat_final_papeletas ?? $ent->detalleTecnico?->cantidad_papeletas ?? '—');
 $mesas = $ent->detalleTecnico?->cantidad_mesas ?? 0;
 $act = $ent->detalleTecnico?->mat_final_actas ?? ($mesas > 0 ? $mesas * 3 : '—');
 $pad = $ent->detalleTecnico?->mat_final_padrones ?? ($mesas > 0 ? $mesas * 3 : '—');

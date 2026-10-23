@@ -77,6 +77,8 @@ class TecnicoDashboardController extends Controller
             ->get();
 
         $papeletas = $detalles->sum(function ($d) {
+            // "No Realizar": no se considera entregado, no suma al total.
+            if ($d->mat_final_papeletas_formato === 'no_realizar') return 0;
             return $d->mat_final_papeletas ?? $d->cantidad_papeletas ?? 0;
         });
         $actas = $detalles->sum(function ($d) {

@@ -198,9 +198,9 @@ if (request()->has('volver')) {
            <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:4px; min-width:0;">
                 <div style="text-align:center;">
                     <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Papeletas</p>
-                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $entrada->detalleTecnico->mat_final_papeletas !== null ? $entrada->detalleTecnico->mat_final_papeletas : ($entrada->detalleTecnico->cantidad_papeletas ?? 0) }}</p>
+                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $entrada->detalleTecnico->mat_final_papeletas_formato === 'no_realizar' ? 0 : ($entrada->detalleTecnico->mat_final_papeletas !== null ? $entrada->detalleTecnico->mat_final_papeletas : ($entrada->detalleTecnico->cantidad_papeletas ?? 0)) }}</p>
                     @if($entrada->detalleTecnico->mat_final_papeletas_formato)
-                    <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($entrada->detalleTecnico->mat_final_papeletas_formato) }}</p>
+                    <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ $entrada->detalleTecnico->mat_final_papeletas_formato === 'no_realizar' ? 'No Realizar' : ucfirst($entrada->detalleTecnico->mat_final_papeletas_formato) }}</p>
                     @endif
                 </div>
                 <div style="text-align:center;">
@@ -341,7 +341,7 @@ if (request()->has('volver')) {
                 <option value="">Formato...</option>
                 <option value="impreso" {{ $papFormatoVal == 'impreso' ? 'selected' : '' }}>Impreso</option>
                 <option value="digital" {{ $papFormatoVal == 'digital' ? 'selected' : '' }}>Digital</option>
-                <option value="sin_papeletas" {{ $papFormatoVal == 'sin_papeletas' ? 'selected' : '' }}>Sin Papeletas</option>
+                <option value="no_realizar" {{ $papFormatoVal == 'no_realizar' ? 'selected' : '' }}>No Realizar</option>
             </select>
         </div>
         <div style="text-align:center;">
@@ -884,7 +884,7 @@ function activarEdicionAsesor() {
         }
     });
     document.querySelector('#asesor-form [name="mat_final_papeletas_formato"]')?.addEventListener('change', function() {
-        if (this.value === 'sin_papeletas') document.querySelector('#asesor-form [name="mat_final_papeletas"]').value = 0;
+        if (this.value === 'sin_papeletas' || this.value === 'no_realizar') document.querySelector('#asesor-form [name="mat_final_papeletas"]').value = 0;
     });
     document.querySelector('#asesor-form [name="mat_final_actas_formato"]')?.addEventListener('change', function() {
         if (this.value === 'sin_actas') document.querySelector('#asesor-form [name="mat_final_actas"]').value = 0;

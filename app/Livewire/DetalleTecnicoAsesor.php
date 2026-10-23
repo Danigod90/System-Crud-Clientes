@@ -147,7 +147,7 @@ class DetalleTecnicoAsesor extends Component
                 break;
 
             case 'mat_final_papeletas_formato':
-                if ($value === 'sin_papeletas') {
+                if ($value === 'sin_papeletas' || $value === 'no_realizar') {
                     $this->mat_final_papeletas = 0;
                 }
                 break;

@@ -92,9 +92,9 @@
             <div style="display:grid; grid-template-columns:repeat(6,1fr); gap:8px;">
                 <div style="text-align:center;">
                     <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Papeletas</p>
-                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $mat_final_papeletas ?? 0 }}</p>
+                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $mat_final_papeletas_formato === 'no_realizar' ? 0 : ($mat_final_papeletas ?? 0) }}</p>
                     @if($mat_final_papeletas_formato)
-                    <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($mat_final_papeletas_formato) }}</p>
+                    <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ $mat_final_papeletas_formato === 'no_realizar' ? 'No Realizar' : ucfirst($mat_final_papeletas_formato) }}</p>
                     @endif
                 </div>
                 <div style="text-align:center;">
@@ -266,7 +266,7 @@
                             <option value="">Formato...</option>
                             <option value="impreso">Impreso</option>
                             <option value="digital">Digital</option>
-                            <option value="sin_papeletas">Sin Papeletas</option>
+                            <option value="no_realizar">No Realizar</option>
                         </select>
                         @error('mat_final_papeletas_formato')
                         <p style="font-size:10px; color:#dc2626; margin:3px 0 0;">{{ $message }}</p>
