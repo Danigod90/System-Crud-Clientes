@@ -179,6 +179,75 @@ return $pdf->stream('reporte-entradas-sin-nota.pdf');
         return view('secretaria.sin_nota.log', compact('pendientes', 'entregados', 'devueltos'));
     }
 
+    // ── Reporte de organizaciones con materiales entregados que todavía
+    // ── no devolvieron — para hacer seguimiento/requerir la devolución.
+    // Las más recientemente entregadas aparecen primero; las que llevan
+    // más tiempo sin devolver quedan al final.
+    public function reporteEntregadosPdf(Request $request)
+    {
+        // Solo asunto_log (o el combo log+tec) tiene materiales que devolver;
+        // las organizaciones de solo técnica no cargan logística, así que no
+        // corresponde que aparezcan en este reporte de devolución.
+        $query = \App\Models\EntradaConNota::where('asunto_log', true)
+            ->where('log_estado', 'entregada')
+            ->with(['detalleTecnico']);
+
+        if ($request->filled('fecha_desde')) {
+            $query->whereDate('fecha_entrega', '>=', $request->fecha_desde);
+        }
+
+        if ($request->filled('fecha_hasta')) {
+            $query->whereDate('fecha_entrega', '<=', $request->fecha_hasta);
+        }
+
+        $entregados = $query->orderByDesc('fecha_entrega')->get();
+
+        $fecha_desde = $request->fecha_desde ?? 'inicio';
+        $fecha_hasta = $request->fecha_hasta ?? now()->format('Y-m-d');
+        $usuario     = 'Abg. ' . auth()->user()->name;
+
+        if (request()->expectsJson()) {
+            $html = view('secretaria.sin_nota.reporte-entregados-pdf', compact('entregados', 'fecha_desde', 'fecha_hasta', 'usuario'))->render();
+            return response()->json(['html' => $html]);
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('secretaria.sin_nota.reporte-entregados-pdf', compact('entregados', 'fecha_desde', 'fecha_hasta', 'usuario'));
+        return $pdf->stream('reporte-entregados-esperando-devolucion.pdf');
+    }
+
+    // ── Reporte de organizaciones que ya devolvieron los materiales.
+    // Ordenado por fecha de devolución más reciente primero.
+    public function reporteDevueltosPdf(Request $request)
+    {
+        $query = \App\Models\EntradaConNota::where('asunto_log', true)
+            ->where('log_estado', 'realizado')
+            ->with(['detalleTecnico', 'logDevolucion']);
+
+        if ($request->filled('fecha_desde')) {
+            $query->whereHas('logDevolucion', fn($q) => $q->whereDate('created_at', '>=', $request->fecha_desde));
+        }
+
+        if ($request->filled('fecha_hasta')) {
+            $query->whereHas('logDevolucion', fn($q) => $q->whereDate('created_at', '<=', $request->fecha_hasta));
+        }
+
+        $devueltos = $query->get()
+            ->sortByDesc(fn($e) => $e->logDevolucion?->created_at)
+            ->values();
+
+        $fecha_desde = $request->fecha_desde ?? 'inicio';
+        $fecha_hasta = $request->fecha_hasta ?? now()->format('Y-m-d');
+        $usuario     = 'Abg. ' . auth()->user()->name;
+
+        if (request()->expectsJson()) {
+            $html = view('secretaria.sin_nota.reporte-devueltos-pdf', compact('devueltos', 'fecha_desde', 'fecha_hasta', 'usuario'))->render();
+            return response()->json(['html' => $html]);
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('secretaria.sin_nota.reporte-devueltos-pdf', compact('devueltos', 'fecha_desde', 'fecha_hasta', 'usuario'));
+        return $pdf->stream('reporte-devueltos.pdf');
+    }
+
     // ── Resumen para el gadget P / D de la barra superior ──
     // P = organizaciones con log ya entregado; D = ya devueltas.
     // Cuenta organizaciones; las unidades (urnas/cuartos/tintas) van al tooltip.

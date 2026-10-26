@@ -82,9 +82,11 @@ class TecnicoDashboardController extends Controller
             return $d->mat_final_papeletas ?? $d->cantidad_papeletas ?? 0;
         });
         $actas = $detalles->sum(function ($d) {
+            if ($d->mat_final_actas_formato === 'no_realizar') return 0;
             return $d->mat_final_actas ?? (($d->cantidad_mesas ?? 0) * 3);
         });
         $padrones = $detalles->sum(function ($d) {
+            if ($d->mat_final_padrones_formato === 'no_realizar') return 0;
             return $d->mat_final_padrones ?? (($d->cantidad_mesas ?? 0) * 3);
         });
 

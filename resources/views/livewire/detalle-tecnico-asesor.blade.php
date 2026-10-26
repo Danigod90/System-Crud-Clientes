@@ -99,16 +99,16 @@
                 </div>
                 <div style="text-align:center;">
                     <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Actas</p>
-                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $mat_final_actas ?? 0 }}</p>
+                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $mat_final_actas_formato === 'no_realizar' ? 0 : ($mat_final_actas ?? 0) }}</p>
                     @if($mat_final_actas_formato)
-                    <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($mat_final_actas_formato) }}</p>
+                    <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ $mat_final_actas_formato === 'no_realizar' ? 'No Realizar' : ucfirst($mat_final_actas_formato) }}</p>
                     @endif
                 </div>
                 <div style="text-align:center;">
                     <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Padrones</p>
-                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $mat_final_padrones ?? 0 }}</p>
+                    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $mat_final_padrones_formato === 'no_realizar' ? 0 : ($mat_final_padrones ?? 0) }}</p>
                     @if($mat_final_padrones_formato)
-                    <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($mat_final_padrones_formato) }}</p>
+                    <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ $mat_final_padrones_formato === 'no_realizar' ? 'No Realizar' : ucfirst($mat_final_padrones_formato) }}</p>
                     @endif
                 </div>
                 @if($entrada->asunto_log)
@@ -280,7 +280,7 @@
                             <option value="">Formato...</option>
                             <option value="impreso">Impreso</option>
                             <option value="digital">Digital</option>
-                            <option value="sin_actas">Sin Actas</option>
+                            <option value="no_realizar">No Realizar</option>
                         </select>
                         @error('mat_final_actas_formato')
                         <p style="font-size:10px; color:#dc2626; margin:3px 0 0;">{{ $message }}</p>
@@ -294,7 +294,7 @@
                             <option value="">Formato...</option>
                             <option value="impreso">Impreso</option>
                             <option value="digital">Digital</option>
-                            <option value="sin_padron">Sin Padrón</option>
+                            <option value="no_realizar">No Realizar</option>
                         </select>
                         @error('mat_final_padrones_formato')
                         <p style="font-size:10px; color:#dc2626; margin:3px 0 0;">{{ $message }}</p>

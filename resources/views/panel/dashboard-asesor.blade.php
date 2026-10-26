@@ -219,8 +219,8 @@
                 $ent = $p->entrada;
                $pap = $ent->detalleTecnico?->mat_final_papeletas_formato === 'no_realizar' ? 0 : ($ent->detalleTecnico?->mat_final_papeletas ?? $ent->detalleTecnico?->cantidad_papeletas ?? '—');
 $mesas = $ent->detalleTecnico?->cantidad_mesas ?? 0;
-$act = $ent->detalleTecnico?->mat_final_actas ?? ($mesas > 0 ? $mesas * 3 : '—');
-$pad = $ent->detalleTecnico?->mat_final_padrones ?? ($mesas > 0 ? $mesas * 3 : '—');
+$act = $ent->detalleTecnico?->mat_final_actas_formato === 'no_realizar' ? 0 : ($ent->detalleTecnico?->mat_final_actas ?? ($mesas > 0 ? $mesas * 3 : '—'));
+$pad = $ent->detalleTecnico?->mat_final_padrones_formato === 'no_realizar' ? 0 : ($ent->detalleTecnico?->mat_final_padrones ?? ($mesas > 0 ? $mesas * 3 : '—'));
 $realizadoPrio = (bool) ($ent->detalleTecnico?->tec_realizado ?? false);
             @endphp
             <div style="background:{{ $realizadoPrio ? '#f0fdf4' : '#fff8f8' }}; border:1px solid {{ $realizadoPrio ? 'rgba(22,163,74,0.25)' : 'rgba(220,38,38,0.15)' }}; border-radius:10px; padding:10px 12px;">

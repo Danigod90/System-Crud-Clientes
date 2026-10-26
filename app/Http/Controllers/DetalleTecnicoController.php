@@ -257,13 +257,15 @@ $detalle = DetalleTecnico::where('entrada_id', $entrada_id)->firstOrFail();
 
     // Materiales técnicos
 $matMesas    = $detalle->cantidad_mesas ?? $detalle->mat_mesas ?? 0;
-$matActas    = !is_null($detalle->mat_final_actas) ? $detalle->mat_final_actas : (!is_null($detalle->mat_actas_electorales) ? $detalle->mat_actas_electorales : ($mesas * 3));
-$matActasFmt = $detalle->mat_final_actas_formato ? ucfirst($detalle->mat_final_actas_formato) : ($detalle->mat_actas_electorales_formato ? ucfirst($detalle->mat_actas_electorales_formato) : '');
-$matPadron   = !is_null($detalle->mat_final_padrones) ? $detalle->mat_final_padrones : (!is_null($detalle->mat_padron) ? $detalle->mat_padron : ($mesas * 3));
-$matPadronFmt = $detalle->mat_final_padrones_formato ? ucfirst($detalle->mat_final_padrones_formato) : ($detalle->mat_padron_formato ? ucfirst($detalle->mat_padron_formato) : '');
-// "No Realizar": en el sistema se guarda la cantidad real (sirve de
-// referencia para calcular actas), pero en el recibo impreso no se
-// considera que se hayan entregado papeletas, así que se muestra 0.
+// "No Realizar": en el sistema se guarda la cantidad real, pero en el
+// recibo impreso no se considera que se hayan entregado los materiales,
+// así que se muestra 0 y la etiqueta "No Realizada".
+$actasNoRealizar = $detalle->mat_final_actas_formato === 'no_realizar' || $detalle->mat_actas_electorales_formato === 'no_realizar';
+$matActas    = $actasNoRealizar ? 0 : (!is_null($detalle->mat_final_actas) ? $detalle->mat_final_actas : (!is_null($detalle->mat_actas_electorales) ? $detalle->mat_actas_electorales : ($mesas * 3)));
+$matActasFmt = $actasNoRealizar ? 'No Realizada' : ($detalle->mat_final_actas_formato ? ucfirst($detalle->mat_final_actas_formato) : ($detalle->mat_actas_electorales_formato ? ucfirst($detalle->mat_actas_electorales_formato) : ''));
+$padronNoRealizar = $detalle->mat_final_padrones_formato === 'no_realizar' || $detalle->mat_padron_formato === 'no_realizar';
+$matPadron   = $padronNoRealizar ? 0 : (!is_null($detalle->mat_final_padrones) ? $detalle->mat_final_padrones : (!is_null($detalle->mat_padron) ? $detalle->mat_padron : ($mesas * 3)));
+$matPadronFmt = $padronNoRealizar ? 'No Realizada' : ($detalle->mat_final_padrones_formato ? ucfirst($detalle->mat_final_padrones_formato) : ($detalle->mat_padron_formato ? ucfirst($detalle->mat_padron_formato) : ''));
 $papeletasNoRealizar = $detalle->mat_final_papeletas_formato === 'no_realizar';
 $matBoletin  = $papeletasNoRealizar ? 0 : (!is_null($detalle->mat_final_papeletas) ? $detalle->mat_final_papeletas : (!is_null($detalle->mat_matriz_boletin) ? $detalle->mat_matriz_boletin : $papeletas));
 $matBoletinFmt = $papeletasNoRealizar ? 'No Realizada' : ($detalle->mat_final_papeletas_formato ? ucfirst($detalle->mat_final_papeletas_formato) : ($detalle->mat_matriz_boletin_formato ? ucfirst($detalle->mat_matriz_boletin_formato) : ''));
@@ -272,8 +274,8 @@ $matCertificados = !is_null($detalle->mat_certificados) ? $detalle->mat_certific
 $matCuentaVotos  = $detalle->mat_cuenta_votos ?? '—';
 
 // Estimado logístico
-$estActas    = !is_null($detalle->mat_final_actas)    ? $detalle->mat_final_actas    : ($mesas * 3);
-$estPadrones = !is_null($detalle->mat_final_padrones) ? $detalle->mat_final_padrones : ($mesas * 3);
+$estActas    = $actasNoRealizar ? 0 : (!is_null($detalle->mat_final_actas)    ? $detalle->mat_final_actas    : ($mesas * 3));
+$estPadrones = $padronNoRealizar ? 0 : (!is_null($detalle->mat_final_padrones) ? $detalle->mat_final_padrones : ($mesas * 3));
 $estCuartos  = !is_null($detalle->mat_final_cuartos)  ? $detalle->mat_final_cuartos  : $mesas;
 $estUrnas    = !is_null($detalle->mat_final_urnas)    ? $detalle->mat_final_urnas    : ($mesas * $papeletas);
 $estTintas   = !is_null($detalle->mat_final_tintas)   ? $detalle->mat_final_tintas   : $mesas;

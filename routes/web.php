@@ -60,6 +60,8 @@ Route::middleware(['auth', 'role:Secretaria Sin Nota|Secretaria Con Nota|Admin|A
     Route::get('sin-nota/pdf', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'exportPdf'])->name('sin-nota.pdf');
     Route::get('sin-nota/log', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'log'])->name('sin-nota.log');
     Route::get('sin-nota/log-resumen', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'resumenLog'])->name('sin-nota.log-resumen');
+    Route::get('sin-nota/log/reporte-entregados', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'reporteEntregadosPdf'])->name('sin-nota.log.reporte-entregados');
+    Route::get('sin-nota/log/reporte-devueltos', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'reporteDevueltosPdf'])->name('sin-nota.log.reporte-devueltos');
     Route::post('sin-nota/log/{id}/devolucion', [\App\Http\Controllers\Secretaria\EntradaSinNotaController::class, 'storeDevolucion'])->name('sin-nota.devolucion');
 
     // ── Rutas nuevas de entrega ───────────────────────────────

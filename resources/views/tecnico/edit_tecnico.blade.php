@@ -205,16 +205,16 @@ if (request()->has('volver')) {
                 </div>
                 <div style="text-align:center;">
     <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Actas</p>
-    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $actasRO }}</p>
+    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $entrada->detalleTecnico->mat_final_actas_formato === 'no_realizar' ? 0 : $actasRO }}</p>
     @if($entrada->detalleTecnico->mat_final_actas_formato)
-    <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($entrada->detalleTecnico->mat_final_actas_formato) }}</p>
+    <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ $entrada->detalleTecnico->mat_final_actas_formato === 'no_realizar' ? 'No Realizar' : ucfirst($entrada->detalleTecnico->mat_final_actas_formato) }}</p>
     @endif
 </div>
 <div style="text-align:center;">
     <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Padrones</p>
-    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $padronesRO }}</p>
+    <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $entrada->detalleTecnico->mat_final_padrones_formato === 'no_realizar' ? 0 : $padronesRO }}</p>
     @if($entrada->detalleTecnico->mat_final_padrones_formato)
-    <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($entrada->detalleTecnico->mat_final_padrones_formato) }}</p>
+    <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ $entrada->detalleTecnico->mat_final_padrones_formato === 'no_realizar' ? 'No Realizar' : ucfirst($entrada->detalleTecnico->mat_final_padrones_formato) }}</p>
     @endif
 </div>
 @if($entrada->asunto_log)
@@ -353,7 +353,7 @@ if (request()->has('volver')) {
                 <option value="">Formato...</option>
                 <option value="impreso" {{ $actasFormatoVal == 'impreso' ? 'selected' : '' }}>Impreso</option>
                 <option value="digital" {{ $actasFormatoVal == 'digital' ? 'selected' : '' }}>Digital</option>
-                <option value="sin_actas" {{ $actasFormatoVal == 'sin_actas' ? 'selected' : '' }}>Sin Actas</option>
+                <option value="no_realizar" {{ $actasFormatoVal == 'no_realizar' ? 'selected' : '' }}>No Realizar</option>
             </select>
         </div>
       <div style="text-align:center;">
@@ -365,7 +365,7 @@ if (request()->has('volver')) {
                 <option value="">Formato...</option>
                 <option value="impreso" {{ $padronesFormatoVal == 'impreso' ? 'selected' : '' }}>Impreso</option>
                 <option value="digital" {{ $padronesFormatoVal == 'digital' ? 'selected' : '' }}>Digital</option>
-                <option value="sin_padron" {{ $padronesFormatoVal == 'sin_padron' ? 'selected' : '' }}>Sin Padrón</option>
+                <option value="no_realizar" {{ $padronesFormatoVal == 'no_realizar' ? 'selected' : '' }}>No Realizar</option>
             </select>
         </div>
         @if($logSalio ?? false)
@@ -567,8 +567,8 @@ $defaultBoletin = is_null($entrada->detalleTecnico?->mat_final_papeletas) ? ($en
     <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
         @foreach([
     ['mat_mesas', 'Mesa/s', false, $defaultMesas, null, null, null],
-    ['mat_actas_electorales', 'Actas Electorales', true, $defaultActas, 'sin_actas', 'Sin Actas', $entrada->detalleTecnico?->mat_final_actas_formato],
-    ['mat_padron', 'Padrón Electoral', true, $defaultPadron, 'sin_padron', 'Sin Padrón', $entrada->detalleTecnico?->mat_final_padrones_formato],
+    ['mat_actas_electorales', 'Actas Electorales', true, $defaultActas, 'no_realizar', 'No Realizar', $entrada->detalleTecnico?->mat_final_actas_formato],
+    ['mat_padron', 'Padrón Electoral', true, $defaultPadron, 'no_realizar', 'No Realizar', $entrada->detalleTecnico?->mat_final_padrones_formato],
     ['mat_matriz_boletin', 'Matriz de Boletín', true, $defaultBoletin, 'sin_papeletas', 'Sin Papeletas', $entrada->detalleTecnico?->mat_final_papeletas_formato],
     ['mat_actas_proclamacion', 'Actas de Proclamación', false, $entrada->detalleTecnico?->mat_actas_proclamacion ?? 3, null, null, null],
     ['mat_certificados', 'Certificados de Resultados', false, null, null, null, null],
@@ -887,10 +887,10 @@ function activarEdicionAsesor() {
         if (this.value === 'sin_papeletas' || this.value === 'no_realizar') document.querySelector('#asesor-form [name="mat_final_papeletas"]').value = 0;
     });
     document.querySelector('#asesor-form [name="mat_final_actas_formato"]')?.addEventListener('change', function() {
-        if (this.value === 'sin_actas') document.querySelector('#asesor-form [name="mat_final_actas"]').value = 0;
+        if (this.value === 'sin_actas' || this.value === 'no_realizar') document.querySelector('#asesor-form [name="mat_final_actas"]').value = 0;
     });
     document.querySelector('#asesor-form [name="mat_final_padrones_formato"]')?.addEventListener('change', function() {
-        if (this.value === 'sin_padron') document.querySelector('#asesor-form [name="mat_final_padrones"]').value = 0;
+        if (this.value === 'sin_padron' || this.value === 'no_realizar') document.querySelector('#asesor-form [name="mat_final_padrones"]').value = 0;
     });
 }
 
@@ -906,10 +906,10 @@ function activarEdicionTec() {
     document.getElementById('tec-form').style.display = 'block';
     document.getElementById('btn-editar-tec').style.display = 'none';
     document.querySelector('#tec-form [name="mat_actas_electorales_formato"]')?.addEventListener('change', function() {
-        if (this.value === 'sin_actas') document.querySelector('#tec-form [name="mat_actas_electorales"]').value = 0;
+        if (this.value === 'sin_actas' || this.value === 'no_realizar') document.querySelector('#tec-form [name="mat_actas_electorales"]').value = 0;
     });
     document.querySelector('#tec-form [name="mat_padron_formato"]')?.addEventListener('change', function() {
-        if (this.value === 'sin_padron') document.querySelector('#tec-form [name="mat_padron"]').value = 0;
+        if (this.value === 'sin_padron' || this.value === 'no_realizar') document.querySelector('#tec-form [name="mat_padron"]').value = 0;
     });
     document.querySelector('#tec-form [name="mat_matriz_boletin_formato"]')?.addEventListener('change', function() {
         if (this.value === 'sin_papeletas') document.querySelector('#tec-form [name="mat_matriz_boletin"]').value = 0;

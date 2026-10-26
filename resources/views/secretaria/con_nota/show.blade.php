@@ -353,8 +353,8 @@
     @endif
 
     @php
-        $estActas    = $mTec->mat_final_actas    !== null ? $mTec->mat_final_actas    : (($mTec->cantidad_mesas ?? 0) * 3);
-        $estPadrones = $mTec->mat_final_padrones !== null ? $mTec->mat_final_padrones : (($mTec->cantidad_mesas ?? 0) * 3);
+        $estActas    = $mTec->mat_final_actas_formato === 'no_realizar' ? 0 : ($mTec->mat_final_actas    !== null ? $mTec->mat_final_actas    : (($mTec->cantidad_mesas ?? 0) * 3));
+        $estPadrones = $mTec->mat_final_padrones_formato === 'no_realizar' ? 0 : ($mTec->mat_final_padrones !== null ? $mTec->mat_final_padrones : (($mTec->cantidad_mesas ?? 0) * 3));
         $estCuartos  = $mTec->mat_final_cuartos  !== null ? $mTec->mat_final_cuartos  : ($mTec->cantidad_mesas ?? 0);
         $estUrnas    = $mTec->mat_final_urnas    !== null ? $mTec->mat_final_urnas    : (($mTec->cantidad_mesas ?? 0) * ($mTec->cantidad_papeletas ?? 0));
         $estTintas   = $mTec->mat_final_tintas   !== null ? $mTec->mat_final_tintas   : ($mTec->cantidad_mesas ?? 0);
@@ -386,14 +386,14 @@
         <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Actas</p>
         <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estActas }}</p>
         @if($mTec->mat_final_actas_formato)
-        <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($mTec->mat_final_actas_formato) }}</p>
+        <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ $mTec->mat_final_actas_formato === 'no_realizar' ? 'No Realizar' : ucfirst($mTec->mat_final_actas_formato) }}</p>
         @endif
     </div>
     <div style="text-align:center;">
         <p style="font-size:11px; color:#6b7280; margin:0 0 2px;">Padrones</p>
         <p style="font-size:18px; font-weight:700; color:#1e40af; margin:0;">{{ $estPadrones }}</p>
         @if($mTec->mat_final_padrones_formato)
-        <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ ucfirst($mTec->mat_final_padrones_formato) }}</p>
+        <p style="font-size:10px; color:#6b7280; margin:2px 0 0;">{{ $mTec->mat_final_padrones_formato === 'no_realizar' ? 'No Realizar' : ucfirst($mTec->mat_final_padrones_formato) }}</p>
         @endif
     </div>
     @if($conNota->asunto_log)

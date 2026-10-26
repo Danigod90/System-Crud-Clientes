@@ -153,13 +153,13 @@ class DetalleTecnicoAsesor extends Component
                 break;
 
             case 'mat_final_actas_formato':
-                if ($value === 'sin_actas') {
+                if ($value === 'sin_actas' || $value === 'no_realizar') {
                     $this->mat_final_actas = 0;
                 }
                 break;
 
             case 'mat_final_padrones_formato':
-                if ($value === 'sin_padron') {
+                if ($value === 'sin_padron' || $value === 'no_realizar') {
                     $this->mat_final_padrones = 0;
                 }
                 break;

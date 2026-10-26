@@ -118,7 +118,13 @@
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; box-shadow:0 1px 4px rgba(0,0,0,0.04); margin-bottom:14px; overflow:hidden;">
             <div style="padding:10px 16px; border-bottom:1px solid #f3f4f6; background:#eff6ff; display:flex; align-items:center; justify-content:space-between;">
                 <span style="font-size:13px; font-weight:600; color:#1d4ed8;">📦 Entregados — esperando devolución</span>
-                <span style="font-size:11px; font-weight:600; background:#dbeafe; color:#1d4ed8; padding:2px 8px; border-radius:20px;">{{ $entregados->count() }}</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button onclick="abrirModalFiltroReporteEntregados()"
+                            style="display:inline-flex; align-items:center; gap:5px; background:#1d4ed8; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">
+                        🖨️ Reporte
+                    </button>
+                    <span style="font-size:11px; font-weight:600; background:#dbeafe; color:#1d4ed8; padding:2px 8px; border-radius:20px;">{{ $entregados->count() }}</span>
+                </div>
             </div>
             <div class="tabla-scroll" style="overflow-y:auto; max-height:280px;">
                 <table style="width:100%; border-collapse:collapse; font-size:12px;">
@@ -214,7 +220,13 @@
         <div style="background:#fff; border-radius:12px; border:1px solid #e5e7eb; box-shadow:0 1px 4px rgba(0,0,0,0.04); overflow:hidden;">
             <div style="padding:10px 16px; border-bottom:1px solid #f3f4f6; background:#f0fdf4; display:flex; align-items:center; justify-content:space-between;">
                 <span style="font-size:13px; font-weight:600; color:#15803d;">✅ Devueltos</span>
-                <span style="font-size:11px; font-weight:600; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:20px;">{{ $devueltos->count() }}</span>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button onclick="abrirModalFiltroReporteDevueltos()"
+                            style="display:inline-flex; align-items:center; gap:5px; background:#15803d; color:#fff; border:none; padding:4px 10px; border-radius:6px; font-size:11px; cursor:pointer; font-weight:500;">
+                        🖨️ Reporte
+                    </button>
+                    <span style="font-size:11px; font-weight:600; background:#dcfce7; color:#15803d; padding:2px 8px; border-radius:20px;">{{ $devueltos->count() }}</span>
+                </div>
             </div>
             <div class="tabla-scroll" style="overflow-y:auto; max-height:280px;">
                 <table style="width:100%; border-collapse:collapse; font-size:12px;">
@@ -550,6 +562,218 @@
         </div>
     </div>
 </div>
+
+{{-- MODAL FILTRO REPORTE ENTREGADOS --}}
+<div id="modal-filtro-reporte-entregados" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:9998; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:12px; width:90%; max-width:380px; box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+        <div style="padding:16px 20px; border-bottom:1px solid #e5e7eb;">
+            <span style="font-size:14px; font-weight:600; color:#111827;">Reporte — Entregados esperando devolución</span>
+        </div>
+        <div style="padding:18px 20px; display:flex; flex-direction:column; gap:12px;">
+            <p style="font-size:12px; color:#6b7280; margin:0;">Dejá las fechas vacías para traer todo el historial.</p>
+            <div>
+                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha Desde</label>
+                <input type="date" id="reporte-entregados-desde"
+                       style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+            </div>
+            <div>
+                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha Hasta</label>
+                <input type="date" id="reporte-entregados-hasta"
+                       style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+            </div>
+        </div>
+        <div style="display:flex; gap:8px; padding:14px 20px; border-top:1px solid #e5e7eb;">
+            <button onclick="generarReporteEntregados()"
+                    style="flex:1; padding:8px 14px; border-radius:8px; border:none; background:#1d4ed8; color:white; font-size:12px; cursor:pointer; font-weight:500;">
+                Generar reporte
+            </button>
+            <button onclick="cerrarModalFiltroReporteEntregados()"
+                    style="padding:8px 14px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:12px; cursor:pointer;">
+                Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+
+{{-- MODAL PREVIEW REPORTE ENTREGADOS --}}
+<div id="modal-pdf-entregados" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:12px; width:90%; max-width:900px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid #e5e7eb; flex-shrink:0;">
+            <span style="font-size:14px; font-weight:600; color:#111827;">Vista previa — Entregados esperando devolución</span>
+            <div style="display:flex; gap:8px;">
+                <button onclick="imprimirPdfEntregados()"
+                    style="display:inline-flex; align-items:center; gap:6px; background:#1d4ed8; color:white; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                    🖨️ Imprimir
+                </button>
+                <button onclick="cerrarModalPdfEntregados()"
+                    style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                    ✕ Cerrar
+                </button>
+            </div>
+        </div>
+        <div style="flex:1; overflow-y:auto; padding:20px; background:#f9fafb;">
+            <div id="pdf-entregados-html" style="background:#fff; border-radius:8px; padding:16px; box-shadow:0 1px 4px rgba(0,0,0,0.08);"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+function abrirModalFiltroReporteEntregados() {
+    document.getElementById('modal-filtro-reporte-entregados').style.display = 'flex';
+}
+
+function cerrarModalFiltroReporteEntregados() {
+    document.getElementById('modal-filtro-reporte-entregados').style.display = 'none';
+}
+
+async function generarReporteEntregados() {
+    const fecha_desde = document.getElementById('reporte-entregados-desde').value;
+    const fecha_hasta = document.getElementById('reporte-entregados-hasta').value;
+    const params = new URLSearchParams({ fecha_desde, fecha_hasta });
+
+    const btn = document.querySelector('#modal-filtro-reporte-entregados button[onclick="generarReporteEntregados()"]');
+    btn.disabled = true;
+    btn.textContent = 'Generando...';
+
+    try {
+        const response = await fetch('{{ route('secretaria.sin-nota.log.reporte-entregados') }}?' + params.toString(), {
+            headers: { 'Accept': 'application/json' }
+        });
+        const data = await response.json();
+        document.getElementById('pdf-entregados-html').innerHTML = data.html;
+        cerrarModalFiltroReporteEntregados();
+        document.getElementById('modal-pdf-entregados').style.display = 'flex';
+    } catch (e) {
+        alert('Error al generar el reporte. Intentá de nuevo.');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Generar reporte';
+    }
+}
+
+function imprimirPdfEntregados() {
+    const contenido = document.getElementById('pdf-entregados-html').innerHTML;
+    const tituloOriginal = document.title;
+    const bodyOriginal = document.body.innerHTML;
+    document.title = 'Reporte Entregados Esperando Devolución';
+    document.body.innerHTML = contenido;
+    window.print();
+    document.body.innerHTML = bodyOriginal;
+    document.title = tituloOriginal;
+    window.location.reload();
+}
+
+function cerrarModalPdfEntregados() {
+    document.getElementById('modal-pdf-entregados').style.display = 'none';
+    document.getElementById('pdf-entregados-html').innerHTML = '';
+}
+</script>
+
+{{-- MODAL FILTRO REPORTE DEVUELTOS --}}
+<div id="modal-filtro-reporte-devueltos" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:9998; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:12px; width:90%; max-width:380px; box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+        <div style="padding:16px 20px; border-bottom:1px solid #e5e7eb;">
+            <span style="font-size:14px; font-weight:600; color:#111827;">Reporte — Devueltos</span>
+        </div>
+        <div style="padding:18px 20px; display:flex; flex-direction:column; gap:12px;">
+            <p style="font-size:12px; color:#6b7280; margin:0;">Dejá las fechas vacías para traer todo el historial.</p>
+            <div>
+                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha Desde</label>
+                <input type="date" id="reporte-devueltos-desde"
+                       style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+            </div>
+            <div>
+                <label style="display:block; font-size:11px; font-weight:600; color:#6b7280; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.5px;">Fecha Hasta</label>
+                <input type="date" id="reporte-devueltos-hasta"
+                       style="width:100%; border:1px solid #e5e7eb; border-radius:8px; padding:7px 10px; font-size:13px; color:#374151; outline:none; box-sizing:border-box;">
+            </div>
+        </div>
+        <div style="display:flex; gap:8px; padding:14px 20px; border-top:1px solid #e5e7eb;">
+            <button onclick="generarReporteDevueltos()"
+                    style="flex:1; padding:8px 14px; border-radius:8px; border:none; background:#15803d; color:white; font-size:12px; cursor:pointer; font-weight:500;">
+                Generar reporte
+            </button>
+            <button onclick="cerrarModalFiltroReporteDevueltos()"
+                    style="padding:8px 14px; border-radius:8px; border:1px solid #e5e7eb; background:white; color:#374151; font-size:12px; cursor:pointer;">
+                Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+
+{{-- MODAL PREVIEW REPORTE DEVUELTOS --}}
+<div id="modal-pdf-devueltos" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:12px; width:90%; max-width:900px; max-height:90vh; display:flex; flex-direction:column; box-shadow:0 8px 32px rgba(0,0,0,0.3);">
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:14px 20px; border-bottom:1px solid #e5e7eb; flex-shrink:0;">
+            <span style="font-size:14px; font-weight:600; color:#111827;">Vista previa — Devueltos</span>
+            <div style="display:flex; gap:8px;">
+                <button onclick="imprimirPdfDevueltos()"
+                    style="display:inline-flex; align-items:center; gap:6px; background:#15803d; color:white; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                    🖨️ Imprimir
+                </button>
+                <button onclick="cerrarModalPdfDevueltos()"
+                    style="display:inline-flex; align-items:center; gap:6px; background:#f3f4f6; color:#374151; padding:8px 18px; border-radius:8px; font-size:13px; border:none; cursor:pointer; font-weight:500;">
+                    ✕ Cerrar
+                </button>
+            </div>
+        </div>
+        <div style="flex:1; overflow-y:auto; padding:20px; background:#f9fafb;">
+            <div id="pdf-devueltos-html" style="background:#fff; border-radius:8px; padding:16px; box-shadow:0 1px 4px rgba(0,0,0,0.08);"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+function abrirModalFiltroReporteDevueltos() {
+    document.getElementById('modal-filtro-reporte-devueltos').style.display = 'flex';
+}
+
+function cerrarModalFiltroReporteDevueltos() {
+    document.getElementById('modal-filtro-reporte-devueltos').style.display = 'none';
+}
+
+async function generarReporteDevueltos() {
+    const fecha_desde = document.getElementById('reporte-devueltos-desde').value;
+    const fecha_hasta = document.getElementById('reporte-devueltos-hasta').value;
+    const params = new URLSearchParams({ fecha_desde, fecha_hasta });
+
+    const btn = document.querySelector('#modal-filtro-reporte-devueltos button[onclick="generarReporteDevueltos()"]');
+    btn.disabled = true;
+    btn.textContent = 'Generando...';
+
+    try {
+        const response = await fetch('{{ route('secretaria.sin-nota.log.reporte-devueltos') }}?' + params.toString(), {
+            headers: { 'Accept': 'application/json' }
+        });
+        const data = await response.json();
+        document.getElementById('pdf-devueltos-html').innerHTML = data.html;
+        cerrarModalFiltroReporteDevueltos();
+        document.getElementById('modal-pdf-devueltos').style.display = 'flex';
+    } catch (e) {
+        alert('Error al generar el reporte. Intentá de nuevo.');
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Generar reporte';
+    }
+}
+
+function imprimirPdfDevueltos() {
+    const contenido = document.getElementById('pdf-devueltos-html').innerHTML;
+    const tituloOriginal = document.title;
+    const bodyOriginal = document.body.innerHTML;
+    document.title = 'Reporte Devueltos';
+    document.body.innerHTML = contenido;
+    window.print();
+    document.body.innerHTML = bodyOriginal;
+    document.title = tituloOriginal;
+    window.location.reload();
+}
+
+function cerrarModalPdfDevueltos() {
+    document.getElementById('modal-pdf-devueltos').style.display = 'none';
+    document.getElementById('pdf-devueltos-html').innerHTML = '';
+}
+</script>
 
 <script>
 function fechaLocalAhora() {
