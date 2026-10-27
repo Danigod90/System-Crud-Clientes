@@ -209,7 +209,7 @@ class EntradaConNotaController extends Controller
     'nombre_organizacion'    => 'required|string|max:255',
     'tipo_organizacion'      => 'required|string|max:255',
     'nombre_representante'   => 'required|string|max:255',
-    'telefono_representante' => 'nullable|string|max:50',
+    'telefono_representante' => 'required|string|max:50',
     'fecha_eleccion'         => 'nullable|date',
     'asesor_asignado'        => 'required|string|max:255',
     'via_ingreso'            => 'required|in:correo,presencial',
