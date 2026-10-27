@@ -112,9 +112,9 @@
     <table>
         <thead>
             <tr>
-                <th>Código</th>
                 <th>Organización</th>
-                <th>Asunto</th>
+                <th>Representante</th>
+                <th>Tel. Representante</th>
                 <th>Persona que retira</th>
                 <th>Teléfono</th>
                 <th>Asesor</th>
@@ -136,9 +136,9 @@
                     $tintas  = $usaTecFila ? ($mTec->mat_final_tintas  ?? $m)        : ($entrada->asunto_log ? ($entrada->log_tintas  ?? 0) : 0);
                 @endphp
                 <tr>
-                    <td>{{ $entrada->codigo_org }}</td>
                     <td>{{ $entrada->nombre_organizacion }}</td>
-                    <td>{{ $entrada->asunto_tec ? 'LOG + TEC' : 'LOG' }}</td>
+                    <td>{{ $entrada->nombre_representante ?? '—' }}</td>
+                    <td>{{ $entrada->telefono_representante ?? '—' }}</td>
                     <td>{{ $entrada->persona_retira ?? '—' }}</td>
                     <td>{{ $entrada->telefono_retira ?? '—' }}</td>
                     <td>{{ $entrada->asesor_asignado ?? '—' }}</td>
