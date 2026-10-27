@@ -218,6 +218,7 @@ class EntradaConNotaController extends Controller
     'direccion'              => 'nullable|string|max:255',
 ], [
     'asunto.required' => 'Elegí al menos un asunto.',
+    'telefono_representante.required' => 'El teléfono del representante es obligatorio.',
 ]);
 
     // El asunto "inf" (informativo) es excluyente: no puede combinarse con otros.
