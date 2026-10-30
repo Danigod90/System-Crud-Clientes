@@ -382,15 +382,18 @@ async function abrirModalListado() {
 
 function imprimirListado() {
     const contenido = document.getElementById('listado-html').innerHTML;
-    const tituloOriginal = document.title;
-    const bodyOriginal = document.body.innerHTML;
-
-    document.title = 'Listado de Entradas — Dir. Org. Intermedias';
-    document.body.innerHTML = contenido;
-    window.print();
-    document.body.innerHTML = bodyOriginal;
-    document.title = tituloOriginal;
-    window.location.reload();
+    const ventana = window.open('', '_blank', 'width=800,height=600');
+    ventana.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"><title>Listado de Entradas — Dir. Org. Intermedias</title></head>
+        <body>${contenido}</body>
+        </html>
+    `);
+    ventana.document.close();
+    ventana.focus();
+    ventana.print();
+    ventana.close();
 }
 
 function cerrarModalListado() {

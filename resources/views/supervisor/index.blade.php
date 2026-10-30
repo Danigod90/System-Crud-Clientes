@@ -278,14 +278,18 @@ async function abrirModalListadoSupervisor() {
 
 function imprimirListadoSupervisor() {
     const contenido = document.getElementById('listado-sup-html').innerHTML;
-    const tituloOriginal = document.title;
-    const bodyOriginal = document.body.innerHTML;
-    document.title = 'Listado Supervisor';
-    document.body.innerHTML = contenido;
-    window.print();
-    document.body.innerHTML = bodyOriginal;
-    document.title = tituloOriginal;
-    window.location.reload();
+    const ventana = window.open('', '_blank', 'width=800,height=600');
+    ventana.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"><title>Listado Supervisor</title></head>
+        <body>${contenido}</body>
+        </html>
+    `);
+    ventana.document.close();
+    ventana.focus();
+    ventana.print();
+    ventana.close();
 }
 
 function cerrarModalListadoSupervisor() {

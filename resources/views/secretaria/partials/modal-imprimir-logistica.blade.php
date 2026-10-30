@@ -176,13 +176,18 @@ async function confirmarImprimirLog() {
 
 function imprimirReciboLog() {
     const contenido = document.getElementById('recibo-log-html').innerHTML;
-    const tituloOriginal = document.title;
-    const bodyOriginal = document.body.innerHTML;
-    document.title = 'Recibo Logística';
-    document.body.innerHTML = contenido;
-    window.print();
-    document.body.innerHTML = bodyOriginal;
-    document.title = tituloOriginal;
+    const ventana = window.open('', '_blank', 'width=800,height=600');
+    ventana.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"><title>Recibo Logística</title></head>
+        <body>${contenido}</body>
+        </html>
+    `);
+    ventana.document.close();
+    ventana.focus();
+    ventana.print();
+    ventana.close();
     window.location.reload();
 }
 

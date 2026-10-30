@@ -653,14 +653,18 @@ async function generarReporteEntregados() {
 
 function imprimirPdfEntregados() {
     const contenido = document.getElementById('pdf-entregados-html').innerHTML;
-    const tituloOriginal = document.title;
-    const bodyOriginal = document.body.innerHTML;
-    document.title = 'Reporte Entregados Esperando Devolución';
-    document.body.innerHTML = contenido;
-    window.print();
-    document.body.innerHTML = bodyOriginal;
-    document.title = tituloOriginal;
-    window.location.reload();
+    const ventana = window.open('', '_blank', 'width=800,height=600');
+    ventana.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"><title>Reporte Entregados Esperando Devolución</title></head>
+        <body>${contenido}</body>
+        </html>
+    `);
+    ventana.document.close();
+    ventana.focus();
+    ventana.print();
+    ventana.close();
 }
 
 function cerrarModalPdfEntregados() {
@@ -759,14 +763,18 @@ async function generarReporteDevueltos() {
 
 function imprimirPdfDevueltos() {
     const contenido = document.getElementById('pdf-devueltos-html').innerHTML;
-    const tituloOriginal = document.title;
-    const bodyOriginal = document.body.innerHTML;
-    document.title = 'Reporte Devueltos';
-    document.body.innerHTML = contenido;
-    window.print();
-    document.body.innerHTML = bodyOriginal;
-    document.title = tituloOriginal;
-    window.location.reload();
+    const ventana = window.open('', '_blank', 'width=800,height=600');
+    ventana.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"><title>Reporte Devueltos</title></head>
+        <body>${contenido}</body>
+        </html>
+    `);
+    ventana.document.close();
+    ventana.focus();
+    ventana.print();
+    ventana.close();
 }
 
 function cerrarModalPdfDevueltos() {
@@ -883,13 +891,18 @@ async function reimprimirRecibo(id, btn) {
 
 function imprimirReciboLog() {
     const contenido = document.getElementById('recibo-log-html').innerHTML;
-    const tituloOriginal = document.title;
-    const bodyOriginal = document.body.innerHTML;
-    document.title = 'Recibo Logística';
-    document.body.innerHTML = contenido;
-    window.print();
-    document.body.innerHTML = bodyOriginal;
-    document.title = tituloOriginal;
+    const ventana = window.open('', '_blank', 'width=800,height=600');
+    ventana.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"><title>Recibo Logística</title></head>
+        <body>${contenido}</body>
+        </html>
+    `);
+    ventana.document.close();
+    ventana.focus();
+    ventana.print();
+    ventana.close();
     window.location.reload();
 }
 

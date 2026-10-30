@@ -177,14 +177,18 @@ async function abrirModalPdfSinNota() {
 
 function imprimirPdfSinNota() {
     const contenido = document.getElementById('pdf-sin-nota-html').innerHTML;
-    const tituloOriginal = document.title;
-    const bodyOriginal = document.body.innerHTML;
-    document.title = 'Reporte Mesa de Entrada Sin Nota';
-    document.body.innerHTML = contenido;
-    window.print();
-    document.body.innerHTML = bodyOriginal;
-    document.title = tituloOriginal;
-    window.location.reload();
+    const ventana = window.open('', '_blank', 'width=800,height=600');
+    ventana.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"><title>Reporte Mesa de Entrada Sin Nota</title></head>
+        <body>${contenido}</body>
+        </html>
+    `);
+    ventana.document.close();
+    ventana.focus();
+    ventana.print();
+    ventana.close();
 }
 
 function cerrarModalPdfSinNota() {
