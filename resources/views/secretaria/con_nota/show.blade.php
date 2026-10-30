@@ -277,18 +277,28 @@
                     </span>
                     @endif
                 </h3>
+                @php
+                    // Si no hay cantidades reales de log cargadas (ej. combo LOG+TEC
+                    // cuya entrega se registró por otro camino que no sea el popup de
+                    // Entrega de Log), usamos como respaldo lo que cargó técnica.
+                    $mTecDL    = $conNota->detalleTecnico;
+                    $usaTecDL  = $conNota->asunto_tec && !$conNota->logConCantidadesReales();
+                    $urnasDL   = $usaTecDL ? ($mTecDL->mat_final_urnas   ?? (($mTecDL->cantidad_mesas ?? 0) * ($mTecDL->cantidad_papeletas ?? 0))) : ($conNota->log_urnas   ?? 0);
+                    $cuartosDL = $usaTecDL ? ($mTecDL->mat_final_cuartos ?? ($mTecDL->cantidad_mesas ?? 0)) : ($conNota->log_cuartos ?? 0);
+                    $tintasDL  = $usaTecDL ? ($mTecDL->mat_final_tintas  ?? ($mTecDL->cantidad_mesas ?? 0)) : ($conNota->log_tintas  ?? 0);
+                @endphp
                 <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px;">
                     <div style="text-align:center;">
                         <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Urnas</p>
-                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $conNota->log_urnas ?? 0 }}</p>
+                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $urnasDL }}</p>
                     </div>
                     <div style="text-align:center;">
                         <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Cuartos oscuros</p>
-                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $conNota->log_cuartos ?? 0 }}</p>
+                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $cuartosDL }}</p>
                     </div>
                     <div style="text-align:center;">
                         <p style="font-size:11px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px;">Tintas</p>
-                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $conNota->log_tintas ?? 0 }}</p>
+                        <p style="font-size:14px; font-weight:600; color:#111827; margin:0;">{{ $tintasDL }}</p>
                     </div>
                 </div>
             </div>
